@@ -86,6 +86,24 @@ export type MappingDoc = {
   updatedAt: string;               // ISO
 };
 
+export type JobDoc = {
+  _id?: unknown;
+  sessionId: string;
+  accountId: string;
+  fileType: string;
+  mappingVersion?: number;
+  files: Array<{ path: string; filename: string; bytes: number }>;
+  status: 'queued' | 'processing' | 'done' | 'error';
+  createdAt: string;
+  updatedAt: string;
+  error?: string;
+  stats?: { processedRows?: number };
+
+  // ▼ add these for eligibility MVP
+  eligibilityStartDate?: string | null;
+  mapping?: { fields: Record<string, string> } | null;
+};
+
 // ===================== Write API =====================
 export async function insertUploadSession(doc: {
   uploaderUserId: string;
