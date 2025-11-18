@@ -1,6 +1,9 @@
 // src/routes/upload/+page.server.ts
 import type { Actions, PageServerLoad } from './$types';
-import { insertUploadSession, getActiveMapping } from '$lib/server/db';
+import { enqueueJob, insertUploadSession, getActiveMapping } from '$lib/server/db';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
 
 // -------------------- Config --------------------
 const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
@@ -248,28 +251,97 @@ export const actions: Actions = {
       }
 
       if (intent === 'confirm') {
-        // Audit confirm
-        auditLog('upload.confirm', {
-          uploaderUserId: user.id,
-          accountId,
-          fileType,
-          ip,
-          files: stats.map((s) => ({ filename: s.filename, bytes: s.bytes, mime: s.mime })),
-          totalBytes
-        });
+        // Parse essentials from the same form used in preview
+        const useStored = form.get('useStoredMapping') === 'on';
+        const mappingJson = String(form.get('mappingJson') ?? '').trim();
 
-        // Persist metadata only (no file bodies)
+        // Rebuild the in-memory files list (the preview code already did this; do it again here)
+        const fileInputs = form.getAll('files') as File[];
+        if (!fileInputs.length) {
+          return { error: 'Please attach at least one file.' };
+        }
+        const files = await Promise.all(
+          fileInputs.map(async (f) => ({
+            name: f.name,
+            type: f.type || 'application/octet-stream',
+            buf: Buffer.from(await f.arrayBuffer())
+          }))
+        );
+
+        // Use the same precomputed stats (or re-create minimal ones if you prefer)
+        const stats = files.map((f) => ({
+          filename: f.name,
+          bytes: f.buf.byteLength,
+          rowCount: null,
+          mime: f.type
+        }));
+        const totalBytes = stats.reduce((s, x) => s + x.bytes, 0);
+
+        // Resolve mapping
+        let mappingSource: 'stored' | 'provided' | 'none' = 'none';
+        let mappingVersion: number | undefined;
+        let mappingPayload: Record<string, string> | null = null;
+
+        if (useStored) {
+          const m = await safeGetActiveMapping(accountId, fileType);
+          if (m) {
+            mappingSource = 'stored';
+            mappingVersion = m.version;
+            mappingPayload = (m.json as Record<string, string>) ?? null;
+          } else {
+            mappingSource = 'none';
+          }
+        } else if (mappingJson) {
+          try {
+            mappingPayload = JSON.parse(mappingJson) as Record<string, string>;
+            mappingSource = 'provided';
+          } catch {
+            return { error: 'Invalid mapping JSON' };
+          }
+        }
+
+        // Create upload session (metadata only)
+        const createdAt = new Date().toISOString();
         const sessionId = await insertUploadSession({
           uploaderUserId: user.id,
           accountId,
           fileType,
-          eligibilityStartDate,
+          eligibilityStartDate: eligibilityStartDate || undefined,
           usedMapping: mappingSource,
           mappingVersion,
           stats,
-          createdAt: new Date().toISOString(),
+          createdAt,
           totalBytes,
-          audit: { confirmAt: new Date().toISOString() }
+          audit: { confirmAt: createdAt }
+        });
+
+        // Save files to disk
+        const baseDir = join(process.cwd(), 'var', 'uploads', sessionId);
+        await mkdir(baseDir, { recursive: true });
+        const saved = [];
+        for (const f of files) {
+          const abs = join(baseDir, f.name);
+          await writeFile(abs, f.buf);
+          saved.push({ path: abs, filename: f.name, bytes: f.buf.byteLength });
+        }
+
+        // Enqueue the job for the worker (eligibility MVP)
+        await enqueueJob({
+          sessionId,
+          accountId,
+          fileType,
+          mappingVersion,
+          files: saved,
+          eligibilityStartDate: eligibilityStartDate || null,
+          mapping: mappingPayload ? { fields: mappingPayload } : null
+        });
+
+        // Audit (consistent with preview -> console.info via auditLog)
+        auditLog('upload.confirm', {
+          sessionId,
+          accountId,
+          fileType,
+          files: saved.map((s) => ({ filename: s.filename, bytes: s.bytes }))
         });
 
         return { confirmed: true, sessionId };
