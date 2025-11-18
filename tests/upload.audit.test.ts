@@ -1,10 +1,25 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // ✅ Mock DB so tests never touch Atlas during preview/confirm
-vi.mock('../src/lib/server/db', () => ({
-  insertUploadSession: vi.fn(async () => 'mockSession123'),
-  getActiveMapping: vi.fn(async () => null) // no stored mapping by default
-}));
+vi.mock('../src/lib/server/db', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    insertUploadSession: vi.fn(async () => 'mockSession123'),
+    enqueueJob: vi.fn(async () => 'job123'),
+    // 👇 add this so confirm path can resolve a mapping without throwing
+    getActiveMapping: vi.fn(async (_accountId: string, _fileType: string) => ({
+      version: 1,
+      json: {
+        MemberID: 'member_id',
+        EligibilityStart: 'medical_eligibility_start_date',
+        EligibilityEnd: 'medical_eligibility_end_date',
+        Relationship: 'member_relationship'
+      }
+    }))
+  };
+});
+
 
 import { actions } from '../src/routes/upload/+page.server';
 import { insertUploadSession } from '../src/lib/server/db';
