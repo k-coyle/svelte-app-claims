@@ -4,7 +4,7 @@ import { createNdjsonIngestor } from '../src/lib/server/ndjson';
 describe('ndjson ingestor', () => {
   it('batches, decorates, and flushes', async () => {
     const calls: any[] = [];
-    const insertMany = vi.fn(async (docs) => { calls.push(docs.map(d => d._sessionId)); });
+    const insertMany = vi.fn(async (docs: any[]) => { calls.push(docs.map((d: any) => d._sessionId)); });
     const ing = createNdjsonIngestor(insertMany, (o) => ({ ...o, _sessionId: 's1' }), 2);
 
     await ing.push('{"a":1}\n{"a":2}\n{"a":3}');

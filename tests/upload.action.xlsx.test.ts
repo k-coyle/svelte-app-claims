@@ -12,7 +12,8 @@ async function makeXlsxBuffer(rows: string[][]): Promise<Buffer> {
 describe('upload action - xlsx preview', () => {
   it('counts rows (including header) for .xlsx', async () => {
     const buf = await makeXlsxBuffer([['a','b'], ['1','2'], ['3','4']]); // 3 rows total
-    const file = new File([buf], 'test.xlsx', {
+    const body = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
+    const file = new File([body], 'test.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     });
 

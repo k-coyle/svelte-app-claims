@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // ✅ Mock DB so tests never touch Atlas during preview/confirm
 vi.mock('../src/lib/server/db', async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import('../src/lib/server/db')>();
   return {
     ...actual,
     insertUploadSession: vi.fn(async () => 'mockSession123'),

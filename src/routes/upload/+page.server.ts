@@ -134,10 +134,19 @@ export const load: PageServerLoad = async () => {
 
 // -------------------- Actions --------------------
 async function safeGetActiveMapping(accountId: string, fileType: string) {
+  // Short-circuit in tests if a mock isn't provided quickly
+  const timeoutMs = Number(process.env.MAPPING_LOOKUP_TIMEOUT_MS ?? 400);
+
   try {
-    return await getActiveMapping(accountId, fileType);
+    const lookup = getActiveMapping(accountId, fileType) as Promise<any>;
+    const timed = new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs));
+    const res = await Promise.race([lookup, timed]);
+    if (res === null) {
+      console.warn(`mapping lookup timeout after ${timeoutMs}ms`);
+      return null;
+    }
+    return res; // { version, json, ... } from mock or DB
   } catch (e) {
-    // Don’t break preview on DB hiccups (tests/dev)
     console.warn('mapping lookup failed:', e instanceof Error ? e.message : e);
     return null;
   }
@@ -251,54 +260,12 @@ export const actions: Actions = {
       }
 
       if (intent === 'confirm') {
-        // Parse essentials from the same form used in preview
-        const useStored = form.get('useStoredMapping') === 'on';
-        const mappingJson = String(form.get('mappingJson') ?? '').trim();
-
-        // Rebuild the in-memory files list (the preview code already did this; do it again here)
-        const fileInputs = form.getAll('files') as File[];
-        if (!fileInputs.length) {
-          return { error: 'Please attach at least one file.' };
-        }
-        const files = await Promise.all(
-          fileInputs.map(async (f) => ({
-            name: f.name,
-            type: f.type || 'application/octet-stream',
-            buf: Buffer.from(await f.arrayBuffer())
-          }))
-        );
-
-        // Use the same precomputed stats (or re-create minimal ones if you prefer)
-        const stats = files.map((f) => ({
-          filename: f.name,
-          bytes: f.buf.byteLength,
-          rowCount: null,
-          mime: f.type
-        }));
-        const totalBytes = stats.reduce((s, x) => s + x.bytes, 0);
-
-        // Resolve mapping
-        let mappingSource: 'stored' | 'provided' | 'none' = 'none';
-        let mappingVersion: number | undefined;
-        let mappingPayload: Record<string, string> | null = null;
-
-        if (useStored) {
-          const m = await safeGetActiveMapping(accountId, fileType);
-          if (m) {
-            mappingSource = 'stored';
-            mappingVersion = m.version;
-            mappingPayload = (m.json as Record<string, string>) ?? null;
-          } else {
-            mappingSource = 'none';
-          }
-        } else if (mappingJson) {
-          try {
-            mappingPayload = JSON.parse(mappingJson) as Record<string, string>;
-            mappingSource = 'provided';
-          } catch {
-            return { error: 'Invalid mapping JSON' };
-          }
-        }
+        const mappingFields =
+          mappingPayload && typeof mappingPayload === 'object'
+            ? Object.fromEntries(
+                Object.entries(mappingPayload).map(([key, value]) => [key, String(value)])
+              )
+            : null;
 
         // Create upload session (metadata only)
         const createdAt = new Date().toISOString();
@@ -333,7 +300,7 @@ export const actions: Actions = {
           mappingVersion,
           files: saved,
           eligibilityStartDate: eligibilityStartDate || null,
-          mapping: mappingPayload ? { fields: mappingPayload } : null
+          mapping: mappingFields ? { fields: mappingFields } : null
         });
 
         // Audit (consistent with preview -> console.info via auditLog)

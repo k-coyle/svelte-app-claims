@@ -30,7 +30,8 @@ describe('header peek (CSV & XLSX)', () => {
     form.append('intent', 'preview');
     form.append('fileType', 'eligibility');
     form.append('accountId', 'clientA');
-    const file = new File([buf], 'hdr.xlsx', {
+    const body = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
+    const file = new File([body], 'hdr.xlsx', {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     });
     form.append('files', file);

@@ -31,35 +31,35 @@ function deriveYear(job) {
 }
 
 async function processEligibilityJob(db, job) {
-  // inside processEligibilityJob(db, job)
-const opts = {
-  reader_type: 'eligibility',
-  file_paths: job.files.map((f) => f.path),
-  chunk_size: 100000,
-  rename_map: job.mapping?.fields ?? null, // <— mapping JSON: { source_col: canonical_col }
-  clean_args: {
-    year: (() => {
-      const iso = job.eligibilityStartDate;
-      return (typeof iso === 'string' && iso.length >= 4) ? Number(iso.slice(0,4)) : new Date().getFullYear();
-    })(),
-    start_col: 'medical_eligibility_start_date',
-    end_col: 'medical_eligibility_end_date',
-    id_col: 'member_id',
-    relationship_col: 'member_relationship',
-    fill_missing_end_date: true,
-    filter_relationship: ['SELF'],
-    monthly_columns: true,
-    drop_duplicates: true,
-    duplicate_subset: null,
-    as_of_col: null,
-    expand_prior_months: 0
-  }
+  const opts = {
+    reader_type: 'eligibility',
+    file_paths: job.files.map((f) => f.path),
+    chunk_size: 100000,
+    rename_map: job.mapping?.fields ?? null,
+    clean_args: {
+      // year not critical to ETL, but your cleaner requires it in the signature
+      year: (() => {
+        const iso = job.eligibilityStartDate;
+        return (typeof iso === 'string' && /^\d{4}/.test(iso)) ? Number(iso.slice(0,4)) : new Date().getFullYear();
+      })(),
+      start_col: 'medical_eligibility_start_date',
+      end_col: 'medical_eligibility_end_date',
+      id_col: 'member_id',
+      relationship_col: 'member_relationship',
+      fill_missing_end_date: true,
+      filter_relationship: ['SELF'],
+      monthly_columns: true,
+      drop_duplicates: true,
+      duplicate_subset: null,
+      as_of_col: null,
+      expand_prior_months: 0
+    }
   };
-  child.stdin.write(JSON.stringify(opts) + '\n');
-  const child = spawn(PY_BIN, [PY_SCRIPT], {
-    cwd: process.cwd(),
-    env: { ...process.env, PYTHONPATH: process.cwd() },
-    stdio: ['pipe', 'pipe', 'inherit'] // stdin, stdout, stderr→inherit
+
+  const child = spawn(PY_BIN, [PY_ENTRY], {
+    cwd: ETL_ROOT,
+    env: { ...process.env },
+    stdio: ['pipe', 'pipe', 'inherit']
   });
 
   // Send options JSON as the first line
