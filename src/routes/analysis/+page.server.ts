@@ -1,11 +1,23 @@
 import type { Actions, PageServerLoad } from './$types';
 import { listAnalysisManifests, writeReportWorkbookArtifacts } from '$lib/server/analysis';
+import { readFile } from 'node:fs/promises';
+
+async function readReportSections(path?: string) {
+	if (!path) return null;
+	try {
+		return JSON.parse(await readFile(path, 'utf8'));
+	} catch {
+		return null;
+	}
+}
 
 export const load: PageServerLoad = async () => {
 	const runs = await listAnalysisManifests(25);
+	const latest = runs[0] ?? null;
 	return {
 		runs,
-		latest: runs[0] ?? null
+		latest,
+		reportSections: await readReportSections(latest?.artifacts?.reportSections ?? latest?.artifacts?.reportWorkbook)
 	};
 };
 

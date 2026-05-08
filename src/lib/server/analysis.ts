@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { spawn } from 'node:child_process';
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { ClaimsRunProfile } from './claimsProfile';
@@ -40,6 +41,12 @@ export type AnalysisManifest = {
 		dashboard: string;
 		reportWorkbook?: string;
 		claimsProfile?: string;
+		reportSections?: string;
+	};
+	mapping?: {
+		source: 'stored' | 'provided' | 'none';
+		version?: number;
+		fields?: Record<string, string>;
 	};
 	report?: ReportWorkbookSummary;
 	claims?: ClaimsRunProfile;
@@ -47,7 +54,7 @@ export type AnalysisManifest = {
 		vendoredRoot: string;
 		requirementsFile: string;
 		runner: string;
-		status: 'not_checked' | 'ready' | 'missing_dependencies';
+		status: 'not_checked' | 'ready' | 'missing_dependencies' | 'error';
 		notes: string[];
 	};
 };
@@ -201,11 +208,56 @@ function pythonManifestStatus() {
 	};
 }
 
+async function readJsonFile<T>(path: string): Promise<T | null> {
+	try {
+		return JSON.parse(await readFile(path, 'utf8')) as T;
+	} catch {
+		return null;
+	}
+}
+
+async function runPythonAnalysis(input: { manifestPath: string; outDir: string }) {
+	const pythonBin = process.env.CLAIMS_PYTHON_BIN ?? process.env.PYTHON_BIN ?? 'python';
+	const args = [runnerFile, '--manifest', input.manifestPath, '--out-dir', input.outDir];
+	const child = spawn(pythonBin, args, {
+		cwd: vendoredRoot,
+		stdio: ['ignore', 'pipe', 'pipe']
+	});
+
+	let stdout = '';
+	let stderr = '';
+	child.stdout.setEncoding('utf8');
+	child.stderr.setEncoding('utf8');
+	child.stdout.on('data', (chunk) => (stdout += String(chunk)));
+	child.stderr.on('data', (chunk) => (stderr += String(chunk)));
+
+	const code = await new Promise<number>((resolve) => {
+		child.on('error', () => resolve(-1));
+		child.on('close', (exitCode) => resolve(exitCode ?? -1));
+	});
+
+	const statusPath = join(input.outDir, 'python-status.json');
+	const reportPath = join(input.outDir, 'report-sections.json');
+	const status = await readJsonFile<Record<string, unknown>>(statusPath);
+	const report = await readJsonFile<{ summary?: ReportWorkbookSummary }>(reportPath);
+
+	return {
+		code,
+		stdout,
+		stderr,
+		statusPath,
+		reportPath,
+		status,
+		report: report?.summary ?? null
+	};
+}
+
 export async function writeAnalysisArtifacts(input: {
 	sessionId: string;
 	accountId: string;
 	files: AnalysisFileInput[];
 	claims?: ClaimsRunProfile | null;
+	mapping?: AnalysisManifest['mapping'];
 	createdAt?: string;
 }) {
 	const createdAt = input.createdAt ?? new Date().toISOString();
@@ -217,6 +269,7 @@ export async function writeAnalysisArtifacts(input: {
 	const dashboardPath = join(dir, 'dashboard.json');
 	const manifestPath = join(dir, 'manifest.json');
 	const claimsProfilePath = input.claims ? join(dir, 'claims-profile.json') : undefined;
+	const reportSectionsPath = join(dir, 'report-sections.json');
 
 	if (input.claims && claimsProfilePath) {
 		await writeFile(claimsProfilePath, `${JSON.stringify(input.claims, null, 2)}\n`, 'utf8');
@@ -233,8 +286,10 @@ export async function writeAnalysisArtifacts(input: {
 		artifacts: {
 			manifest: manifestPath,
 			dashboard: dashboardPath,
-			claimsProfile: claimsProfilePath
+			claimsProfile: claimsProfilePath,
+			reportSections: reportSectionsPath
 		},
+		mapping: input.mapping,
 		claims: input.claims ?? undefined,
 		python: {
 			...pythonManifestStatus()
@@ -259,6 +314,64 @@ export async function writeAnalysisArtifacts(input: {
 
 	await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 	await writeFile(dashboardPath, `${JSON.stringify(dashboard, null, 2)}\n`, 'utf8');
+
+	const pythonResult = await runPythonAnalysis({ manifestPath, outDir: dir });
+	if (pythonResult.report) {
+		manifest.report = pythonResult.report;
+		manifest.status = 'ready_for_bi';
+		manifest.metrics = buildReportMetrics(pythonResult.report);
+		manifest.requirements = manifest.requirements.map((requirement) => {
+			if (requirement.key === 'eligibility' && requirement.status !== 'met') {
+				return {
+					...requirement,
+					status: 'met',
+					description:
+						'Demo eligibility was generated from claim members because no eligibility file was uploaded.'
+				};
+			}
+			if (requirement.key === 'bi') {
+				return {
+					...requirement,
+					status: 'met',
+					description: 'Python report sections were generated from uploaded raw claims.'
+				};
+			}
+			return requirement;
+		});
+	}
+
+	if (pythonResult.status?.ok === true) {
+		manifest.python = {
+			...manifest.python,
+			status: 'ready',
+			notes: [
+				'Python runner completed and wrote dashboard-ready report sections.',
+				`Runner mode: ${String(pythonResult.status.mode ?? 'unknown')}.`,
+				'Legacy dependency readiness is recorded in python-status.json.'
+			]
+		};
+	} else {
+		manifest.python = {
+			...manifest.python,
+			status: 'error',
+			notes: [
+				'Python runner did not complete successfully.',
+				pythonResult.stderr || pythonResult.stdout || 'See python-status.json for details.'
+			]
+		};
+	}
+
+	const enrichedDashboard = {
+		...dashboard,
+		status: manifest.status,
+		metrics: manifest.metrics,
+		requirements: manifest.requirements,
+		python: manifest.python,
+		report: manifest.report ?? null
+	};
+
+	await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+	await writeFile(dashboardPath, `${JSON.stringify(enrichedDashboard, null, 2)}\n`, 'utf8');
 
 	return manifest;
 }

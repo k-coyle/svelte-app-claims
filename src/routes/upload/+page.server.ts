@@ -322,6 +322,11 @@ export const actions: Actions = {
           accountId,
           createdAt,
           claims: claimsProfile,
+          mapping: {
+            source: mappingSource,
+            version: mappingVersion,
+            fields: mappingFields ?? undefined
+          },
           files: saved.map((file) => {
             const stat = stats.find((item) => item.filename === file.filename);
             return {

@@ -1,10 +1,13 @@
-pandas
-numpy
-munch
+pandas==1.5.3
+numpy==1.26.4
+munch==2.5.0
 pydash
 XlsxWriter
 fuzzywuzzy
-python-levenshtein
+python-Levenshtein
 detect-delimiter
 stringcase
 python-dateutil
+ipdb
+pyarrow
+openpyxl

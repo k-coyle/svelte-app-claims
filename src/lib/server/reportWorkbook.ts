@@ -30,7 +30,7 @@ export type YearSummary = {
 
 export type ReportWorkbookSummary = {
 	sourceFilename: string;
-	sourceFormat: 'write_excel_report_workbook';
+	sourceFormat: 'write_excel_report_workbook' | 'python_claims_analysis';
 	yearCount: number;
 	sectionCount: number;
 	years: YearSummary[];
@@ -241,7 +241,7 @@ function summarizeWorkbook(sourceFilename: string, years: YearReport[]): ReportW
 
 	return {
 		sourceFilename,
-		sourceFormat: 'write_excel_report_workbook',
+		sourceFormat: 'write_excel_report_workbook' as const,
 		yearCount: years.length,
 		sectionCount,
 		years: yearSummaries,

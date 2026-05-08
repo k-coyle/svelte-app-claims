@@ -46,6 +46,17 @@
 			status: string;
 			notes: string[];
 		};
+		artifacts?: {
+			reportSections?: string;
+			claimsProfile?: string;
+			dashboard?: string;
+			manifest?: string;
+		};
+		mapping?: {
+			source: 'stored' | 'provided' | 'none';
+			version?: number;
+			fields?: Record<string, string>;
+		};
 		claims?: {
 			source: 'uploaded_claims';
 			profiledAt: string;
@@ -116,6 +127,13 @@
 	export let data: {
 		runs: AnalysisManifest[];
 		latest: AnalysisManifest | null;
+		reportSections: {
+			years?: Array<{
+				analysisYear: number;
+				sections: Record<string, { rows: Record<string, ReportCellValue>[]; properties?: Record<string, ReportCellValue> }>;
+			}>;
+			warnings?: string[];
+		} | null;
 	};
 
 	export let form: { ok?: boolean; sessionId?: string; yearCount?: number; error?: string } | null = null;
@@ -170,6 +188,30 @@
 	function coverageLabel(value: boolean) {
 		return value ? 'Present' : 'Missing';
 	}
+
+	function pctChange(current: number | null | undefined, previous: number | null | undefined) {
+		if (typeof current !== 'number' || typeof previous !== 'number' || previous === 0) return '-';
+		return `${(((current - previous) / previous) * 100).toFixed(1)}%`;
+	}
+
+	function reportYearRows() {
+		return data.latest?.report?.years ?? [];
+	}
+
+	function latestReportSections() {
+		const years = data.reportSections?.years ?? [];
+		return years[years.length - 1]?.sections ?? {};
+	}
+
+	$: matrixRows = latestReportSections().get_medical__cc_matrix?.rows?.slice(0, 6) ?? [];
+	$: matrixColumns = matrixRows.length
+		? Object.keys(matrixRows[0]).filter((key) => key !== 'condition_group').slice(0, 6)
+		: [];
+	$: latestYear = data.latest?.report?.latestYear;
+	$: projectedSavings =
+		typeof latestYear?.medicalTotalAfterExclusions === 'number'
+			? latestYear.medicalTotalAfterExclusions * 0.03
+			: null;
 </script>
 
 <div class="space-y-5">
@@ -244,6 +286,22 @@
 					</div>
 			</CardContent>
 		</Card>
+
+		<Card>
+				<CardHeader>
+					<CardTitle>Pipeline status</CardTitle>
+					<CardDescription>Raw upload to dashboard artifact flow.</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div class="grid gap-2 text-sm sm:grid-cols-5">
+						<Badge variant="secondary">Raw upload</Badge>
+						<Badge variant={data.latest.mapping?.fields ? 'secondary' : 'outline'}>Mapping</Badge>
+						<Badge variant={data.latest.claims ? 'secondary' : 'outline'}>Claims profile</Badge>
+						<Badge variant={data.latest.python.status === 'ready' ? 'secondary' : 'outline'}>Python analysis</Badge>
+						<Badge variant={data.latest.report ? 'secondary' : 'outline'}>Dashboard data</Badge>
+					</div>
+				</CardContent>
+			</Card>
 
 		{#if data.latest.claims}
 			<div class="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
@@ -351,6 +409,36 @@
 		{/if}
 
 		{#if data.latest.report}
+			<div class="grid gap-4 md:grid-cols-3">
+				<Card>
+					<CardHeader>
+						<CardDescription>Annual medical trend</CardDescription>
+						<CardTitle>
+							{#if reportYearRows().length > 1}
+								{pctChange(
+									reportYearRows()[reportYearRows().length - 1]?.medicalTotalAfterExclusions,
+									reportYearRows()[reportYearRows().length - 2]?.medicalTotalAfterExclusions
+								)}
+							{:else}
+								-
+							{/if}
+						</CardTitle>
+					</CardHeader>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardDescription>Members with chronic signals</CardDescription>
+						<CardTitle>{data.latest.report.conditionPrevalence.length}</CardTitle>
+					</CardHeader>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardDescription>Illustrative ROI opportunity</CardDescription>
+						<CardTitle>{fmtMoney(projectedSavings)}</CardTitle>
+					</CardHeader>
+				</Card>
+			</div>
+
 			<div class="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
 				<Card>
 					<CardHeader>
@@ -458,6 +546,68 @@
 					</CardContent>
 				</Card>
 			</div>
+
+			{#if matrixRows.length}
+				<Card>
+					<CardHeader>
+						<CardTitle>Chronic-condition hierarchy matrix</CardTitle>
+						<CardDescription>Member overlap between top detected condition groups.</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<div class="overflow-x-auto">
+							<table class="w-full text-left text-sm">
+								<thead class="border-b text-muted-foreground">
+									<tr>
+										<th class="py-2 pr-4">Condition</th>
+										{#each matrixColumns as column}
+											<th class="py-2 pr-4">{column}</th>
+										{/each}
+									</tr>
+								</thead>
+								<tbody>
+									{#each matrixRows as row}
+										<tr class="border-b last:border-0">
+											<td class="py-3 pr-4 font-medium">{conditionName(row)}</td>
+											{#each matrixColumns as column}
+												<td class="py-3 pr-4">{fmtNumber(row[column])}</td>
+											{/each}
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					</CardContent>
+				</Card>
+			{/if}
+
+			<Card>
+				<CardHeader>
+					<CardTitle>Key findings</CardTitle>
+					<CardDescription>Auto-generated readout from the latest dashboard artifact.</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div class="grid gap-2 text-sm md:grid-cols-3">
+						<div class="rounded-lg border px-3 py-3">
+							<p class="font-medium">Cost baseline</p>
+							<p class="mt-1 text-muted-foreground">
+								Latest medical cost is {fmtMoney(latestYear?.medicalTotalAfterExclusions ?? latestYear?.medicalTotal)}.
+							</p>
+						</div>
+						<div class="rounded-lg border px-3 py-3">
+							<p class="font-medium">Clinical concentration</p>
+							<p class="mt-1 text-muted-foreground">
+								Top condition rows and diagnosis codes identify where the next care-management review should focus.
+							</p>
+						</div>
+						<div class="rounded-lg border px-3 py-3">
+							<p class="font-medium">Demo eligibility</p>
+							<p class="mt-1 text-muted-foreground">
+								When eligibility is absent, the runner uses claim members as full-year demo eligibility for denominators.
+							</p>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
 		{/if}
 
 		<Card>
