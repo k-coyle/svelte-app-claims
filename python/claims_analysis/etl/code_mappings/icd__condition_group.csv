@@ -1,0 +1,1577 @@
+icd_code,condition_group
+249,Diabetes
+2490,Diabetes
+24900,Diabetes
+24901,Diabetes
+2491,Diabetes
+24910,Diabetes
+24911,Diabetes
+2492,Diabetes
+24920,Diabetes
+24921,Diabetes
+2493,Diabetes
+24930,Diabetes
+24931,Diabetes
+2494,Diabetes
+24940,Diabetes
+24941,Diabetes
+2495,Diabetes
+24950,Diabetes
+24951,Diabetes
+2496,Diabetes
+24960,Diabetes
+24961,Diabetes
+2497,Diabetes
+24970,Diabetes
+24971,Diabetes
+2498,Diabetes
+24980,Diabetes
+24981,Diabetes
+2499,Diabetes
+24990,Diabetes
+24991,Diabetes
+250,Diabetes
+2500,Diabetes
+25000,Diabetes
+25001,Diabetes
+25002,Diabetes
+25003,Diabetes
+2501,Diabetes
+25010,Diabetes
+25011,Diabetes
+25012,Diabetes
+25013,Diabetes
+2502,Diabetes
+25020,Diabetes
+25021,Diabetes
+25022,Diabetes
+25023,Diabetes
+2503,Diabetes
+25030,Diabetes
+25031,Diabetes
+25032,Diabetes
+25033,Diabetes
+2504,Diabetes
+25040,Diabetes
+25041,Diabetes
+25042,Diabetes
+25043,Diabetes
+2505,Diabetes
+25050,Diabetes
+25051,Diabetes
+25052,Diabetes
+25053,Diabetes
+2506,Diabetes
+25060,Diabetes
+25061,Diabetes
+25062,Diabetes
+25063,Diabetes
+2507,Diabetes
+25070,Diabetes
+25071,Diabetes
+25072,Diabetes
+25073,Diabetes
+2508,Diabetes
+25080,Diabetes
+25081,Diabetes
+25082,Diabetes
+25083,Diabetes
+2509,Diabetes
+25090,Diabetes
+25091,Diabetes
+25092,Diabetes
+25093,Diabetes
+27800,Obesity
+27801,Obesity
+27802,Obesity
+2920,MH6
+29211,MH6
+29212,MH6
+2922,MH6
+296,MH6
+2960,MH6
+29600,MH6
+29601,MH6
+29602,MH6
+29603,MH6
+29604,MH6
+29605,MH6
+29606,MH6
+2961,MH6
+29610,MH6
+29611,MH6
+29612,MH6
+29613,MH6
+29614,MH6
+29615,MH6
+29616,MH6
+2962,MH6
+29620,MH6
+29621,MH6
+29622,MH6
+29623,MH6
+29624,MH6
+29625,MH6
+29626,MH6
+2963,MH6
+29630,MH6
+29631,MH6
+29632,MH6
+29633,MH6
+29634,MH6
+29635,MH6
+29636,MH6
+2964,MH6
+29640,MH6
+29641,MH6
+29642,MH6
+29643,MH6
+29644,MH6
+29645,MH6
+29646,MH6
+2965,MH6
+29650,MH6
+29651,MH6
+29652,MH6
+29653,MH6
+29654,MH6
+29655,MH6
+29656,MH6
+2966,MH6
+29660,MH6
+29661,MH6
+29662,MH6
+29663,MH6
+29664,MH6
+29665,MH6
+29666,MH6
+2967,MH6
+2968,MH6
+29680,MH6
+29681,MH6
+29682,MH6
+29689,MH6
+2969,MH6
+29690,MH6
+29699,MH6
+2980,MH6
+300,MH6
+30000,MH6
+30001,MH6
+30002,MH6
+30009,MH6
+3004,MH6
+304,MH6
+30400,MH6
+30401,MH6
+30402,MH6
+3041,MH6
+30410,MH6
+30411,MH6
+30412,MH6
+3042,MH6
+30420,MH6
+30421,MH6
+30422,MH6
+3043,MH6
+30430,MH6
+30431,MH6
+30432,MH6
+3044,MH6
+30440,MH6
+30441,MH6
+30442,MH6
+3045,MH6
+30450,MH6
+30451,MH6
+30452,MH6
+3046,MH6
+30460,MH6
+30461,MH6
+30462,MH6
+30470,MH6
+30471,MH6
+30472,MH6
+30480,MH6
+30481,MH6
+30482,MH6
+3049,MH6
+30490,MH6
+30491,MH6
+30492,MH6
+305,MH6
+30500,MH6
+30501,MH6
+30502,MH6
+3051,MH6
+3052,MH6
+30520,MH6
+30521,MH6
+30522,MH6
+3053,MH6
+30530,MH6
+30531,MH6
+30532,MH6
+3054,MH6
+30540,MH6
+30541,MH6
+30542,MH6
+3055,MH6
+30550,MH6
+30551,MH6
+30552,MH6
+3056,MH6
+30560,MH6
+30561,MH6
+30562,MH6
+3057,MH6
+30570,MH6
+30571,MH6
+30572,MH6
+30580,MH6
+30581,MH6
+30582,MH6
+3059,MH6
+30590,MH6
+30591,MH6
+30592,MH6
+3071,MH6
+3075,MH6
+30750,MH6
+30751,MH6
+30752,MH6
+30753,MH6
+30754,MH6
+3090,MH6
+3091,MH6
+30981,MH6
+311,MH6
+34989,Diabetes
+3499,Diabetes
+3535,Diabetes
+3559,Diabetes
+3572,Diabetes
+3620,Diabetes
+36201,Diabetes
+36202,Diabetes
+36203,Diabetes
+36204,Diabetes
+36205,Diabetes
+36206,Diabetes
+36207,Diabetes
+36641,Diabetes
+39891,Congestive Heart Failure
+401,Hypertension
+4010,Hypertension
+4011,Hypertension
+4019,Hypertension
+402,Hypertension
+4020,Hypertension
+40200,Hypertension
+40201,Congestive Heart Failure
+4021,Hypertension
+40210,Hypertension
+40211,Congestive Heart Failure
+4029,Hypertension
+40290,Hypertension
+40291,Congestive Heart Failure
+403,Hypertension
+4030,Hypertension
+40300,Hypertension
+4031,Hypertension
+40310,Hypertension
+4039,Hypertension
+40390,Hypertension
+404,Hypertension
+4040,Hypertension
+40400,Hypertension
+40401,Congestive Heart Failure
+40403,Congestive Heart Failure
+4041,Hypertension
+40410,Hypertension
+40411,Congestive Heart Failure
+40413,Congestive Heart Failure
+4049,Hypertension
+40490,Hypertension
+40491,Congestive Heart Failure
+40493,Congestive Heart Failure
+405,Hypertension
+4050,Hypertension
+40501,Hypertension
+40509,Hypertension
+4051,Hypertension
+40511,Hypertension
+40519,Hypertension
+4059,Hypertension
+40591,Hypertension
+40599,Hypertension
+410,CAD
+4100,CAD
+41000,CAD
+41001,CAD
+41002,CAD
+4101,CAD
+41010,CAD
+41011,CAD
+41012,CAD
+4102,CAD
+41020,CAD
+41021,CAD
+41022,CAD
+4103,CAD
+41030,CAD
+41031,CAD
+41032,CAD
+4104,CAD
+41040,CAD
+41041,CAD
+41042,CAD
+4105,CAD
+41050,CAD
+41051,CAD
+41052,CAD
+4106,CAD
+41060,CAD
+41061,CAD
+41062,CAD
+4107,CAD
+41070,CAD
+41071,CAD
+41072,CAD
+4108,CAD
+41080,CAD
+41081,CAD
+41082,CAD
+4109,CAD
+41090,CAD
+41091,CAD
+41092,CAD
+411,CAD
+4110,CAD
+4111,CAD
+4118,CAD
+41181,CAD
+41189,CAD
+412,CAD
+413,CAD
+4130,CAD
+4131,CAD
+4139,CAD
+414,CAD
+4140,CAD
+41400,CAD
+41401,CAD
+41402,CAD
+41403,CAD
+41404,CAD
+41405,CAD
+41406,CAD
+41407,CAD
+4141,CAD
+41410,CAD
+41411,CAD
+41412,CAD
+41419,CAD
+4142,CAD
+4143,CAD
+4144,CAD
+4148,CAD
+4149,CAD
+428,Congestive Heart Failure
+4280,Congestive Heart Failure
+4281,Congestive Heart Failure
+4282,Congestive Heart Failure
+42820,Congestive Heart Failure
+42821,Congestive Heart Failure
+42822,Congestive Heart Failure
+42823,Congestive Heart Failure
+4283,Congestive Heart Failure
+42830,Congestive Heart Failure
+42831,Congestive Heart Failure
+42832,Congestive Heart Failure
+42833,Congestive Heart Failure
+4284,Congestive Heart Failure
+42840,Congestive Heart Failure
+42841,Congestive Heart Failure
+42842,Congestive Heart Failure
+42843,Congestive Heart Failure
+4289,Congestive Heart Failure
+4292,CAD
+4297,CAD
+4372,Hypertension
+44381,Diabetes
+4911,COPD
+4912,COPD
+49120,COPD
+49121,COPD
+49122,COPD
+4918,COPD
+4919,COPD
+492,COPD
+4920,COPD
+4928,COPD
+493,Asthma
+4930,Asthma
+49300,Asthma
+49301,Asthma
+49302,Asthma
+4931,Asthma
+49310,Asthma
+49311,Asthma
+49312,Asthma
+4932,COPD
+49320,COPD
+49321,COPD
+49322,COPD
+4938,Asthma
+49381,Asthma
+49382,Asthma
+4939,Asthma
+49390,Asthma
+49391,Asthma
+49392,Asthma
+496,COPD
+5064,COPD
+5181,COPD
+5238,Diabetes
+5289,Diabetes
+5363,Diabetes
+58181,Diabetes
+58381,Diabetes
+7093,Diabetes
+7098,Diabetes
+7135,Diabetes
+71640,Diabetes
+71680,Diabetes
+7200,Back and Neck Pain
+7220,Back and Neck Pain
+72210,Back and Neck Pain
+72211,Back and Neck Pain
+7222,Back and Neck Pain
+72230,Back and Neck Pain
+72231,Back and Neck Pain
+72232,Back and Neck Pain
+72239,Back and Neck Pain
+7224,Back and Neck Pain
+72251,Back and Neck Pain
+72252,Back and Neck Pain
+7226,Back and Neck Pain
+72270,Back and Neck Pain
+72271,Back and Neck Pain
+72272,Back and Neck Pain
+72273,Back and Neck Pain
+72280,Back and Neck Pain
+72281,Back and Neck Pain
+72282,Back and Neck Pain
+72283,Back and Neck Pain
+72290,Back and Neck Pain
+72291,Back and Neck Pain
+72292,Back and Neck Pain
+72293,Back and Neck Pain
+723,Back and Neck Pain
+7230,Back and Neck Pain
+7231,Back and Neck Pain
+7232,Back and Neck Pain
+7233,Back and Neck Pain
+7234,Back and Neck Pain
+7235,Back and Neck Pain
+7236,Back and Neck Pain
+7237,Back and Neck Pain
+7238,Back and Neck Pain
+7239,Back and Neck Pain
+724,Back and Neck Pain
+7240,Back and Neck Pain
+72400,Back and Neck Pain
+72401,Back and Neck Pain
+72402,Back and Neck Pain
+72409,Back and Neck Pain
+7241,Back and Neck Pain
+7242,Back and Neck Pain
+7243,Back and Neck Pain
+7244,Back and Neck Pain
+7245,Back and Neck Pain
+7246,Back and Neck Pain
+7247,Back and Neck Pain
+72470,Back and Neck Pain
+72471,Back and Neck Pain
+72479,Back and Neck Pain
+7248,Back and Neck Pain
+7249,Back and Neck Pain
+72789,Back and Neck Pain
+7292,Back and Neck Pain
+73740,Back and Neck Pain
+7378,Back and Neck Pain
+7379,Back and Neck Pain
+7384,Back and Neck Pain
+7391,Back and Neck Pain
+7393,Back and Neck Pain
+7394,Back and Neck Pain
+75612,Back and Neck Pain
+783,MH6
+7830,MH6
+7831,MH6
+7832,MH6
+78321,MH6
+78322,MH6
+7854,Diabetes
+8460,Back and Neck Pain
+8470,Back and Neck Pain
+8472,Back and Neck Pain
+8473,Back and Neck Pain
+8474,Back and Neck Pain
+8479,Back and Neck Pain
+8485,Back and Neck Pain
+E0801   ,Diabetes
+E0810   ,Diabetes
+E0811   ,Diabetes
+E0821   ,Diabetes
+E08311  ,Diabetes
+E08319  ,Diabetes
+E0836   ,Diabetes
+E0837X1 ,Diabetes
+E0837X2 ,Diabetes
+E0837X3 ,Diabetes
+E0837X9 ,Diabetes
+E0839   ,Diabetes
+E0840   ,Diabetes
+E0841   ,Diabetes
+E0842   ,Diabetes
+E0843   ,Diabetes
+E0844   ,Diabetes
+E0849   ,Diabetes
+E0851   ,Diabetes
+E08610  ,Diabetes
+E08618  ,Diabetes
+E08620  ,Diabetes
+E08621  ,Diabetes
+E08622  ,Diabetes
+E08628  ,Diabetes
+E08630  ,Diabetes
+E08638  ,Diabetes
+E08641  ,Diabetes
+E0865   ,Diabetes
+E0869   ,Diabetes
+E088    ,Diabetes
+E089    ,Diabetes
+E0901   ,Diabetes
+E0910   ,Diabetes
+E0911   ,Diabetes
+E0921   ,Diabetes
+E09311  ,Diabetes
+E09319  ,Diabetes
+E0936   ,Diabetes
+E0937X1 ,Diabetes
+E0937X2 ,Diabetes
+E0937X3 ,Diabetes
+E0937X9 ,Diabetes
+E0939   ,Diabetes
+E0940   ,Diabetes
+E0941   ,Diabetes
+E0942   ,Diabetes
+E0943   ,Diabetes
+E0944   ,Diabetes
+E0949   ,Diabetes
+E0951   ,Diabetes
+E09610  ,Diabetes
+E09618  ,Diabetes
+E09620  ,Diabetes
+E09621  ,Diabetes
+E09622  ,Diabetes
+E09628  ,Diabetes
+E09630  ,Diabetes
+E09638  ,Diabetes
+E09641  ,Diabetes
+E09649  ,Diabetes
+E0965   ,Diabetes
+E0969   ,Diabetes
+E098    ,Diabetes
+E099    ,Diabetes
+E1010,Diabetes
+E1011,Diabetes
+E1021,Diabetes
+E1022,Diabetes
+E1029,Diabetes
+E10311,Diabetes
+E10319,Diabetes
+E10321,Diabetes
+E10329,Diabetes
+E10331,Diabetes
+E10339,Diabetes
+E10341,Diabetes
+E10349,Diabetes
+E10351,Diabetes
+E10359,Diabetes
+E1036,Diabetes
+E1039,Diabetes
+E1040,Diabetes
+E1041,Diabetes
+E1042,Diabetes
+E1043,Diabetes
+E1044,Diabetes
+E1049,Diabetes
+E1051,Diabetes
+E1052,Diabetes
+E1059,Diabetes
+E10610,Diabetes
+E10618,Diabetes
+E10620,Diabetes
+E10621,Diabetes
+E10622,Diabetes
+E10628,Diabetes
+E10630,Diabetes
+E10638,Diabetes
+E10641,Diabetes
+E10649,Diabetes
+E1065,Diabetes
+E1069,Diabetes
+E108,Diabetes
+E109,Diabetes
+E11,Diabetes
+E110,Diabetes
+E1100,Diabetes
+E1101,Diabetes
+E1110   ,Diabetes
+E1111   ,Diabetes
+E112,Diabetes
+E1121,Diabetes
+E1122,Diabetes
+E1129,Diabetes
+E113,Diabetes
+E1131,Diabetes
+E11311,Diabetes
+E11319,Diabetes
+E1132,Diabetes
+E11321,Diabetes
+E11329,Diabetes
+E1133,Diabetes
+E11331,Diabetes
+E11339,Diabetes
+E1134,Diabetes
+E11341,Diabetes
+E11349,Diabetes
+E1135,Diabetes
+E11351,Diabetes
+E11359,Diabetes
+E1136,Diabetes
+E1139,Diabetes
+E114,Diabetes
+E1140,Diabetes
+E1141,Diabetes
+E1142,Diabetes
+E1143,Diabetes
+E1144,Diabetes
+E1149,Diabetes
+E115,Diabetes
+E1151,Diabetes
+E1152,Diabetes
+E1159,Diabetes
+E116,Diabetes
+E1161,Diabetes
+E11610,Diabetes
+E11618,Diabetes
+E1162,Diabetes
+E11620,Diabetes
+E11621,Diabetes
+E11622,Diabetes
+E11628,Diabetes
+E1163,Diabetes
+E11630,Diabetes
+E11638,Diabetes
+E1164,Diabetes
+E11641,Diabetes
+E11649,Diabetes
+E1165,Diabetes
+E1169,Diabetes
+E118,Diabetes
+E119,Diabetes
+E13,Diabetes
+E130,Diabetes
+E1300,Diabetes
+E1301,Diabetes
+E131,Diabetes
+E1310,Diabetes
+E1311,Diabetes
+E132,Diabetes
+E1321,Diabetes
+E1322,Diabetes
+E1329,Diabetes
+E133,Diabetes
+E1331,Diabetes
+E13311,Diabetes
+E13319,Diabetes
+E1332,Diabetes
+E13321,Diabetes
+E13329,Diabetes
+E1333,Diabetes
+E13331,Diabetes
+E13339,Diabetes
+E1334,Diabetes
+E13341,Diabetes
+E13349,Diabetes
+E1335,Diabetes
+E13351,Diabetes
+E13359,Diabetes
+E1336,Diabetes
+E1339,Diabetes
+E134,Diabetes
+E1340,Diabetes
+E1341,Diabetes
+E1342,Diabetes
+E1343,Diabetes
+E1344,Diabetes
+E1349,Diabetes
+E135,Diabetes
+E1351,Diabetes
+E1352,Diabetes
+E1359,Diabetes
+E136,Diabetes
+E1361,Diabetes
+E13610,Diabetes
+E13618,Diabetes
+E1362,Diabetes
+E13620,Diabetes
+E13621,Diabetes
+E13622,Diabetes
+E13628,Diabetes
+E1363,Diabetes
+E13630,Diabetes
+E13638,Diabetes
+E1364,Diabetes
+E13641,Diabetes
+E13649,Diabetes
+E1365,Diabetes
+E1369,Diabetes
+E138,Diabetes
+E139,Diabetes
+E66,Obesity
+E660,Obesity
+E6601,Obesity
+E6609,Obesity
+E661,Obesity
+E662,Obesity
+E663,Obesity
+E668,Obesity
+E669,Obesity
+F0631,MH6
+F0632,MH6
+F111,MH6
+F1110,MH6
+F1112,MH6
+F11120,MH6
+F11121,MH6
+F11122,MH6
+F11129,MH6
+F1114,MH6
+F1115,MH6
+F11150,MH6
+F11151,MH6
+F11159,MH6
+F1118,MH6
+F11181,MH6
+F11182,MH6
+F11188,MH6
+F1119,MH6
+F112,MH6
+F1120,MH6
+F1122,MH6
+F11220,MH6
+F11221,MH6
+F11222,MH6
+F11229,MH6
+F1123,MH6
+F1124,MH6
+F1125,MH6
+F11250,MH6
+F11251,MH6
+F11259,MH6
+F1128,MH6
+F11281,MH6
+F11282,MH6
+F11288,MH6
+F1129,MH6
+F119,MH6
+F1190,MH6
+F1192,MH6
+F11920,MH6
+F11921,MH6
+F11922,MH6
+F11929,MH6
+F1193,MH6
+F1194,MH6
+F1195,MH6
+F11950,MH6
+F11951,MH6
+F11959,MH6
+F1198,MH6
+F11981,MH6
+F11982,MH6
+F11988,MH6
+F1199,MH6
+F12,MH6
+F121,MH6
+F1210,MH6
+F1212,MH6
+F12120,MH6
+F12121,MH6
+F12122,MH6
+F12129,MH6
+F1215,MH6
+F12150,MH6
+F12151,MH6
+F12159,MH6
+F1218,MH6
+F12180,MH6
+F12188,MH6
+F1219,MH6
+F122,MH6
+F1220,MH6
+F1222,MH6
+F12220,MH6
+F12221,MH6
+F12222,MH6
+F12229,MH6
+F1225,MH6
+F12250,MH6
+F12251,MH6
+F12259,MH6
+F1228,MH6
+F12280,MH6
+F12288,MH6
+F1229,MH6
+F1292,MH6
+F12920,MH6
+F12921,MH6
+F12922,MH6
+F12929,MH6
+F1295,MH6
+F12950,MH6
+F12951,MH6
+F12959,MH6
+F1298,MH6
+F12980,MH6
+F12988,MH6
+F1299,MH6
+F13,MH6
+F131,MH6
+F1310,MH6
+F1312,MH6
+F13120,MH6
+F13121,MH6
+F13129,MH6
+F1314,MH6
+F1315,MH6
+F13150,MH6
+F13151,MH6
+F13159,MH6
+F1318,MH6
+F13180,MH6
+F13181,MH6
+F13182,MH6
+F13188,MH6
+F1319,MH6
+F132,MH6
+F1320,MH6
+F1322,MH6
+F13220,MH6
+F13221,MH6
+F13229,MH6
+F1323,MH6
+F13230,MH6
+F13231,MH6
+F13232,MH6
+F13239,MH6
+F1324,MH6
+F1325,MH6
+F13250,MH6
+F13251,MH6
+F13259,MH6
+F1326,MH6
+F1327,MH6
+F1328,MH6
+F13280,MH6
+F13281,MH6
+F13282,MH6
+F13288,MH6
+F1329,MH6
+F139,MH6
+F1390,MH6
+F1392,MH6
+F13920,MH6
+F13921,MH6
+F13929,MH6
+F1393,MH6
+F13930,MH6
+F13931,MH6
+F13932,MH6
+F13939,MH6
+F1394,MH6
+F1395,MH6
+F13950,MH6
+F13951,MH6
+F13959,MH6
+F1396,MH6
+F1397,MH6
+F1398,MH6
+F13980,MH6
+F13981,MH6
+F13982,MH6
+F13988,MH6
+F1399,MH6
+F14,MH6
+F141,MH6
+F1410,MH6
+F1412,MH6
+F14120,MH6
+F14121,MH6
+F14122,MH6
+F14129,MH6
+F1414,MH6
+F1415,MH6
+F14150,MH6
+F14151,MH6
+F14159,MH6
+F1418,MH6
+F14180,MH6
+F14181,MH6
+F14182,MH6
+F14188,MH6
+F1419,MH6
+F142,MH6
+F1420,MH6
+F1422,MH6
+F14220,MH6
+F14221,MH6
+F14222,MH6
+F14229,MH6
+F1423,MH6
+F1424,MH6
+F1425,MH6
+F14250,MH6
+F14251,MH6
+F14259,MH6
+F1428,MH6
+F14280,MH6
+F14281,MH6
+F14282,MH6
+F14288,MH6
+F1429,MH6
+F149,MH6
+F1490,MH6
+F1492,MH6
+F14920,MH6
+F14921,MH6
+F14922,MH6
+F14929,MH6
+F1494,MH6
+F1495,MH6
+F14950,MH6
+F14951,MH6
+F14959,MH6
+F1498,MH6
+F14980,MH6
+F14981,MH6
+F14982,MH6
+F14988,MH6
+F1499,MH6
+F15,MH6
+F151,MH6
+F1510,MH6
+F1512,MH6
+F15120,MH6
+F15121,MH6
+F15122,MH6
+F15129,MH6
+F1514,MH6
+F1515,MH6
+F15150,MH6
+F15151,MH6
+F15159,MH6
+F1518,MH6
+F15180,MH6
+F15181,MH6
+F15182,MH6
+F15188,MH6
+F1519,MH6
+F152,MH6
+F1520,MH6
+F1522,MH6
+F15220,MH6
+F15221,MH6
+F15222,MH6
+F15229,MH6
+F1523,MH6
+F1524,MH6
+F1525,MH6
+F15250,MH6
+F15251,MH6
+F15259,MH6
+F1528,MH6
+F15280,MH6
+F15281,MH6
+F15282,MH6
+F15288,MH6
+F1529,MH6
+F159,MH6
+F1590,MH6
+F1592,MH6
+F15920,MH6
+F15921,MH6
+F15922,MH6
+F15929,MH6
+F1593,MH6
+F1594,MH6
+F1595,MH6
+F15950,MH6
+F15951,MH6
+F15959,MH6
+F1598,MH6
+F15980,MH6
+F15981,MH6
+F15982,MH6
+F15988,MH6
+F1599,MH6
+F16,MH6
+F161,MH6
+F1610,MH6
+F1612,MH6
+F16120,MH6
+F16121,MH6
+F16122,MH6
+F16129,MH6
+F1614,MH6
+F1615,MH6
+F16150,MH6
+F16151,MH6
+F16159,MH6
+F1618,MH6
+F16180,MH6
+F16183,MH6
+F16188,MH6
+F1619,MH6
+F162,MH6
+F1620,MH6
+F1622,MH6
+F16220,MH6
+F16221,MH6
+F16229,MH6
+F1624,MH6
+F1625,MH6
+F16250,MH6
+F16251,MH6
+F16259,MH6
+F1628,MH6
+F16280,MH6
+F16283,MH6
+F16288,MH6
+F1629,MH6
+F169,MH6
+F1690,MH6
+F1692,MH6
+F16920,MH6
+F16921,MH6
+F16929,MH6
+F1694,MH6
+F1695,MH6
+F16950,MH6
+F16951,MH6
+F16959,MH6
+F1698,MH6
+F16980,MH6
+F16983,MH6
+F16988,MH6
+F1699,MH6
+F181,MH6
+F1810,MH6
+F1812,MH6
+F18120,MH6
+F18121,MH6
+F18129,MH6
+F1814,MH6
+F1815,MH6
+F18150,MH6
+F18151,MH6
+F18159,MH6
+F1817,MH6
+F1818,MH6
+F18180,MH6
+F18188,MH6
+F1819,MH6
+F182,MH6
+F1820,MH6
+F1822,MH6
+F18220,MH6
+F18221,MH6
+F18229,MH6
+F1824,MH6
+F1825,MH6
+F18250,MH6
+F18251,MH6
+F18259,MH6
+F1827,MH6
+F1828,MH6
+F18280,MH6
+F18288,MH6
+F1829,MH6
+F189,MH6
+F1890,MH6
+F1892,MH6
+F18920,MH6
+F18921,MH6
+F18929,MH6
+F1894,MH6
+F1895,MH6
+F18950,MH6
+F18951,MH6
+F18959,MH6
+F1897,MH6
+F1898,MH6
+F18980,MH6
+F18988,MH6
+F1899,MH6
+F19,MH6
+F191,MH6
+F1910,MH6
+F1912,MH6
+F19120,MH6
+F19121,MH6
+F19122,MH6
+F19129,MH6
+F1914,MH6
+F1915,MH6
+F19150,MH6
+F19151,MH6
+F19159,MH6
+F1916,MH6
+F1917,MH6
+F1918,MH6
+F19180,MH6
+F19181,MH6
+F19182,MH6
+F19188,MH6
+F1919,MH6
+F192,MH6
+F1920,MH6
+F1922,MH6
+F19220,MH6
+F19221,MH6
+F19222,MH6
+F19229,MH6
+F1923,MH6
+F19230,MH6
+F19231,MH6
+F19232,MH6
+F19239,MH6
+F1924,MH6
+F1925,MH6
+F19250,MH6
+F19251,MH6
+F19259,MH6
+F1926,MH6
+F1927,MH6
+F1928,MH6
+F19280,MH6
+F19281,MH6
+F19282,MH6
+F19288,MH6
+F1929,MH6
+F199,MH6
+F1990,MH6
+F1992,MH6
+F19920,MH6
+F19921,MH6
+F19922,MH6
+F19929,MH6
+F1993,MH6
+F19930,MH6
+F19931,MH6
+F19932,MH6
+F19939,MH6
+F1994,MH6
+F1995,MH6
+F19950,MH6
+F19951,MH6
+F19959,MH6
+F1996,MH6
+F1997,MH6
+F1998,MH6
+F19980,MH6
+F19981,MH6
+F19982,MH6
+F19988,MH6
+F1999,MH6
+F251,MH6
+F3010,MH6
+F3011,MH6
+F3012,MH6
+F3013,MH6
+F302,MH6
+F303,MH6
+F304,MH6
+F308,MH6
+F309,MH6
+F310,MH6
+F3110,MH6
+F3111,MH6
+F3112,MH6
+F3113,MH6
+F312,MH6
+F3130,MH6
+F3131,MH6
+F3132,MH6
+F314,MH6
+F315,MH6
+F3160,MH6
+F3161,MH6
+F3162,MH6
+F3163,MH6
+F3164,MH6
+F3171,MH6
+F3172,MH6
+F3173,MH6
+F3174,MH6
+F3175,MH6
+F3176,MH6
+F3177,MH6
+F3178,MH6
+F3181,MH6
+F3189,MH6
+F319,MH6
+F32,MH6
+F320,MH6
+F321,MH6
+F322,MH6
+F323,MH6
+F324,MH6
+F325,MH6
+F328,MH6
+F329,MH6
+F33,MH6
+F330,MH6
+F331,MH6
+F332,MH6
+F333,MH6
+F3341,MH6
+F3342,MH6
+F338,MH6
+F339,MH6
+F348,MH6
+F349,MH6
+F39,MH6
+F41,MH6
+F410,MH6
+F411,MH6
+F413,MH6
+F418,MH6
+F419,MH6
+F431,MH6
+F4310,MH6
+F4311,MH6
+F4312,MH6
+F50,MH6
+F500,MH6
+F5000,MH6
+F5001,MH6
+F5002,MH6
+F502,MH6
+F508,MH6
+F509,MH6
+G545    ,Diabetes
+G589    ,Diabetes
+G968    ,Diabetes
+G988    ,Diabetes
+I0981   ,Congestive Heart Failure
+I10,Hypertension
+I110    ,Congestive Heart Failure
+I119    ,Hypertension
+I129    ,Hypertension
+I130    ,Congestive Heart Failure
+I1310   ,Hypertension
+I132    ,Congestive Heart Failure
+I150    ,Hypertension
+I158    ,Hypertension
+I169    ,Hypertension
+I200    ,CAD
+I201    ,CAD
+I208    ,CAD
+I209    ,CAD
+I2109   ,CAD
+I2111   ,CAD
+I2119   ,CAD
+I2129   ,CAD
+I213    ,CAD
+I214    ,CAD
+I219    ,CAD
+I21A1   ,CAD
+I21A9   ,CAD
+I240    ,CAD
+I241    ,CAD
+I248    ,CAD
+I25,CAD
+I251,CAD
+I2510,CAD
+I2511,CAD
+I25110,CAD
+I25111,CAD
+I25118,CAD
+I25119,CAD
+I252,CAD
+I253,CAD
+I2541,CAD
+I2542,CAD
+I255,CAD
+I256,CAD
+I25700,CAD
+I25701,CAD
+I25708,CAD
+I25709,CAD
+I25710,CAD
+I25711,CAD
+I25718,CAD
+I25719,CAD
+I25720,CAD
+I25721,CAD
+I25728,CAD
+I25729,CAD
+I25730,CAD
+I25731,CAD
+I25738,CAD
+I25739,CAD
+I25750,CAD
+I25751,CAD
+I25758,CAD
+I25759,CAD
+I25760,CAD
+I25761,CAD
+I25768,CAD
+I25769,CAD
+I25790,CAD
+I25791,CAD
+I25798,CAD
+I25799,CAD
+I25810,CAD
+I25811,CAD
+I25812,CAD
+I2582,CAD
+I2583,CAD
+I2584,CAD
+I2589,CAD
+I259,CAD
+I50,Congestive Heart Failure
+I501,Congestive Heart Failure
+I502,Congestive Heart Failure
+I5020,Congestive Heart Failure
+I5021,Congestive Heart Failure
+I5022,Congestive Heart Failure
+I5023,Congestive Heart Failure
+I503,Congestive Heart Failure
+I5030,Congestive Heart Failure
+I5031,Congestive Heart Failure
+I5032,Congestive Heart Failure
+I5033,Congestive Heart Failure
+I504,Congestive Heart Failure
+I5040,Congestive Heart Failure
+I5041,Congestive Heart Failure
+I5042,Congestive Heart Failure
+I5043,Congestive Heart Failure
+I50810  ,Congestive Heart Failure
+I50811  ,Congestive Heart Failure
+I50812  ,Congestive Heart Failure
+I50813  ,Congestive Heart Failure
+I50814  ,Congestive Heart Failure
+I5082   ,Congestive Heart Failure
+I5083   ,Congestive Heart Failure
+I5084   ,Congestive Heart Failure
+I5089   ,Congestive Heart Failure
+I509,Congestive Heart Failure
+I798    ,Diabetes
+I96     ,Diabetes
+J411    ,COPD
+J418    ,COPD
+J42     ,COPD
+J439    ,COPD
+J44,COPD
+J440,COPD
+J441,COPD
+J449,COPD
+J4520,Asthma
+J4521,Asthma
+J4522,Asthma
+J4530,Asthma
+J4531,Asthma
+J4532,Asthma
+J4540,Asthma
+J4541,Asthma
+J4542,Asthma
+J4550,Asthma
+J4551,Asthma
+J4552,Asthma
+J45901,Asthma
+J45902,Asthma
+J45909,Asthma
+J45991,Asthma
+J45998,Asthma
+J684    ,COPD
+J982    ,COPD
+K055    ,Diabetes
+K061    ,Diabetes
+K062    ,Diabetes
+K063    ,Diabetes
+K1370   ,Diabetes
+K1379   ,Diabetes
+K3184   ,Diabetes
+L942    ,Diabetes
+L988    ,Diabetes
+M1280   ,Diabetes
+M1460   ,Diabetes
+M4300   ,Back and Neck Pain
+M4310   ,Back and Neck Pain
+M4327   ,Back and Neck Pain
+M4328   ,Back and Neck Pain
+M436    ,Back and Neck Pain
+M438X9  ,Back and Neck Pain
+M454,Back and Neck Pain
+M459    ,Back and Neck Pain
+M480,Back and Neck Pain
+M4800,Back and Neck Pain
+M4801,Back and Neck Pain
+M4802,Back and Neck Pain
+M4803,Back and Neck Pain
+M4804,Back and Neck Pain
+M4805,Back and Neck Pain
+M4806,Back and Neck Pain
+M4807,Back and Neck Pain
+M4808,Back and Neck Pain
+M50,Back and Neck Pain
+M500,Back and Neck Pain
+M5000,Back and Neck Pain
+M5001,Back and Neck Pain
+M5002,Back and Neck Pain
+M5003,Back and Neck Pain
+M501,Back and Neck Pain
+M5010,Back and Neck Pain
+M5011,Back and Neck Pain
+M5012,Back and Neck Pain
+M5013,Back and Neck Pain
+M502,Back and Neck Pain
+M5020,Back and Neck Pain
+M5021,Back and Neck Pain
+M5022,Back and Neck Pain
+M5023,Back and Neck Pain
+M503,Back and Neck Pain
+M5030,Back and Neck Pain
+M5031,Back and Neck Pain
+M5032,Back and Neck Pain
+M5033,Back and Neck Pain
+M508,Back and Neck Pain
+M5080,Back and Neck Pain
+M5081,Back and Neck Pain
+M5082,Back and Neck Pain
+M5083,Back and Neck Pain
+M509,Back and Neck Pain
+M5090,Back and Neck Pain
+M5091,Back and Neck Pain
+M5092,Back and Neck Pain
+M5093,Back and Neck Pain
+M51,Back and Neck Pain
+M510,Back and Neck Pain
+M5104,Back and Neck Pain
+M5105,Back and Neck Pain
+M5106,Back and Neck Pain
+M5107,Back and Neck Pain
+M511,Back and Neck Pain
+M5114,Back and Neck Pain
+M5115,Back and Neck Pain
+M5116,Back and Neck Pain
+M5117,Back and Neck Pain
+M512,Back and Neck Pain
+M5124,Back and Neck Pain
+M5125,Back and Neck Pain
+M5126,Back and Neck Pain
+M5127,Back and Neck Pain
+M513,Back and Neck Pain
+M5134,Back and Neck Pain
+M5135,Back and Neck Pain
+M5136,Back and Neck Pain
+M5137,Back and Neck Pain
+M514,Back and Neck Pain
+M5144,Back and Neck Pain
+M5145,Back and Neck Pain
+M5146,Back and Neck Pain
+M5147,Back and Neck Pain
+M518,Back and Neck Pain
+M5184,Back and Neck Pain
+M5185,Back and Neck Pain
+M5186,Back and Neck Pain
+M5187,Back and Neck Pain
+M519,Back and Neck Pain
+M530    ,Back and Neck Pain
+M531    ,Back and Neck Pain
+M532X7  ,Back and Neck Pain
+M532X8  ,Back and Neck Pain
+M533    ,Back and Neck Pain
+M5382   ,Back and Neck Pain
+M539    ,Back and Neck Pain
+M54,Back and Neck Pain
+M540,Back and Neck Pain
+M5400,Back and Neck Pain
+M5401,Back and Neck Pain
+M5402,Back and Neck Pain
+M5403,Back and Neck Pain
+M5404,Back and Neck Pain
+M5405,Back and Neck Pain
+M5406,Back and Neck Pain
+M5407,Back and Neck Pain
+M5408,Back and Neck Pain
+M5409,Back and Neck Pain
+M541,Back and Neck Pain
+M5410,Back and Neck Pain
+M5411,Back and Neck Pain
+M5412,Back and Neck Pain
+M5413,Back and Neck Pain
+M5414,Back and Neck Pain
+M5415,Back and Neck Pain
+M5416,Back and Neck Pain
+M5417,Back and Neck Pain
+M5418,Back and Neck Pain
+M542,Back and Neck Pain
+M543,Back and Neck Pain
+M5430,Back and Neck Pain
+M5431,Back and Neck Pain
+M5432,Back and Neck Pain
+M544,Back and Neck Pain
+M5440,Back and Neck Pain
+M5441,Back and Neck Pain
+M5442,Back and Neck Pain
+M545,Back and Neck Pain
+M546,Back and Neck Pain
+M548,Back and Neck Pain
+M5481,Back and Neck Pain
+M5489,Back and Neck Pain
+M549,Back and Neck Pain
+M6500   ,Back and Neck Pain
+M6788   ,Back and Neck Pain
+M7100   ,Back and Neck Pain
+M7180   ,Back and Neck Pain
+M792    ,Back and Neck Pain
+M9901   ,Back and Neck Pain
+M9903   ,Back and Neck Pain
+M9904   ,Back and Neck Pain
+N08     ,Diabetes
+Q762    ,Back and Neck Pain
+R630    ,MH6
+R634    ,MH6
+R635    ,MH6
+R636    ,MH6
+S134XXA ,Back and Neck Pain
+S138XXA ,Back and Neck Pain
+S239XXA ,Back and Neck Pain
+S335XXA ,Back and Neck Pain
+S338XXA ,Back and Neck Pain
+V4581,CAD
+V4582,CAD
+V4585,Diabetes
+V5391,Diabetes
+Z4681   ,Diabetes
+Z951    ,CAD
+Z9641   ,Diabetes
+Z9861   ,CAD

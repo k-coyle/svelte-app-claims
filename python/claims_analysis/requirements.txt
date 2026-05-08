@@ -1,0 +1,10 @@
+pandas
+numpy
+munch
+pydash
+XlsxWriter
+fuzzywuzzy
+python-levenshtein
+detect-delimiter
+stringcase
+python-dateutil

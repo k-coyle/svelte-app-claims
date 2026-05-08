@@ -1,0 +1,948 @@
+icd_code,condition_group
+584,ESRD
+585,ESRD
+586,ESRD
+N186,ESRD
+042,HIV/AIDS
+B20,HIV/AIDS
+286,Hemophilia
+D66,Hemophilia
+C000,Cancer - Lip
+C000,Cancer - Lip
+C001,Cancer - Lip
+C001,Cancer - Lip
+C002,Cancer - Lip
+C002,Cancer - Lip
+C003,Cancer - Lip
+C003,Cancer - Lip
+C004,Cancer - Lip
+C004,Cancer - Lip
+C005,Cancer - Lip
+C005,Cancer - Lip
+C006,Cancer - Lip
+C006,Cancer - Lip
+C007,Cancer - Lip
+C007,Cancer - Lip
+C008,Cancer - Lip
+C008,Cancer - Lip
+C009,Cancer - Lip
+C009,Cancer - Lip
+C019,Cancer - Tongue
+C019,Cancer - Tongue
+C020,Cancer - Tongue
+C020,Cancer - Tongue
+C021,Cancer - Tongue
+C021,Cancer - Tongue
+C022,Cancer - Tongue
+C022,Cancer - Tongue
+C023,Cancer - Tongue
+C023,Cancer - Tongue
+C024,Cancer - Tongue
+C024,Cancer - Tongue
+C025,Cancer - Tongue
+C025,Cancer - Tongue
+C026,Cancer - Tongue
+C026,Cancer - Tongue
+C027,Cancer - Tongue
+C027,Cancer - Tongue
+C028,Cancer - Tongue
+C028,Cancer - Tongue
+C029,Cancer - Tongue
+C029,Cancer - Tongue
+C079,Cancer - Salivary Gland
+C079,Cancer - Salivary Gland
+C080,Cancer - Salivary Gland
+C080,Cancer - Salivary Gland
+C081,Cancer - Salivary Gland
+C081,Cancer - Salivary Gland
+C082,Cancer - Salivary Gland
+C082,Cancer - Salivary Gland
+C083,Cancer - Salivary Gland
+C083,Cancer - Salivary Gland
+C084,Cancer - Salivary Gland
+C084,Cancer - Salivary Gland
+C085,Cancer - Salivary Gland
+C085,Cancer - Salivary Gland
+C086,Cancer - Salivary Gland
+C086,Cancer - Salivary Gland
+C087,Cancer - Salivary Gland
+C087,Cancer - Salivary Gland
+C088,Cancer - Salivary Gland
+C088,Cancer - Salivary Gland
+C089,Cancer - Salivary Gland
+C089,Cancer - Salivary Gland
+C040,Cancer - Floor of Mouth
+C040,Cancer - Floor of Mouth
+C041,Cancer - Floor of Mouth
+C041,Cancer - Floor of Mouth
+C042,Cancer - Floor of Mouth
+C042,Cancer - Floor of Mouth
+C043,Cancer - Floor of Mouth
+C043,Cancer - Floor of Mouth
+C044,Cancer - Floor of Mouth
+C044,Cancer - Floor of Mouth
+C045,Cancer - Floor of Mouth
+C045,Cancer - Floor of Mouth
+C046,Cancer - Floor of Mouth
+C046,Cancer - Floor of Mouth
+C047,Cancer - Floor of Mouth
+C047,Cancer - Floor of Mouth
+C048,Cancer - Floor of Mouth
+C048,Cancer - Floor of Mouth
+C049,Cancer - Floor of Mouth
+C049,Cancer - Floor of Mouth
+C030,Cancer - Gum and Other Mouth
+C030,Cancer - Gum and Other Mouth
+C031,Cancer - Gum and Other Mouth
+C031,Cancer - Gum and Other Mouth
+C032,Cancer - Gum and Other Mouth
+C032,Cancer - Gum and Other Mouth
+C033,Cancer - Gum and Other Mouth
+C033,Cancer - Gum and Other Mouth
+C034,Cancer - Gum and Other Mouth
+C034,Cancer - Gum and Other Mouth
+C035,Cancer - Gum and Other Mouth
+C035,Cancer - Gum and Other Mouth
+C036,Cancer - Gum and Other Mouth
+C036,Cancer - Gum and Other Mouth
+C037,Cancer - Gum and Other Mouth
+C037,Cancer - Gum and Other Mouth
+C038,Cancer - Gum and Other Mouth
+C038,Cancer - Gum and Other Mouth
+C039,Cancer - Gum and Other Mouth
+C039,Cancer - Gum and Other Mouth
+C050,Cancer - Gum and Other Mouth
+C051,Cancer - Gum and Other Mouth
+C052,Cancer - Gum and Other Mouth
+C053,Cancer - Gum and Other Mouth
+C054,Cancer - Gum and Other Mouth
+C055,Cancer - Gum and Other Mouth
+C056,Cancer - Gum and Other Mouth
+C057,Cancer - Gum and Other Mouth
+C058,Cancer - Gum and Other Mouth
+C059,Cancer - Gum and Other Mouth
+C060,Cancer - Gum and Other Mouth
+C061,Cancer - Gum and Other Mouth
+C062,Cancer - Gum and Other Mouth
+C063,Cancer - Gum and Other Mouth
+C064,Cancer - Gum and Other Mouth
+C065,Cancer - Gum and Other Mouth
+C066,Cancer - Gum and Other Mouth
+C067,Cancer - Gum and Other Mouth
+C068,Cancer - Gum and Other Mouth
+C069,Cancer - Gum and Other Mouth
+C110,Cancer - Nasopharynx
+C110,Cancer - Nasopharynx
+C111,Cancer - Nasopharynx
+C111,Cancer - Nasopharynx
+C112,Cancer - Nasopharynx
+C112,Cancer - Nasopharynx
+C113,Cancer - Nasopharynx
+C113,Cancer - Nasopharynx
+C114,Cancer - Nasopharynx
+C114,Cancer - Nasopharynx
+C115,Cancer - Nasopharynx
+C115,Cancer - Nasopharynx
+C116,Cancer - Nasopharynx
+C116,Cancer - Nasopharynx
+C117,Cancer - Nasopharynx
+C117,Cancer - Nasopharynx
+C118,Cancer - Nasopharynx
+C118,Cancer - Nasopharynx
+C119,Cancer - Nasopharynx
+C119,Cancer - Nasopharynx
+C090,Cancer - Tonsil
+C090,Cancer - Tonsil
+C091,Cancer - Tonsil
+C091,Cancer - Tonsil
+C092,Cancer - Tonsil
+C092,Cancer - Tonsil
+C093,Cancer - Tonsil
+C093,Cancer - Tonsil
+C094,Cancer - Tonsil
+C094,Cancer - Tonsil
+C095,Cancer - Tonsil
+C095,Cancer - Tonsil
+C096,Cancer - Tonsil
+C096,Cancer - Tonsil
+C097,Cancer - Tonsil
+C097,Cancer - Tonsil
+C098,Cancer - Tonsil
+C098,Cancer - Tonsil
+C099,Cancer - Tonsil
+C099,Cancer - Tonsil
+C100,Cancer - Oropharynx
+C100,Cancer - Oropharynx
+C101,Cancer - Oropharynx
+C101,Cancer - Oropharynx
+C102,Cancer - Oropharynx
+C102,Cancer - Oropharynx
+C103,Cancer - Oropharynx
+C103,Cancer - Oropharynx
+C104,Cancer - Oropharynx
+C104,Cancer - Oropharynx
+C105,Cancer - Oropharynx
+C105,Cancer - Oropharynx
+C106,Cancer - Oropharynx
+C106,Cancer - Oropharynx
+C107,Cancer - Oropharynx
+C107,Cancer - Oropharynx
+C108,Cancer - Oropharynx
+C108,Cancer - Oropharynx
+C109,Cancer - Oropharynx
+C109,Cancer - Oropharynx
+C129,Cancer - Hypopharynx
+C129,Cancer - Hypopharynx
+C130,Cancer - Hypopharynx
+C131,Cancer - Hypopharynx
+C132,Cancer - Hypopharynx
+C133,Cancer - Hypopharynx
+C134,Cancer - Hypopharynx
+C135,Cancer - Hypopharynx
+C136,Cancer - Hypopharynx
+C137,Cancer - Hypopharynx
+C138,Cancer - Hypopharynx
+C139,Cancer - Hypopharynx
+C140,Cancer - Other Oral Cavity and Pharynx
+C140,Cancer - Other Oral Cavity and Pharynx
+C142,Cancer - Other Oral Cavity and Pharynx
+C148,Cancer - Other Oral Cavity and Pharynx
+C150,Cancer - Esophagus
+C150,Cancer - Esophagus
+C151,Cancer - Esophagus
+C151,Cancer - Esophagus
+C152,Cancer - Esophagus
+C152,Cancer - Esophagus
+C153,Cancer - Esophagus
+C153,Cancer - Esophagus
+C154,Cancer - Esophagus
+C154,Cancer - Esophagus
+C155,Cancer - Esophagus
+C155,Cancer - Esophagus
+C156,Cancer - Esophagus
+C156,Cancer - Esophagus
+C157,Cancer - Esophagus
+C157,Cancer - Esophagus
+C158,Cancer - Esophagus
+C158,Cancer - Esophagus
+C159,Cancer - Esophagus
+C159,Cancer - Esophagus
+C160,Cancer - Stomach
+C160,Cancer - Stomach
+C161,Cancer - Stomach
+C161,Cancer - Stomach
+C162,Cancer - Stomach
+C162,Cancer - Stomach
+C163,Cancer - Stomach
+C163,Cancer - Stomach
+C164,Cancer - Stomach
+C164,Cancer - Stomach
+C165,Cancer - Stomach
+C165,Cancer - Stomach
+C166,Cancer - Stomach
+C166,Cancer - Stomach
+C167,Cancer - Stomach
+C167,Cancer - Stomach
+C168,Cancer - Stomach
+C168,Cancer - Stomach
+C169,Cancer - Stomach
+C169,Cancer - Stomach
+C170,Cancer - Small Intestine
+C170,Cancer - Small Intestine
+C171,Cancer - Small Intestine
+C171,Cancer - Small Intestine
+C172,Cancer - Small Intestine
+C172,Cancer - Small Intestine
+C173,Cancer - Small Intestine
+C173,Cancer - Small Intestine
+C174,Cancer - Small Intestine
+C174,Cancer - Small Intestine
+C175,Cancer - Small Intestine
+C175,Cancer - Small Intestine
+C176,Cancer - Small Intestine
+C176,Cancer - Small Intestine
+C177,Cancer - Small Intestine
+C177,Cancer - Small Intestine
+C178,Cancer - Small Intestine
+C178,Cancer - Small Intestine
+C179,Cancer - Small Intestine
+C179,Cancer - Small Intestine
+C180,Cancer - Cecum
+C180,Cancer - Cecum
+C181,Cancer - Appendix
+C181,Cancer - Appendix
+C182,Cancer - Ascending Colon
+C182,Cancer - Ascending Colon
+C183,Cancer - Hepatic Flexure
+C183,Cancer - Hepatic Flexure
+C184,Cancer - Transverse Colon
+C184,Cancer - Transverse Colon
+C185,Cancer - Splenic Flexure
+C185,Cancer - Splenic Flexure
+C186,Cancer - Descending Colon
+C186,Cancer - Descending Colon
+C187,Cancer - Sigmoid Colon
+C187,Cancer - Sigmoid Colon
+C188,"Cancer - Large Intestine, NOS"
+C188,"Cancer - Large Intestine, NOS"
+C189,"Cancer - Large Intestine, NOS"
+C189,"Cancer - Large Intestine, NOS"
+C260,"Cancer - Large Intestine, NOS"
+C199,Cancer - Rectosigmoid Junction
+C199,Cancer - Rectosigmoid Junction
+C209,Cancer - Rectum
+C209,Cancer - Rectum
+C210,"Cancer - Anus, Anal Canal and Anorectum"
+C210,"Cancer - Anus, Anal Canal and Anorectum"
+C211,"Cancer - Anus, Anal Canal and Anorectum"
+C211,"Cancer - Anus, Anal Canal and Anorectum"
+C212,"Cancer - Anus, Anal Canal and Anorectum"
+C212,"Cancer - Anus, Anal Canal and Anorectum"
+C218,"Cancer - Anus, Anal Canal and Anorectum"
+C220,Cancer - Liver
+C220,Cancer - Liver
+C221,Cancer - Intrahepatic Bile Duct
+C221,Cancer - Intrahepatic Bile Duct
+C239,Cancer - Gallbladder
+C239,Cancer - Gallbladder
+C240,Cancer - Other Biliary
+C240,Cancer - Other Biliary
+C241,Cancer - Other Biliary
+C241,Cancer - Other Biliary
+C242,Cancer - Other Biliary
+C242,Cancer - Other Biliary
+C243,Cancer - Other Biliary
+C243,Cancer - Other Biliary
+C244,Cancer - Other Biliary
+C244,Cancer - Other Biliary
+C245,Cancer - Other Biliary
+C245,Cancer - Other Biliary
+C246,Cancer - Other Biliary
+C246,Cancer - Other Biliary
+C247,Cancer - Other Biliary
+C247,Cancer - Other Biliary
+C248,Cancer - Other Biliary
+C248,Cancer - Other Biliary
+C249,Cancer - Other Biliary
+C249,Cancer - Other Biliary
+C250,Cancer - Pancreas
+C250,Cancer - Pancreas
+C251,Cancer - Pancreas
+C251,Cancer - Pancreas
+C252,Cancer - Pancreas
+C252,Cancer - Pancreas
+C253,Cancer - Pancreas
+C253,Cancer - Pancreas
+C254,Cancer - Pancreas
+C254,Cancer - Pancreas
+C255,Cancer - Pancreas
+C255,Cancer - Pancreas
+C256,Cancer - Pancreas
+C256,Cancer - Pancreas
+C257,Cancer - Pancreas
+C257,Cancer - Pancreas
+C258,Cancer - Pancreas
+C258,Cancer - Pancreas
+C259,Cancer - Pancreas
+C259,Cancer - Pancreas
+C480,Cancer - Retroperitoneum
+C480,Cancer - Retroperitoneum
+C481,"Cancer - Peritoneum, Omentum and Mesentery"
+C481,"Cancer - Peritoneum, Omentum and Mesentery"
+C482,"Cancer - Peritoneum, Omentum and Mesentery"
+C482,"Cancer - Peritoneum, Omentum and Mesentery"
+C268,Cancer - Other Digestive Organs
+C268,Cancer - Other Digestive Organs
+C269,Cancer - Other Digestive Organs
+C269,Cancer - Other Digestive Organs
+C488,Cancer - Other Digestive Organs
+C300,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C300,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C301,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C301,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C310,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C311,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C312,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C313,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C314,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C315,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C316,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C317,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C318,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C319,"Cancer - Nose, Nasal Cavity and Middle Ear"
+C320,Cancer - Larynx
+C320,Cancer - Larynx
+C321,Cancer - Larynx
+C321,Cancer - Larynx
+C322,Cancer - Larynx
+C322,Cancer - Larynx
+C323,Cancer - Larynx
+C323,Cancer - Larynx
+C324,Cancer - Larynx
+C324,Cancer - Larynx
+C325,Cancer - Larynx
+C325,Cancer - Larynx
+C326,Cancer - Larynx
+C326,Cancer - Larynx
+C327,Cancer - Larynx
+C327,Cancer - Larynx
+C328,Cancer - Larynx
+C328,Cancer - Larynx
+C329,Cancer - Larynx
+C329,Cancer - Larynx
+C340,Cancer - Lung and Bronchus
+C340,Cancer - Lung and Bronchus
+C341,Cancer - Lung and Bronchus
+C341,Cancer - Lung and Bronchus
+C342,Cancer - Lung and Bronchus
+C342,Cancer - Lung and Bronchus
+C343,Cancer - Lung and Bronchus
+C343,Cancer - Lung and Bronchus
+C344,Cancer - Lung and Bronchus
+C344,Cancer - Lung and Bronchus
+C345,Cancer - Lung and Bronchus
+C345,Cancer - Lung and Bronchus
+C346,Cancer - Lung and Bronchus
+C346,Cancer - Lung and Bronchus
+C347,Cancer - Lung and Bronchus
+C347,Cancer - Lung and Bronchus
+C348,Cancer - Lung and Bronchus
+C348,Cancer - Lung and Bronchus
+C349,Cancer - Lung and Bronchus
+C349,Cancer - Lung and Bronchus
+C384,Cancer - Pleura
+C384,Cancer - Pleura
+C339,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C339,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C381,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C382,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C383,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C388,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C390,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C398,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C399,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+C400,Cancer - Bones and Joints
+C400,Cancer - Bones and Joints
+C401,Cancer - Bones and Joints
+C401,Cancer - Bones and Joints
+C402,Cancer - Bones and Joints
+C402,Cancer - Bones and Joints
+C403,Cancer - Bones and Joints
+C403,Cancer - Bones and Joints
+C404,Cancer - Bones and Joints
+C404,Cancer - Bones and Joints
+C405,Cancer - Bones and Joints
+C405,Cancer - Bones and Joints
+C406,Cancer - Bones and Joints
+C406,Cancer - Bones and Joints
+C407,Cancer - Bones and Joints
+C407,Cancer - Bones and Joints
+C408,Cancer - Bones and Joints
+C408,Cancer - Bones and Joints
+C409,Cancer - Bones and Joints
+C409,Cancer - Bones and Joints
+C410,Cancer - Bones and Joints
+C410,Cancer - Bones and Joints
+C411,Cancer - Bones and Joints
+C411,Cancer - Bones and Joints
+C412,Cancer - Bones and Joints
+C412,Cancer - Bones and Joints
+C413,Cancer - Bones and Joints
+C413,Cancer - Bones and Joints
+C414,Cancer - Bones and Joints
+C414,Cancer - Bones and Joints
+C415,Cancer - Bones and Joints
+C415,Cancer - Bones and Joints
+C416,Cancer - Bones and Joints
+C416,Cancer - Bones and Joints
+C417,Cancer - Bones and Joints
+C417,Cancer - Bones and Joints
+C418,Cancer - Bones and Joints
+C418,Cancer - Bones and Joints
+C419,Cancer - Bones and Joints
+C419,Cancer - Bones and Joints
+C380,Cancer - Soft Tissue including Heart
+C380,Cancer - Soft Tissue including Heart
+C470,Cancer - Soft Tissue including Heart
+C471,Cancer - Soft Tissue including Heart
+C472,Cancer - Soft Tissue including Heart
+C473,Cancer - Soft Tissue including Heart
+C474,Cancer - Soft Tissue including Heart
+C475,Cancer - Soft Tissue including Heart
+C476,Cancer - Soft Tissue including Heart
+C477,Cancer - Soft Tissue including Heart
+C478,Cancer - Soft Tissue including Heart
+C479,Cancer - Soft Tissue including Heart
+C490,Cancer - Soft Tissue including Heart
+C491,Cancer - Soft Tissue including Heart
+C492,Cancer - Soft Tissue including Heart
+C493,Cancer - Soft Tissue including Heart
+C494,Cancer - Soft Tissue including Heart
+C495,Cancer - Soft Tissue including Heart
+C496,Cancer - Soft Tissue including Heart
+C497,Cancer - Soft Tissue including Heart
+C498,Cancer - Soft Tissue including Heart
+C499,Cancer - Soft Tissue including Heart
+C440,Cancer - Melanoma of the Skin
+C440,Cancer - Melanoma of the Skin
+C441,Cancer - Melanoma of the Skin
+C441,Cancer - Melanoma of the Skin
+C442,Cancer - Melanoma of the Skin
+C442,Cancer - Melanoma of the Skin
+C443,Cancer - Melanoma of the Skin
+C443,Cancer - Melanoma of the Skin
+C444,Cancer - Melanoma of the Skin
+C444,Cancer - Melanoma of the Skin
+C445,Cancer - Melanoma of the Skin
+C445,Cancer - Melanoma of the Skin
+C446,Cancer - Melanoma of the Skin
+C446,Cancer - Melanoma of the Skin
+C447,Cancer - Melanoma of the Skin
+C447,Cancer - Melanoma of the Skin
+C448,Cancer - Melanoma of the Skin
+C448,Cancer - Melanoma of the Skin
+C449,Cancer - Melanoma of the Skin
+C449,Cancer - Melanoma of the Skin
+C440,Cancer - Other Non-Epithelial Skin
+C440,Cancer - Other Non-Epithelial Skin
+C441,Cancer - Other Non-Epithelial Skin
+C441,Cancer - Other Non-Epithelial Skin
+C442,Cancer - Other Non-Epithelial Skin
+C442,Cancer - Other Non-Epithelial Skin
+C443,Cancer - Other Non-Epithelial Skin
+C443,Cancer - Other Non-Epithelial Skin
+C444,Cancer - Other Non-Epithelial Skin
+C444,Cancer - Other Non-Epithelial Skin
+C445,Cancer - Other Non-Epithelial Skin
+C445,Cancer - Other Non-Epithelial Skin
+C446,Cancer - Other Non-Epithelial Skin
+C446,Cancer - Other Non-Epithelial Skin
+C447,Cancer - Other Non-Epithelial Skin
+C447,Cancer - Other Non-Epithelial Skin
+C448,Cancer - Other Non-Epithelial Skin
+C448,Cancer - Other Non-Epithelial Skin
+C449,Cancer - Other Non-Epithelial Skin
+C449,Cancer - Other Non-Epithelial Skin
+C500,Cancer - Breast
+C500,Cancer - Breast
+C501,Cancer - Breast
+C501,Cancer - Breast
+C502,Cancer - Breast
+C502,Cancer - Breast
+C503,Cancer - Breast
+C503,Cancer - Breast
+C504,Cancer - Breast
+C504,Cancer - Breast
+C505,Cancer - Breast
+C505,Cancer - Breast
+C506,Cancer - Breast
+C506,Cancer - Breast
+C507,Cancer - Breast
+C507,Cancer - Breast
+C508,Cancer - Breast
+C508,Cancer - Breast
+C509,Cancer - Breast
+C509,Cancer - Breast
+C530,Cancer - Cervix Uteri
+C530,Cancer - Cervix Uteri
+C531,Cancer - Cervix Uteri
+C531,Cancer - Cervix Uteri
+C532,Cancer - Cervix Uteri
+C532,Cancer - Cervix Uteri
+C533,Cancer - Cervix Uteri
+C533,Cancer - Cervix Uteri
+C534,Cancer - Cervix Uteri
+C534,Cancer - Cervix Uteri
+C535,Cancer - Cervix Uteri
+C535,Cancer - Cervix Uteri
+C536,Cancer - Cervix Uteri
+C536,Cancer - Cervix Uteri
+C537,Cancer - Cervix Uteri
+C537,Cancer - Cervix Uteri
+C538,Cancer - Cervix Uteri
+C538,Cancer - Cervix Uteri
+C539,Cancer - Cervix Uteri
+C539,Cancer - Cervix Uteri
+C540,Cancer - Corpus Uteri
+C540,Cancer - Corpus Uteri
+C541,Cancer - Corpus Uteri
+C541,Cancer - Corpus Uteri
+C542,Cancer - Corpus Uteri
+C542,Cancer - Corpus Uteri
+C543,Cancer - Corpus Uteri
+C543,Cancer - Corpus Uteri
+C544,Cancer - Corpus Uteri
+C544,Cancer - Corpus Uteri
+C545,Cancer - Corpus Uteri
+C545,Cancer - Corpus Uteri
+C546,Cancer - Corpus Uteri
+C546,Cancer - Corpus Uteri
+C547,Cancer - Corpus Uteri
+C547,Cancer - Corpus Uteri
+C548,Cancer - Corpus Uteri
+C548,Cancer - Corpus Uteri
+C549,Cancer - Corpus Uteri
+C549,Cancer - Corpus Uteri
+C559,"Cancer - Uterus, NOS"
+C559,"Cancer - Uterus, NOS"
+C569,Cancer - Ovary
+C569,Cancer - Ovary
+C529,Cancer - Vagina
+C529,Cancer - Vagina
+C510,Cancer - Vulva
+C510,Cancer - Vulva
+C511,Cancer - Vulva
+C511,Cancer - Vulva
+C512,Cancer - Vulva
+C512,Cancer - Vulva
+C513,Cancer - Vulva
+C513,Cancer - Vulva
+C514,Cancer - Vulva
+C514,Cancer - Vulva
+C515,Cancer - Vulva
+C515,Cancer - Vulva
+C516,Cancer - Vulva
+C516,Cancer - Vulva
+C517,Cancer - Vulva
+C517,Cancer - Vulva
+C518,Cancer - Vulva
+C518,Cancer - Vulva
+C519,Cancer - Vulva
+C519,Cancer - Vulva
+C570,Cancer - Other Female Genital Organs
+C570,Cancer - Other Female Genital Organs
+C571,Cancer - Other Female Genital Organs
+C571,Cancer - Other Female Genital Organs
+C572,Cancer - Other Female Genital Organs
+C572,Cancer - Other Female Genital Organs
+C573,Cancer - Other Female Genital Organs
+C573,Cancer - Other Female Genital Organs
+C574,Cancer - Other Female Genital Organs
+C574,Cancer - Other Female Genital Organs
+C575,Cancer - Other Female Genital Organs
+C575,Cancer - Other Female Genital Organs
+C576,Cancer - Other Female Genital Organs
+C576,Cancer - Other Female Genital Organs
+C577,Cancer - Other Female Genital Organs
+C577,Cancer - Other Female Genital Organs
+C578,Cancer - Other Female Genital Organs
+C578,Cancer - Other Female Genital Organs
+C579,Cancer - Other Female Genital Organs
+C579,Cancer - Other Female Genital Organs
+C589,Cancer - Other Female Genital Organs
+C619,Cancer - Prostate
+C619,Cancer - Prostate
+C620,Cancer - Testis
+C620,Cancer - Testis
+C621,Cancer - Testis
+C621,Cancer - Testis
+C622,Cancer - Testis
+C622,Cancer - Testis
+C623,Cancer - Testis
+C623,Cancer - Testis
+C624,Cancer - Testis
+C624,Cancer - Testis
+C625,Cancer - Testis
+C625,Cancer - Testis
+C626,Cancer - Testis
+C626,Cancer - Testis
+C627,Cancer - Testis
+C627,Cancer - Testis
+C628,Cancer - Testis
+C628,Cancer - Testis
+C629,Cancer - Testis
+C629,Cancer - Testis
+C600,Cancer - Penis
+C600,Cancer - Penis
+C601,Cancer - Penis
+C601,Cancer - Penis
+C602,Cancer - Penis
+C602,Cancer - Penis
+C603,Cancer - Penis
+C603,Cancer - Penis
+C604,Cancer - Penis
+C604,Cancer - Penis
+C605,Cancer - Penis
+C605,Cancer - Penis
+C606,Cancer - Penis
+C606,Cancer - Penis
+C607,Cancer - Penis
+C607,Cancer - Penis
+C608,Cancer - Penis
+C608,Cancer - Penis
+C609,Cancer - Penis
+C609,Cancer - Penis
+C630,Cancer - Other Male Genital Organs
+C630,Cancer - Other Male Genital Organs
+C631,Cancer - Other Male Genital Organs
+C631,Cancer - Other Male Genital Organs
+C632,Cancer - Other Male Genital Organs
+C632,Cancer - Other Male Genital Organs
+C633,Cancer - Other Male Genital Organs
+C633,Cancer - Other Male Genital Organs
+C634,Cancer - Other Male Genital Organs
+C634,Cancer - Other Male Genital Organs
+C635,Cancer - Other Male Genital Organs
+C635,Cancer - Other Male Genital Organs
+C636,Cancer - Other Male Genital Organs
+C636,Cancer - Other Male Genital Organs
+C637,Cancer - Other Male Genital Organs
+C637,Cancer - Other Male Genital Organs
+C638,Cancer - Other Male Genital Organs
+C638,Cancer - Other Male Genital Organs
+C639,Cancer - Other Male Genital Organs
+C639,Cancer - Other Male Genital Organs
+C670,Cancer - Urinary Bladder
+C670,Cancer - Urinary Bladder
+C671,Cancer - Urinary Bladder
+C671,Cancer - Urinary Bladder
+C672,Cancer - Urinary Bladder
+C672,Cancer - Urinary Bladder
+C673,Cancer - Urinary Bladder
+C673,Cancer - Urinary Bladder
+C674,Cancer - Urinary Bladder
+C674,Cancer - Urinary Bladder
+C675,Cancer - Urinary Bladder
+C675,Cancer - Urinary Bladder
+C676,Cancer - Urinary Bladder
+C676,Cancer - Urinary Bladder
+C677,Cancer - Urinary Bladder
+C677,Cancer - Urinary Bladder
+C678,Cancer - Urinary Bladder
+C678,Cancer - Urinary Bladder
+C679,Cancer - Urinary Bladder
+C679,Cancer - Urinary Bladder
+C649,Cancer - Kidney and Renal Pelvis
+C649,Cancer - Kidney and Renal Pelvis
+C659,Cancer - Kidney and Renal Pelvis
+C669,Cancer - Ureter
+C669,Cancer - Ureter
+C680,Cancer - Other Urinary Organs
+C680,Cancer - Other Urinary Organs
+C681,Cancer - Other Urinary Organs
+C681,Cancer - Other Urinary Organs
+C682,Cancer - Other Urinary Organs
+C682,Cancer - Other Urinary Organs
+C683,Cancer - Other Urinary Organs
+C683,Cancer - Other Urinary Organs
+C684,Cancer - Other Urinary Organs
+C684,Cancer - Other Urinary Organs
+C685,Cancer - Other Urinary Organs
+C685,Cancer - Other Urinary Organs
+C686,Cancer - Other Urinary Organs
+C686,Cancer - Other Urinary Organs
+C687,Cancer - Other Urinary Organs
+C687,Cancer - Other Urinary Organs
+C688,Cancer - Other Urinary Organs
+C688,Cancer - Other Urinary Organs
+C689,Cancer - Other Urinary Organs
+C689,Cancer - Other Urinary Organs
+C690,Cancer - Eye and Orbit
+C690,Cancer - Eye and Orbit
+C691,Cancer - Eye and Orbit
+C691,Cancer - Eye and Orbit
+C692,Cancer - Eye and Orbit
+C692,Cancer - Eye and Orbit
+C693,Cancer - Eye and Orbit
+C693,Cancer - Eye and Orbit
+C694,Cancer - Eye and Orbit
+C694,Cancer - Eye and Orbit
+C695,Cancer - Eye and Orbit
+C695,Cancer - Eye and Orbit
+C696,Cancer - Eye and Orbit
+C696,Cancer - Eye and Orbit
+C697,Cancer - Eye and Orbit
+C697,Cancer - Eye and Orbit
+C698,Cancer - Eye and Orbit
+C698,Cancer - Eye and Orbit
+C699,Cancer - Eye and Orbit
+C699,Cancer - Eye and Orbit
+C710,Cancer - Brain
+C710,Cancer - Brain
+C711,Cancer - Brain
+C711,Cancer - Brain
+C712,Cancer - Brain
+C712,Cancer - Brain
+C713,Cancer - Brain
+C713,Cancer - Brain
+C714,Cancer - Brain
+C714,Cancer - Brain
+C715,Cancer - Brain
+C715,Cancer - Brain
+C716,Cancer - Brain
+C716,Cancer - Brain
+C717,Cancer - Brain
+C717,Cancer - Brain
+C718,Cancer - Brain
+C718,Cancer - Brain
+C719,Cancer - Brain
+C719,Cancer - Brain
+C710,Cancer - Cranial Nerves Other Nervous System
+C710,Cancer - Cranial Nerves Other Nervous System
+C711,Cancer - Cranial Nerves Other Nervous System
+C711,Cancer - Cranial Nerves Other Nervous System
+C712,Cancer - Cranial Nerves Other Nervous System
+C712,Cancer - Cranial Nerves Other Nervous System
+C713,Cancer - Cranial Nerves Other Nervous System
+C713,Cancer - Cranial Nerves Other Nervous System
+C714,Cancer - Cranial Nerves Other Nervous System
+C714,Cancer - Cranial Nerves Other Nervous System
+C715,Cancer - Cranial Nerves Other Nervous System
+C715,Cancer - Cranial Nerves Other Nervous System
+C716,Cancer - Cranial Nerves Other Nervous System
+C716,Cancer - Cranial Nerves Other Nervous System
+C717,Cancer - Cranial Nerves Other Nervous System
+C717,Cancer - Cranial Nerves Other Nervous System
+C718,Cancer - Cranial Nerves Other Nervous System
+C718,Cancer - Cranial Nerves Other Nervous System
+C719,Cancer - Cranial Nerves Other Nervous System
+C719,Cancer - Cranial Nerves Other Nervous System
+C739,Cancer - Thyroid
+C739,Cancer - Thyroid
+C379,Cancer - Other Endocrine including Thymus
+C379,Cancer - Other Endocrine including Thymus
+C740,Cancer - Other Endocrine including Thymus
+C741,Cancer - Other Endocrine including Thymus
+C742,Cancer - Other Endocrine including Thymus
+C743,Cancer - Other Endocrine including Thymus
+C744,Cancer - Other Endocrine including Thymus
+C745,Cancer - Other Endocrine including Thymus
+C746,Cancer - Other Endocrine including Thymus
+C747,Cancer - Other Endocrine including Thymus
+C748,Cancer - Other Endocrine including Thymus
+C749,Cancer - Other Endocrine including Thymus
+C750,Cancer - Other Endocrine including Thymus
+C751,Cancer - Other Endocrine including Thymus
+C752,Cancer - Other Endocrine including Thymus
+C753,Cancer - Other Endocrine including Thymus
+C754,Cancer - Other Endocrine including Thymus
+C755,Cancer - Other Endocrine including Thymus
+C756,Cancer - Other Endocrine including Thymus
+C757,Cancer - Other Endocrine including Thymus
+C758,Cancer - Other Endocrine including Thymus
+C759,Cancer - Other Endocrine including Thymus
+C024,Cancer - Hodgkin - Nodal
+C024,Cancer - Hodgkin - Nodal
+C098,Cancer - Hodgkin - Nodal
+C099,Cancer - Hodgkin - Nodal
+C111,Cancer - Hodgkin - Nodal
+C142,Cancer - Hodgkin - Nodal
+C379,Cancer - Hodgkin - Nodal
+C422,Cancer - Hodgkin - Nodal
+C770,Cancer - Hodgkin - Nodal
+C771,Cancer - Hodgkin - Nodal
+C772,Cancer - Hodgkin - Nodal
+C773,Cancer - Hodgkin - Nodal
+C774,Cancer - Hodgkin - Nodal
+C775,Cancer - Hodgkin - Nodal
+C776,Cancer - Hodgkin - Nodal
+C777,Cancer - Hodgkin - Nodal
+C778,Cancer - Hodgkin - Nodal
+C779,Cancer - Hodgkin - Nodal
+C024,Cancer - NHL - Nodal
+C024,Cancer - NHL - Nodal
+C098,Cancer - NHL - Nodal
+C099,Cancer - NHL - Nodal
+C111,Cancer - NHL - Nodal
+C142,Cancer - NHL - Nodal
+C379,Cancer - NHL - Nodal
+C422,Cancer - NHL - Nodal
+C770,Cancer - NHL - Nodal
+C771,Cancer - NHL - Nodal
+C772,Cancer - NHL - Nodal
+C773,Cancer - NHL - Nodal
+C774,Cancer - NHL - Nodal
+C775,Cancer - NHL - Nodal
+C776,Cancer - NHL - Nodal
+C777,Cancer - NHL - Nodal
+C778,Cancer - NHL - Nodal
+C779,Cancer - NHL - Nodal
+C098,Cancer - NHL - Extranodal
+C098,Cancer - NHL - Extranodal
+C099,Cancer - NHL - Extranodal
+C099,Cancer - NHL - Extranodal
+C111,Cancer - NHL - Extranodal
+C142,Cancer - NHL - Extranodal
+C379,Cancer - NHL - Extranodal
+C422,Cancer - NHL - Extranodal
+C770,Cancer - NHL - Extranodal
+C771,Cancer - NHL - Extranodal
+C772,Cancer - NHL - Extranodal
+C773,Cancer - NHL - Extranodal
+C774,Cancer - NHL - Extranodal
+C775,Cancer - NHL - Extranodal
+C776,Cancer - NHL - Extranodal
+C777,Cancer - NHL - Extranodal
+C778,Cancer - NHL - Extranodal
+C779,Cancer - NHL - Extranodal
+C420,Cancer - Chronic Lymphocytic Leukemia
+C420,Cancer - Chronic Lymphocytic Leukemia
+C421,Cancer - Chronic Lymphocytic Leukemia
+C424,Cancer - Chronic Lymphocytic Leukemia
+20010,Cancer - Lip
+20020,Cancer - Tongue
+20030,Cancer - Salivary Gland
+20040,Cancer - Floor of Mouth
+20050,Cancer - Gum and Other Mouth
+20060,Cancer - Nasopharynx
+20070,Cancer - Tonsil
+20080,Cancer - Oropharynx
+20090,Cancer - Hypopharynx
+20100,Cancer - Other Oral Cavity and Pharynx
+21010,Cancer - Esophagus
+21020,Cancer - Stomach
+21030,Cancer - Small Intestine
+21041,Cancer - Cecum
+21042,Cancer - Appendix
+21043,Cancer - Ascending Colon
+21044,Cancer - Hepatic Flexure
+21045,Cancer - Transverse Colon
+21046,Cancer - Splenic Flexure
+21047,Cancer - Descending Colon
+21048,Cancer - Sigmoid Colon
+21049,"Cancer - Large Intestine, NOS"
+21051,Cancer - Rectosigmoid Junction
+21052,Cancer - Rectum
+21060,"Cancer - Anus, Anal Canal and Anorectum"
+21071,Cancer - Liver
+21072,Cancer - Intrahepatic Bile Duct
+21080,Cancer - Gallbladder
+21090,Cancer - Other Biliary
+21100,Cancer - Pancreas
+21110,Cancer - Retroperitoneum
+21120,"Cancer - Peritoneum, Omentum and Mesentery"
+21130,Cancer - Other Digestive Organs
+22010,"Cancer - Nose, Nasal Cavity and Middle Ear"
+22020,Cancer - Larynx
+22030,Cancer - Lung and Bronchus
+22050,Cancer - Pleura
+22060,"Cancer - Trachea, Mediastinum and Other Respiratory Organs"
+23000,Cancer - Bones and Joints
+24000,Cancer - Soft Tissue including Heart
+25010,Cancer - Melanoma of the Skin
+25020,Cancer - Other Non-Epithelial Skin
+26000,Cancer - Breast
+27010,Cancer - Cervix Uteri
+27020,Cancer - Corpus Uteri
+27030,"Cancer - Uterus, NOS"
+27040,Cancer - Ovary
+27050,Cancer - Vagina
+27060,Cancer - Vulva
+27070,Cancer - Other Female Genital Organs
+28010,Cancer - Prostate
+28020,Cancer - Testis
+28030,Cancer - Penis
+28040,Cancer - Other Male Genital Organs
+29010,Cancer - Urinary Bladder
+29020,Cancer - Kidney and Renal Pelvis
+29030,Cancer - Ureter
+29040,Cancer - Other Urinary Organs
+30000,Cancer - Eye and Orbit
+31010,Cancer - Brain
+31040,Cancer - Cranial Nerves Other Nervous System
+32010,Cancer - Thyroid
+32020,Cancer - Other Endocrine including Thymus
+33011,Cancer - Hodgkin - Nodal
+33041,Cancer - NHL - Nodal
+33042,Cancer - NHL - Extranodal
+35012,Cancer - Chronic Lymphocytic Leukemia

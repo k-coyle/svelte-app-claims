@@ -1,0 +1,10 @@
+column_number,column,column_uspm,dtype,parse_date
+0,Member Identifier,member_id,Int64,FALSE
+1,Person Code,responsible_party_id,Int64,FALSE
+2,Patient Birth Year,,Int16,FALSE
+3,Patient Gender,member_gender,string,FALSE
+4,Relationship to Member,member_relationship,string,FALSE
+5,Amount Billed,amount_total,Float64,FALSE
+6,Date Filled,date_filled,,TRUE
+7,Date Claim Processed,date_claim_processed,,TRUE
+8,D.0 RX Number,number,Int64,FALSE

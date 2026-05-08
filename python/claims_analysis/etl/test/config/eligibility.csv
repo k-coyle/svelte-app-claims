@@ -1,0 +1,7 @@
+column_number,column,column_uspm,dtype,parse_date
+0,medicalEligibilityEndDate,medical_eligibility_end_date,,TRUE
+1,medicalEligibilityStartDate,medical_eligibility_start_date,,TRUE
+2,medicalPlanId,medical_plan_id,string,FALSE
+3,memberGender,member_gender,string,FALSE
+4,memberId,member_id,string,FALSE
+5,memberPostalCode,member_postal_code,string,FALSE

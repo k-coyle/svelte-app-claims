@@ -7,6 +7,7 @@
 	import UploadIcon from '@lucide/svelte/icons/upload';
 	import HistoryIcon from '@lucide/svelte/icons/history';
 	import SettingsIcon from '@lucide/svelte/icons/settings-2';
+	import BarChart3Icon from '@lucide/svelte/icons/bar-chart-3';
 
 	let { children } = $props();
 
@@ -14,6 +15,7 @@
 		{ label: 'Dashboard', href: '/', icon: LayoutDashboardIcon },
 		{ label: 'Upload', href: '/upload', icon: UploadIcon },
 		{ label: 'History', href: '/upload/history', icon: HistoryIcon },
+		{ label: 'Analysis', href: '/analysis', icon: BarChart3Icon },
 		{ label: 'Mappings', href: '/admin/mappings', icon: SettingsIcon }
 	];
 

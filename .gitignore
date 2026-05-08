@@ -25,4 +25,11 @@ vite.config.ts.timestamp-*
 # Local demo persistence
 var/local-store.json
 var/dev-server.log
+var/dev-server.err.log
 var/uploads/
+var/analysis/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]

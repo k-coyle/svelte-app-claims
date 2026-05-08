@@ -1,0 +1,6 @@
+column_number,column,column_uspm,dtype,parse_date
+0,Employee ID,employee_id,Int64,FALSE
+1,Birth Year,,Int64,FALSE
+2,Gender,member_gender,string,FALSE
+3,Quarterly Date,medical_eligibility_date_as_of,,TRUE
+4,Med Insurance Program,medical_plan_type,string,FALSE

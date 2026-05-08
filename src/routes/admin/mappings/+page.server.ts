@@ -1,6 +1,7 @@
 // src/routes/admin/mappings/+page.server.ts
 import type { PageServerLoad, Actions } from './$types';
 import { listMappings, upsertMapping } from '$lib/server/db';
+import { parseHistoricalMappingCsv } from '$lib/server/mappingImport';
 
 // Mock auth: require client_manager role (replace with real auth later)
 type User = { id: string; role: 'client' | 'client_manager'; accountId?: string };
@@ -24,7 +25,7 @@ export const load: PageServerLoad = async ({ url }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request }) => {
+  save: async ({ request }) => {
     const user = getUser();
     if (user.role !== 'client_manager') return { error: 'Not authorized' };
 
@@ -54,6 +55,33 @@ export const actions: Actions = {
     try {
       const id = await upsertMapping({ accountId, fileType, version, json, isActive });
       return { ok: true, id };
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'unexpected error';
+      return { error: msg };
+    }
+  },
+  importCsv: async ({ request }) => {
+    const user = getUser();
+    if (user.role !== 'client_manager') return { error: 'Not authorized' };
+
+    const form = await request.formData();
+    const accountId = String(form.get('accountId') ?? '').trim();
+    const fileType = String(form.get('fileType') ?? '').trim();
+    const versionRaw = String(form.get('version') ?? '').trim();
+    const isActive = form.get('isActive') === 'on';
+    const file = form.get('mappingFile');
+
+    if (!accountId) return { error: 'accountId is required' };
+    if (!fileType) return { error: 'fileType is required' };
+    const version = Number(versionRaw);
+    if (!Number.isInteger(version) || version <= 0) return { error: 'version must be a positive integer' };
+    if (!(file instanceof File) || file.size === 0) return { error: 'mapping CSV is required' };
+
+    try {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const json = parseHistoricalMappingCsv(buffer);
+      const id = await upsertMapping({ accountId, fileType, version, json, isActive });
+      return { ok: true, id, importedFieldCount: json.fieldCount };
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'unexpected error';
       return { error: msg };

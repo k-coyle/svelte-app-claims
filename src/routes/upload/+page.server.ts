@@ -1,6 +1,9 @@
 // src/routes/upload/+page.server.ts
 import type { Actions, PageServerLoad } from './$types';
 import { enqueueJob, insertUploadSession, getActiveMapping } from '$lib/server/db';
+import { writeAnalysisArtifacts } from '$lib/server/analysis';
+import { buildClaimsRunProfile, profileClaimsBuffer } from '$lib/server/claimsProfile';
+import { mappingPayloadToFields } from '$lib/server/mappingImport';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -233,6 +236,7 @@ export const actions: Actions = {
         }))
       );
       const totalBytes = stats.reduce((n, s) => n + Number(s.bytes ?? 0), 0);
+      const mappingFields = mappingPayloadToFields(mappingPayload, stats[0]?.headers ?? null);
 
       if (intent === 'preview') {
         // Audit preview
@@ -253,20 +257,13 @@ export const actions: Actions = {
             eligibilityStartDate,
             usedMapping: mappingSource,
             mappingVersion,
-            mappingFieldCount: mappingPayload ? Object.keys(mappingPayload).length : undefined,
+            mappingFieldCount: mappingFields ? Object.keys(mappingFields).length : undefined,
             stats
           }
         };
       }
 
       if (intent === 'confirm') {
-        const mappingFields =
-          mappingPayload && typeof mappingPayload === 'object'
-            ? Object.fromEntries(
-                Object.entries(mappingPayload).map(([key, value]) => [key, String(value)])
-              )
-            : null;
-
         // Create upload session (metadata only)
         const createdAt = new Date().toISOString();
         const sessionId = await insertUploadSession({
@@ -301,6 +298,39 @@ export const actions: Actions = {
           files: saved,
           eligibilityStartDate: eligibilityStartDate || null,
           mapping: mappingFields ? { fields: mappingFields } : null
+        });
+
+        const claimsProfile = buildClaimsRunProfile(
+          files
+            .map((file) => {
+              const stat = stats.find((item) => item.filename === file.name);
+              if (!isTextLike(file.name, file.type)) return null;
+              return profileClaimsBuffer({
+                filename: file.name,
+                fileType,
+                buffer: file.buf,
+                headers: stat?.headers ?? null,
+                rowCount: stat?.rowCount ?? null,
+                mappingFields
+              });
+            })
+            .filter((profile): profile is NonNullable<typeof profile> => Boolean(profile))
+        );
+
+        await writeAnalysisArtifacts({
+          sessionId,
+          accountId,
+          createdAt,
+          claims: claimsProfile,
+          files: saved.map((file) => {
+            const stat = stats.find((item) => item.filename === file.filename);
+            return {
+              ...file,
+              fileType,
+              rowCount: stat?.rowCount ?? null,
+              headers: stat?.headers ?? null
+            };
+          })
         });
 
         // Audit (consistent with preview -> console.info via auditLog)

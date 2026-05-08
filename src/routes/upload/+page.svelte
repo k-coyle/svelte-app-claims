@@ -137,6 +137,7 @@
 		<div class="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900" role="status">
 			{successMsg}
 			<a href={historyHref} class="ml-3 font-medium underline">View history</a>
+			<a href="/analysis" class="ml-3 font-medium underline">View analysis</a>
 		</div>
 	{/if}
 

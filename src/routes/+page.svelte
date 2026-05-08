@@ -9,6 +9,7 @@
 		CardTitle
 	} from '$lib/components/ui/card';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+	import BarChart3Icon from '@lucide/svelte/icons/bar-chart-3';
 	import DatabaseZapIcon from '@lucide/svelte/icons/database-zap';
 	import FileSpreadsheetIcon from '@lucide/svelte/icons/file-spreadsheet';
 	import HistoryIcon from '@lucide/svelte/icons/history';
@@ -136,7 +137,7 @@
 				<CardTitle>Demo workflow</CardTitle>
 				<CardDescription>Primary surfaces for the stakeholder walkthrough.</CardDescription>
 			</CardHeader>
-			<CardContent class="grid gap-3 sm:grid-cols-3">
+			<CardContent class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 				<a href="/upload" class="rounded-lg border p-4 transition hover:bg-muted/60">
 					<div class="flex items-center justify-between gap-2">
 						<UploadIcon class="size-5 text-muted-foreground" />
@@ -160,6 +161,14 @@
 					</div>
 					<p class="mt-4 font-medium">Mappings</p>
 					<p class="mt-1 text-sm text-muted-foreground">Create stored mapping versions.</p>
+				</a>
+				<a href="/analysis" class="rounded-lg border p-4 transition hover:bg-muted/60">
+					<div class="flex items-center justify-between gap-2">
+						<BarChart3Icon class="size-5 text-muted-foreground" />
+						<ArrowRightIcon class="size-4 text-muted-foreground" />
+					</div>
+					<p class="mt-4 font-medium">Analysis</p>
+					<p class="mt-1 text-sm text-muted-foreground">Review staged BI artifacts.</p>
 				</a>
 			</CardContent>
 		</Card>

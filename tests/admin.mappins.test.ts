@@ -30,7 +30,7 @@ describe('admin mappings', () => {
     form.append('isActive', 'on');
 
     const req = new Request('http://local/admin/mappings', { method: 'POST', body: form });
-    const res = await (actions as any).default({ request: req });
+    const res = await (actions as any).save({ request: req });
 
     expect(res.ok).toBe(true);
     expect(res.id).toBe('map123');
@@ -44,7 +44,7 @@ describe('admin mappings', () => {
     form.append('version', '1');
     form.append('json', '{bad json}');
     const req = new Request('http://local/admin/mappings', { method: 'POST', body: form });
-    const res = await (actions as any).default({ request: req });
+    const res = await (actions as any).save({ request: req });
     expect(res.error).toMatch(/invalid/i);
   });
 });

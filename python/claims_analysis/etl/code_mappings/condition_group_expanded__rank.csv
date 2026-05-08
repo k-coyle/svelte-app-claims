@@ -1,0 +1,39 @@
+condition_group,rank
+Hyperlipidemia,1
+Immune Disorders,2
+Congestive Heart Failure,3
+Parkinson's Disease,5
+Tuberculosis,6
+Atrial Fibrillation,7
+Immunodeficiency,8
+Asthma,9
+Headache,10
+Demyelinating Diseases,11
+Cystic Fibrosis,12
+Chronic Renal Failure,13
+Hypertension,14
+Osteoporosis,15
+Schizophrenia,16
+Liver Diseases,17
+Inflammatory Bowel Diseases,18
+Affective Psychosis,19
+COPD,20
+CAD,21
+Rheumatoid Arthritis,22
+Eating Disorders,23
+Hepatitis,24
+Depression,26
+Diabetes,27
+Coagulopathy,28
+Osteoarthritis,29
+High Risk Pregnancy,30
+Obesity,31
+Cerebrovascular Disease,32
+Thyroid Disorders,33
+Back and Neck Pain,34
+Mental Health,35
+Anxiety,36
+Substance Abuse,37
+PTSD,38
+Normal Pregnancy,39
+Cancer,40

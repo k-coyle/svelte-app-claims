@@ -1,0 +1,19 @@
+column_number,column,column_uspm,dtype,parse_date
+0,Claim Number,number,Int64,FALSE
+1,Claim Sequence Number,sequence,Int64,FALSE
+2,Person Number,responsible_party_id,Int64,FALSE
+3,Member Identifier,member_id,Int64,FALSE
+4,Empl/Dep-Act/Ret,member_relationship,string,FALSE
+5,Date Service Started,date_service_start,,TRUE
+6,Date Service Stopped,date_service_end,,TRUE
+7,Place of Service,pos_code,string,FALSE
+8,Diagnosis Code 1,icd_1,string,FALSE
+9,Diagnosis Code 2,icd_2,string,FALSE
+10,Diagnosis Code 3,icd_3,string,FALSE
+11,Diagnosis Code 4,icd_4,string,FALSE
+12,Diagnosis Code 5,icd_5,string,FALSE
+13,Procedure Code,procedure_code,string,FALSE
+14,Paid Amount,amount_total,Float64,FALSE
+15,Birth Year,,Int16,FALSE
+16,Gender,member_gender,string,FALSE
+17,Category of Health Plan,medical_plan_group,string,FALSE
