@@ -34,7 +34,7 @@
 <div class="space-y-5">
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 		<div>
-			<p class="text-sm font-medium text-muted-foreground">Claims ingestion</p>
+			<p class="text-sm font-medium text-muted-foreground">Claims analytics</p>
 			<h1 class="text-2xl font-semibold tracking-tight">Mapping admin</h1>
 		</div>
 		<Button href="/upload" variant="outline">Back to upload</Button>
@@ -127,7 +127,7 @@
 			<Card>
 				<CardHeader>
 					<CardTitle>Import CSV mapping</CardTitle>
-					<CardDescription>Historical column mapping CSV.</CardDescription>
+					<CardDescription>Column mapping CSV for raw claims intake.</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form method="POST" action="?/importCsv" enctype="multipart/form-data" class="grid gap-3">

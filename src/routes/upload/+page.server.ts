@@ -1,359 +1,346 @@
-// src/routes/upload/+page.server.ts
 import type { Actions, PageServerLoad } from './$types';
-import { enqueueJob, insertUploadSession, getActiveMapping } from '$lib/server/db';
 import { writeAnalysisArtifacts } from '$lib/server/analysis';
 import { buildClaimsRunProfile, profileClaimsBuffer } from '$lib/server/claimsProfile';
-import { mappingPayloadToFields } from '$lib/server/mappingImport';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { getActiveMapping, insertUploadSession } from '$lib/server/db';
+import {
+	buildSessionValidation,
+	cleanupRawTempFiles,
+	fileStatsFromProfiles,
+	fileTypes,
+	legacySessionFileType,
+	profileUploadedFiles,
+	rawUploadRetentionPolicy,
+	readFilesFromForm,
+	validateAllowedFiles,
+	writeCanonicalFiles,
+	writeRawTempFiles,
+	type CanonicalIngestionFile,
+	type IngestionFileProfile,
+	type IngestionSessionValidation,
+	type RawUploadRetention
+} from '$lib/server/ingestion';
+import { readFile } from 'node:fs/promises';
 
-
-// -------------------- Config --------------------
-const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
-const MAX_FILES = 20;
-const ALLOWED_EXTS = new Set(['.csv', '.tsv', '.txt', '.psv', '.xls', '.xlsx']);
-const HEADER_PEEK_MAX = 10;
-
-// -------------------- Mocked auth (replace later) --------------------
 type User = { id: string; role: 'client' | 'client_manager'; accountId?: string };
+
 function getUser(): User {
-  return { id: 'user_123', role: 'client_manager' };
+	return { id: 'user_123', role: 'client_manager' };
 }
+
 function getAllowedAccounts(user: User) {
-  return user.role === 'client'
-    ? [{ id: user.accountId!, name: 'My Account' }]
-    : [
-        { id: 'clientA', name: 'Client A' },
-        { id: 'clientB', name: 'Client B' },
-        { id: 'clientC', name: 'Client C' }
-      ];
+	if (user.role === 'client') return [{ id: user.accountId!, name: 'My Account' }];
+	return [
+		{ id: 'clientA', name: 'Client A' },
+		{ id: 'clientB', name: 'Client B' },
+		{ id: 'clientC', name: 'Client C' }
+	];
 }
+
 function canSelectAccount(user: User, accountId: string) {
-  return user.role === 'client' ? user.accountId === accountId : true;
+	return user.role === 'client' ? user.accountId === accountId : true;
 }
 
-// -------------------- Helpers: files & parse --------------------
-function getExt(name: string): string {
-  const m = name.toLowerCase().match(/\.[^.]+$/);
-  return m ? m[0] : '';
-}
-function isTextLike(name: string, mime?: string) {
-  const ext = getExt(name);
-  return ['.csv', '.tsv', '.txt', '.psv'].includes(ext) || (mime?.startsWith('text/') ?? false);
-}
-function countLinesFast(buf: Buffer): number {
-  return buf.toString('utf8').split(/\r?\n/).filter((l) => l.trim().length > 0).length;
-}
-async function countRowsSmart(name: string, mime: string | undefined, buf: Buffer): Promise<number | null> {
-  const ext = getExt(name);
-  if (ext === '.xlsx' || ext === '.xls') {
-    const XLSX = await import('xlsx'); // lazy load only for Excel
-    const wb = XLSX.read(buf, { type: 'buffer' });
-    const first = wb.SheetNames[0];
-    if (!first) return 0;
-    const sheet = wb.Sheets[first];
-    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false }) as unknown[];
-    return rows.length; // includes header if present
-  }
-  if (isTextLike(name, mime)) return countLinesFast(buf);
-  return countLinesFast(buf); // fallback for unknown “flat” files
-}
-function stripBOM(s: string): string {
-  return s.charCodeAt(0) === 0xfeff ? s.slice(1) : s;
-}
-function splitHeaderLine(line: string): string[] {
-  const l = line.trim();
-  const delim = l.includes(',') ? ',' : l.includes('\t') ? '\t' : l.includes('|') ? '|' : ',';
-  return l.split(delim).map((t) => {
-    let v = t.trim();
-    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
-    return v;
-  });
-}
-async function extractHeadersSmart(name: string, mime: string | undefined, buf: Buffer): Promise<string[] | null> {
-  const ext = getExt(name);
-  if (ext === '.xlsx' || ext === '.xls') {
-    const XLSX = await import('xlsx');
-    const wb = XLSX.read(buf, { type: 'buffer' });
-    const first = wb.SheetNames[0];
-    if (!first) return null;
-    const sheet = wb.Sheets[first];
-    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false }) as unknown as any[][];
-    const hdr = Array.isArray(rows?.[0]) ? rows[0] : null;
-    return hdr ? hdr.slice(0, HEADER_PEEK_MAX).map((x) => (x == null ? '' : String(x).trim())) : null;
-  }
-  // text-like
-  const text = stripBOM(buf.toString('utf8'));
-  const lines = text.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
-  if (!lines.length) return null;
-  return splitHeaderLine(lines[0]).slice(0, HEADER_PEEK_MAX);
-}
-function validateAllowedFiles(files: { name: string }[]): string | null {
-  const bad: string[] = [];
-  for (const f of files) {
-    const ext = getExt(f.name);
-    if (!ALLOWED_EXTS.has(ext)) bad.push(f.name);
-  }
-  if (files.length > MAX_FILES) return `Too many files. Maximum allowed is ${MAX_FILES}.`;
-  if (bad.length) {
-    return `These file types are not allowed: ${bad.join(', ')}. Allowed: ${Array.from(ALLOWED_EXTS).join(', ')}`;
-  }
-  return null;
-}
-async function readFilesFromForm(form: FormData) {
-  const list = form.getAll('files');
-  const out: { name: string; type?: string; buf: Buffer }[] = [];
-  let total = 0;
-  for (const item of list) {
-    if (!(item instanceof File)) continue;
-    const ab = await item.arrayBuffer();
-    const buf = Buffer.from(ab);
-    total += buf.byteLength;
-    if (total > MAX_UPLOAD_BYTES) throw new Error('Total upload too large (200MB limit).');
-    out.push({ name: item.name, type: item.type, buf });
-  }
-  return out;
-}
-
-// -------------------- Audit --------------------
 function auditLog(event: string, payload: Record<string, unknown>) {
-  try {
-    console.info(JSON.stringify({ ts: new Date().toISOString(), event, ...payload }));
-  } catch {
-    console.info(`[audit] ${event}`);
-  }
+	try {
+		console.info(JSON.stringify({ ts: new Date().toISOString(), event, ...payload }));
+	} catch {
+		console.info(`[audit] ${event}`);
+	}
 }
 
-// -------------------- Load --------------------
+function previewMappingSummary(files: IngestionFileProfile[]) {
+	const first = files[0]?.mapping;
+	return {
+		usedMapping: first?.source ?? 'none',
+		mappingVersion: first?.version,
+		mappingFieldCount: first?.fieldCount
+	};
+}
+
+function analysisMappingSummary(files: IngestionFileProfile[]) {
+	const mapped = files.find((file) => file.mapping.fieldCount > 0)?.mapping;
+	return mapped
+		? {
+				source: mapped.source,
+				version: mapped.version,
+				fields: mapped.fields
+			}
+		: { source: 'none' as const };
+}
+
+async function buildClaimsProfile(files: CanonicalIngestionFile[]) {
+	const profiles = await Promise.all(
+		files
+			.filter((file) => file.fileType === 'medical' || file.fileType === 'pharmacy')
+			.map(async (file) =>
+				profileClaimsBuffer({
+					filename: file.filename,
+					fileType: file.fileType,
+					buffer: await readFile(file.path),
+					headers: null,
+					rowCount: file.rowCount,
+					mappingFields: {}
+				})
+			)
+	);
+	return buildClaimsRunProfile(
+		profiles.filter((profile): profile is NonNullable<typeof profile> => Boolean(profile))
+	);
+}
+
+async function makeProfiles(input: {
+	form: FormData;
+	accountId: string;
+	claimMembersEligibleAssumptionAccepted: boolean;
+}) {
+	const files = await readFilesFromForm(input.form);
+	if (!files.length) throw new Error('Please attach at least one file.');
+
+	const validationError = validateAllowedFiles(files);
+	if (validationError) throw new Error(validationError);
+
+	const profiles = await profileUploadedFiles({
+		accountId: input.accountId,
+		form: input.form,
+		files,
+		getActiveMapping
+	});
+	const validation = buildSessionValidation({
+		files: profiles,
+		claimMembersEligibleAssumptionAccepted: input.claimMembersEligibleAssumptionAccepted
+	});
+
+	return { files, profiles, validation };
+}
+
+function assertEligibilityConfirmation(validation: IngestionSessionValidation) {
+	if (
+		!validation.session.eligibilityPresent &&
+		!validation.session.claimMembersEligibleAssumptionAccepted
+	) {
+		throw new Error(
+			'Eligibility is missing. Confirm that all individuals in the claims files may be treated as eligible before continuing.'
+		);
+	}
+}
+
+function publicFiles(files: IngestionFileProfile[]) {
+	return files.map((file) => ({
+		fileId: file.fileId,
+		filename: file.filename,
+		bytes: file.bytes,
+		mime: file.mime,
+		rowCount: file.rowCount,
+		headers: file.headers,
+		inferredFileType: file.inferredFileType,
+		fileType: file.fileType,
+		mapping: {
+			source: file.mapping.source,
+			mode: file.mapping.mode,
+			version: file.mapping.version,
+			fieldCount: file.mapping.fieldCount,
+			fields: file.mapping.fields
+		},
+		validation: file.validation
+	}));
+}
+
+async function confirmSession(input: {
+	user: User;
+	accountId: string;
+	profiles: IngestionFileProfile[];
+	files: Awaited<ReturnType<typeof readFilesFromForm>>;
+	validation: IngestionSessionValidation;
+	createdAt: string;
+	totalBytes: number;
+	retention: RawUploadRetention;
+}) {
+	const stats = fileStatsFromProfiles(input.profiles);
+	const sessionFileType = legacySessionFileType(input.profiles);
+	const sessionFileTypes = fileTypes(input.profiles);
+	const sessionId = await insertUploadSession({
+		uploaderUserId: input.user.id,
+		accountId: input.accountId,
+		fileType: sessionFileType,
+		fileTypes: sessionFileTypes,
+		usedMapping: previewMappingSummary(input.profiles).usedMapping,
+		mappingVersion: previewMappingSummary(input.profiles).mappingVersion,
+		stats,
+		files: publicFiles(input.profiles),
+		validation: input.validation,
+		rawUploadRetention: input.retention,
+		createdAt: input.createdAt,
+		totalBytes: input.totalBytes,
+		audit: { confirmAt: input.createdAt }
+	});
+
+	let rawDir: string | undefined;
+	let finalRetention = input.retention;
+	try {
+		rawDir = await writeRawTempFiles({ sessionId, files: input.files });
+		const canonicalFiles = await writeCanonicalFiles({
+			sessionId,
+			files: input.files,
+			profiles: input.profiles
+		});
+		finalRetention = await cleanupRawTempFiles(rawDir, input.retention);
+
+		await writeAnalysisArtifacts({
+			manifestVersion: 2,
+			sessionId,
+			accountId: input.accountId,
+			createdAt: input.createdAt,
+			files: canonicalFiles.map((file) => ({
+				fileId: file.fileId,
+				path: file.path,
+				filename: file.filename,
+				bytes: file.bytes,
+				fileType: file.fileType,
+				rowCount: file.rowCount,
+				headers: file.headers,
+				mime: file.mime,
+				mapping: {
+					source: file.mapping.source,
+					mode: file.mapping.mode,
+					version: file.mapping.version,
+					fields: file.mapping.fields,
+					fieldCount: file.mapping.fieldCount
+				},
+				validation: file.validation,
+				invalidRowCount: file.validation.invalidRowCount,
+				rejectedRowCount: file.validation.rejectedRowCount,
+				artifacts: file.artifacts
+			})),
+			fileTypes: sessionFileTypes,
+			claims: await buildClaimsProfile(canonicalFiles),
+			mapping: analysisMappingSummary(input.profiles),
+			validation: input.validation,
+			rawUploadRetention: finalRetention
+		});
+
+		auditLog('upload.confirm', {
+			sessionId,
+			accountId: input.accountId,
+			fileType: sessionFileType,
+			fileTypes: sessionFileTypes,
+			productionReady: input.validation.productionReady,
+			rawUploadRetention: finalRetention.cleanupStatus,
+			files: input.profiles.map((file) => ({
+				filename: file.filename,
+				bytes: file.bytes,
+				fileType: file.fileType,
+				mappingSource: file.mapping.source,
+				mappingVersion: file.mapping.version,
+				validationStatus: file.validation.status
+			}))
+		});
+
+		return { sessionId, rawUploadRetention: finalRetention };
+	} catch (e) {
+		if (rawDir) await cleanupRawTempFiles(rawDir, input.retention);
+		throw e;
+	}
+}
+
 export const load: PageServerLoad = async () => {
-  const user = getUser();
-  const allowedAccounts = getAllowedAccounts(user);
-  return {
-    allowedAccounts,
-    defaultAccountId: user.role === 'client' ? user.accountId : allowedAccounts[0]?.id,
-    userId: user.id
-  };
+	const user = getUser();
+	const allowedAccounts = getAllowedAccounts(user);
+	return {
+		allowedAccounts,
+		defaultAccountId: user.role === 'client' ? user.accountId : allowedAccounts[0]?.id,
+		userId: user.id
+	};
 };
 
-// -------------------- Actions --------------------
-async function safeGetActiveMapping(accountId: string, fileType: string) {
-  // Short-circuit in tests if a mock isn't provided quickly
-  const timeoutMs = Number(process.env.MAPPING_LOOKUP_TIMEOUT_MS ?? 400);
-
-  try {
-    const lookup = getActiveMapping(accountId, fileType) as Promise<any>;
-    const timed = new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs));
-    const res = await Promise.race([lookup, timed]);
-    if (res === null) {
-      console.warn(`mapping lookup timeout after ${timeoutMs}ms`);
-      return null;
-    }
-    return res; // { version, json, ... } from mock or DB
-  } catch (e) {
-    console.warn('mapping lookup failed:', e instanceof Error ? e.message : e);
-    return null;
-  }
-}
-
 export const actions: Actions = {
-  default: async (evt) => {
-    try {
-      const request = (evt as any).request as Request;
-      const getClientAddress = (evt as any).getClientAddress as (() => string) | undefined;
-      const ip = typeof getClientAddress === 'function' ? getClientAddress() : undefined;
+	default: async (evt) => {
+		try {
+			const request = evt.request;
+			const ip = typeof evt.getClientAddress === 'function' ? evt.getClientAddress() : undefined;
+			const form = await request.formData();
+			const user = getUser();
 
-      const form = await request.formData();
-      const user = getUser();
+			const intent = String(form.get('intent') ?? 'preview');
+			const accountId = String(form.get('accountId') ?? '');
+			const claimMembersEligibleAssumptionAccepted =
+				form.get('assumeClaimMembersEligible') === 'on';
 
-      // --- fields ---
-      const intent = String(form.get('intent') ?? 'preview');
-      const fileType = String(form.get('fileType') ?? '');
-      const accountId = String(form.get('accountId') ?? '');
-      const useStoredMapping = form.get('useStoredMapping') === 'on';
-      const mappingJson = (form.get('mappingJson') as string) || '';
-      const eligibilityStartDateRaw = form.get('eligibilityStartDate') as string | null;
+			if (!accountId) return { error: 'Account is required.' };
+			if (!canSelectAccount(user, accountId)) return { error: 'Not allowed for this account.' };
 
-      if (!fileType) return { error: 'File type is required.' };
-      if (!accountId) return { error: 'Account is required.' };
-      if (!canSelectAccount(user, accountId)) return { error: 'Not allowed for this account.' };
+			const { files, profiles, validation } = await makeProfiles({
+				form,
+				accountId,
+				claimMembersEligibleAssumptionAccepted
+			});
+			const stats = fileStatsFromProfiles(profiles);
+			const totalBytes = stats.reduce((sum, stat) => sum + Number(stat.bytes ?? 0), 0);
+			const summary = previewMappingSummary(profiles);
+			const sessionFileType = legacySessionFileType(profiles);
+			const sessionFileTypes = fileTypes(profiles);
 
-      // --- files & validation ---
-      const files = await readFilesFromForm(form);
-      if (!files.length) return { error: 'Please attach at least one file.' };
+			if (intent === 'preview') {
+				auditLog('upload.preview', {
+					uploaderUserId: user.id,
+					accountId,
+					fileType: sessionFileType,
+					fileTypes: sessionFileTypes,
+					ip,
+					productionReady: validation.productionReady,
+					files: profiles.map((file) => ({
+						filename: file.filename,
+						bytes: file.bytes,
+						mime: file.mime,
+						fileType: file.fileType,
+						mappingSource: file.mapping.source,
+						mappingVersion: file.mapping.version,
+						validationStatus: file.validation.status
+					})),
+					totalBytes
+				});
 
-      {
-      const validationError = validateAllowedFiles(files);
-      if (validationError) return { error: validationError };
-     }
+				return {
+					preview: {
+						uploaderUserId: user.id,
+						accountId,
+						fileType: sessionFileType,
+						fileTypes: sessionFileTypes,
+						...summary,
+						stats,
+						files: publicFiles(profiles),
+						validation
+					}
+				};
+			}
 
-      // --- eligibility date (if provided) ---
-      let eligibilityStartDate: string | undefined;
-      if (fileType === 'eligibility' && eligibilityStartDateRaw) {
-        const d = new Date(eligibilityStartDateRaw);
-        if (isNaN(d.getTime())) return { error: 'Invalid eligibility start date.' };
-        eligibilityStartDate = d.toISOString();
-      }
+			if (intent === 'confirm') {
+				assertEligibilityConfirmation(validation);
+				const createdAt = new Date().toISOString();
+				const retention = rawUploadRetentionPolicy();
+				const confirmed = await confirmSession({
+					user,
+					accountId,
+					profiles,
+					files,
+					validation,
+					createdAt,
+					totalBytes,
+					retention
+				});
 
-      // --- resolve mapping: stored / provided / none ---
-      let mappingSource: 'stored' | 'provided' | 'none' = 'none';
-      let mappingVersion: number | undefined;
-      let mappingPayload: Record<string, unknown> | undefined;
+				return {
+					confirmed: true,
+					sessionId: confirmed.sessionId,
+					validation,
+					rawUploadRetention: confirmed.rawUploadRetention
+				};
+			}
 
-      if (useStoredMapping) {
-        const m = await safeGetActiveMapping(accountId, fileType);
-        if (!m) return { error: 'No stored mapping found for this account & file type.' };
-        mappingSource = 'stored';
-        mappingVersion = m.version;
-        mappingPayload = m.json;
-        } else if (mappingJson.trim()) {
-        try {
-            mappingPayload = JSON.parse(mappingJson);
-            mappingSource = 'provided';
-        } catch {
-            return { error: 'Mapping JSON is invalid.' };
-        }
-        } else {
-        // Fallback to stored if available, but don’t hard-fail if DB has issues
-        const m = await safeGetActiveMapping(accountId, fileType);
-        if (m) {
-            mappingSource = 'stored';
-            mappingVersion = m.version;
-            mappingPayload = m.json;
-        } else {
-            mappingSource = 'none';
-        }
-      }
-
-
-      // --- stats (rows + headers) ---
-      const stats = await Promise.all(
-        files.map(async (f) => ({
-          filename: f.name,
-          bytes: f.buf.byteLength,
-          rowCount: await countRowsSmart(f.name, f.type, f.buf),
-          mime: f.type,
-          headers: await extractHeadersSmart(f.name, f.type, f.buf)
-        }))
-      );
-      const totalBytes = stats.reduce((n, s) => n + Number(s.bytes ?? 0), 0);
-      const mappingFields = mappingPayloadToFields(mappingPayload, stats[0]?.headers ?? null);
-
-      if (intent === 'preview') {
-        // Audit preview
-        auditLog('upload.preview', {
-          uploaderUserId: user.id,
-          accountId,
-          fileType,
-          ip,
-          files: stats.map((s) => ({ filename: s.filename, bytes: s.bytes, mime: s.mime })),
-          totalBytes
-        });
-
-        return {
-          preview: {
-            uploaderUserId: user.id,
-            accountId,
-            fileType,
-            eligibilityStartDate,
-            usedMapping: mappingSource,
-            mappingVersion,
-            mappingFieldCount: mappingFields ? Object.keys(mappingFields).length : undefined,
-            stats
-          }
-        };
-      }
-
-      if (intent === 'confirm') {
-        // Create upload session (metadata only)
-        const createdAt = new Date().toISOString();
-        const sessionId = await insertUploadSession({
-          uploaderUserId: user.id,
-          accountId,
-          fileType,
-          eligibilityStartDate: eligibilityStartDate || undefined,
-          usedMapping: mappingSource,
-          mappingVersion,
-          stats,
-          createdAt,
-          totalBytes,
-          audit: { confirmAt: createdAt }
-        });
-
-        // Save files to disk
-        const baseDir = join(process.cwd(), 'var', 'uploads', sessionId);
-        await mkdir(baseDir, { recursive: true });
-        const saved = [];
-        for (const f of files) {
-          const abs = join(baseDir, f.name);
-          await writeFile(abs, f.buf);
-          saved.push({ path: abs, filename: f.name, bytes: f.buf.byteLength });
-        }
-
-        // Enqueue the job for the worker (eligibility MVP)
-        await enqueueJob({
-          sessionId,
-          accountId,
-          fileType,
-          mappingVersion,
-          files: saved,
-          eligibilityStartDate: eligibilityStartDate || null,
-          mapping: mappingFields ? { fields: mappingFields } : null
-        });
-
-        const claimsProfile = buildClaimsRunProfile(
-          files
-            .map((file) => {
-              const stat = stats.find((item) => item.filename === file.name);
-              if (!isTextLike(file.name, file.type)) return null;
-              return profileClaimsBuffer({
-                filename: file.name,
-                fileType,
-                buffer: file.buf,
-                headers: stat?.headers ?? null,
-                rowCount: stat?.rowCount ?? null,
-                mappingFields
-              });
-            })
-            .filter((profile): profile is NonNullable<typeof profile> => Boolean(profile))
-        );
-
-        await writeAnalysisArtifacts({
-          sessionId,
-          accountId,
-          createdAt,
-          claims: claimsProfile,
-          mapping: {
-            source: mappingSource,
-            version: mappingVersion,
-            fields: mappingFields ?? undefined
-          },
-          files: saved.map((file) => {
-            const stat = stats.find((item) => item.filename === file.filename);
-            return {
-              ...file,
-              fileType,
-              rowCount: stat?.rowCount ?? null,
-              headers: stat?.headers ?? null
-            };
-          })
-        });
-
-        // Audit (consistent with preview -> console.info via auditLog)
-        auditLog('upload.confirm', {
-          sessionId,
-          accountId,
-          fileType,
-          files: saved.map((s) => ({ filename: s.filename, bytes: s.bytes }))
-        });
-
-        return { confirmed: true, sessionId };
-      }
-
-      return { error: 'Unknown intent.' };
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Unexpected error';
-      console.error('Upload error:', e);
-      return { error: msg };
-    }
-  }
+			return { error: 'Unknown intent.' };
+		} catch (e: unknown) {
+			const msg = e instanceof Error ? e.message : 'Unexpected error';
+			if (process.env.NODE_ENV !== 'test') console.error('Upload error:', msg);
+			return { error: msg };
+		}
+	}
 };

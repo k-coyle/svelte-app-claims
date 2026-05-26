@@ -1,38 +1,69 @@
-# sv
+# Claims BI Demo
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Local web app for walking stakeholders from raw claims intake to Python-generated BI dashboard output.
 
-## Creating a project
+## What This App Does
 
-If you're seeing this, you've probably already done this step. Congrats!
+- Imports client column mappings for medical, pharmacy, and eligibility files.
+- Uploads raw claims files into local session folders.
+- Runs the app-owned Python analysis runner against those files.
+- Writes canonical CSVs, status JSON, dashboard JSON, report sections, and an optional trace workbook.
+- Renders dashboard-ready KPIs, trends, condition views, risk profile, findings, and recommendations.
 
-```sh
-# create a new project in the current directory
-npx sv create
+No database is required for the current demo build. Runtime data is stored under `var/`.
 
-# create a new project in my-app
-npx sv create my-app
+## Run Locally
+
+```powershell
+npm install
+cmd /c npm run dev -- --host 127.0.0.1
 ```
 
-## Developing
+Open the local URL printed by Vite, then use:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+1. `/admin/mappings` to import a column mapping CSV.
+2. `/upload` to upload raw claims and confirm analysis.
+3. `/analysis` to review the generated BI dashboard and trace artifacts.
 
-```sh
-npm run dev
+## Python Runtime
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+The preferred runtime is the repo-local Python 3.11 virtual environment:
+
+```powershell
+.\.venv\Scripts\python.exe python\claims_analysis\run_analysis.py --probe
 ```
 
-## Building
+Expected analysis mode is `source_ready`. If dependencies are missing, the runner records the missing packages in `python-status.json` and uses `fallback_analysis` so the app can still produce inspectable demo artifacts.
 
-To create a production version of your app:
+## Analytics Parity
 
-```sh
-npm run build
+The historic analytics repo remains the source of truth:
+
+```text
+C:\Users\kcoyle\Desktop\claims-analysis
 ```
 
-You can preview the production build with `npm run preview`.
+Run the parity check before stakeholder demos or after analytics changes:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```powershell
+npm run test:analytics-parity
+```
+
+The check reads the historic README sample data, compares shared ETL file hashes, and verifies the report-method outputs used by `write_excel_report()`. A passing result means the app-owned copy matches the historic source outputs for that sample.
+
+## Useful Commands
+
+```powershell
+cmd /c npm run check
+cmd /c npm test
+cmd /c npm run build
+```
+
+## Artifact Layout
+
+```text
+var/uploads/<sessionId>/       raw uploaded files
+var/analysis/<sessionId>/      manifest, status, dashboard, report artifacts
+var/analysis/<sessionId>/canonical/
+                               cleaned medical/pharmacy/eligibility CSVs
+```

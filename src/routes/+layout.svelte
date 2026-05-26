@@ -33,8 +33,8 @@
 	<div class="flex min-h-screen">
 		<aside class="hidden w-64 shrink-0 border-r bg-card lg:block">
 			<div class="border-b px-5 py-5">
-				<p class="text-xs font-medium uppercase text-muted-foreground">Claims Ops</p>
-				<p class="mt-1 text-sm font-semibold">Ingestion Demo</p>
+				<p class="text-xs font-medium uppercase text-muted-foreground">Claims BI</p>
+				<p class="mt-1 text-sm font-semibold">Analytics Workspace</p>
 			</div>
 			<nav class="space-y-1 px-3 py-4">
 				{#each navItems as item}
@@ -51,7 +51,7 @@
 				{/each}
 			</nav>
 			<div class="mx-3 mt-2 rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
-				Local demo mode is active. Upload sessions, mappings, and queued jobs persist under <code>var/</code>.
+				Local artifact mode is active. Upload sessions, mappings, analysis outputs, and trace workbooks persist under <code>var/</code>.
 			</div>
 		</aside>
 
@@ -59,8 +59,8 @@
 			<header class="sticky top-0 z-10 border-b bg-background/95 px-4 py-3 backdrop-blur lg:px-6">
 				<div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
 					<div>
-						<p class="text-sm font-semibold">Claims ingestion workspace</p>
-						<p class="text-xs text-muted-foreground">Preview, queue, and review files without DB access</p>
+						<p class="text-sm font-semibold">Claims analytics workspace</p>
+						<p class="text-xs text-muted-foreground">Upload raw claims, run Python analysis, and review BI outputs</p>
 					</div>
 					<div class="flex gap-2 lg:hidden">
 					{#each navItems as item}

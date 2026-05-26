@@ -4,6 +4,8 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	type Account = { id: string; name: string };
+	type FileType = 'eligibility' | 'medical' | 'pharmacy';
+	type MappingMode = 'stored' | 'provided' | 'canonical';
 	type FileStat = {
 		filename: string;
 		bytes: number;
@@ -11,15 +13,48 @@
 		mime?: string;
 		headers?: string[] | null;
 	};
+	type FilePreview = FileStat & {
+		fileId: string;
+		fileType: FileType;
+		inferredFileType: FileType;
+		mapping: {
+			source: 'stored' | 'provided' | 'canonical' | 'none';
+			mode: string;
+			version?: number;
+			fieldCount?: number;
+		};
+		validation: {
+			status: 'ok' | 'warning' | 'blocking';
+			blockingWarnings: string[];
+			qualityWarnings: string[];
+			requiredCoverage: Record<string, { status: string; fields: string[] }>;
+		};
+	};
 	type Preview = {
 		uploaderUserId: string;
 		accountId: string;
 		fileType: string;
-		eligibilityStartDate?: string;
-		usedMapping: 'stored' | 'provided' | 'none';
+		fileTypes: FileType[];
+		usedMapping: 'stored' | 'provided' | 'canonical' | 'none';
 		mappingVersion?: number;
 		mappingFieldCount?: number;
 		stats: FileStat[];
+		files: FilePreview[];
+		validation: {
+			productionReady: boolean;
+			warnings: Array<{ severity: string; message: string; filename?: string }>;
+			session: {
+				eligibilityPresent: boolean;
+				medicalPresent: boolean;
+				pharmacyPresent: boolean;
+				claimMembersEligibleAssumptionAccepted: boolean;
+			};
+		};
+	};
+	type FileConfig = {
+		fileType: FileType;
+		mappingMode: MappingMode;
+		mappingJson: string;
 	};
 
 	export let data: {
@@ -29,27 +64,41 @@
 	};
 
 	let files: File[] = [];
+	let fileConfigs: FileConfig[] = [];
 	let dragging = false;
-	let fileType = 'eligibility';
 	let accountId = data.defaultAccountId ?? data.allowedAccounts[0]?.id ?? '';
-	let eligibilityStartDate = '';
-	let useStoredMapping = false;
-	let mappingJson = '';
+	let assumeClaimMembersEligible = false;
 	let errorMsg = '';
 	let successMsg = '';
 	let isSubmitting = false;
 	let preview: Preview | null = null;
 
-	$: eligibilityEnabled = fileType === 'eligibility';
-	$: mappingEnabled = !useStoredMapping;
-	$: historyHref = buildHistoryHref(accountId || '', fileType || '', 10);
+	$: historyHref = buildHistoryHref(accountId || '', '', 10);
 	$: totalBytes = preview ? preview.stats.reduce((sum, stat) => sum + Number(stat.bytes ?? 0), 0) : 0;
+	$: hasEligibilitySelection = fileConfigs.some((config) => config.fileType === 'eligibility');
+
+	function inferFileType(file: File): FileType {
+		const name = file.name.toLowerCase();
+		if (name.includes('elig')) return 'eligibility';
+		if (name.includes('pharm') || name.includes('rx')) return 'pharmacy';
+		return 'medical';
+	}
+
+	function setFiles(nextFiles: File[]) {
+		files = nextFiles;
+		fileConfigs = files.map((file, index) => ({
+			fileType: fileConfigs[index]?.fileType ?? inferFileType(file),
+			mappingMode: fileConfigs[index]?.mappingMode ?? 'stored',
+			mappingJson: fileConfigs[index]?.mappingJson ?? ''
+		}));
+		preview = null;
+	}
 
 	function onDrop(e: DragEvent) {
 		e.preventDefault();
 		dragging = false;
 		if (!e.dataTransfer) return;
-		files = Array.from(e.dataTransfer.files);
+		setFiles(Array.from(e.dataTransfer.files));
 	}
 
 	function onDragOver(e: DragEvent) {
@@ -63,7 +112,7 @@
 
 	function onFilePick(e: Event) {
 		const input = e.target as HTMLInputElement;
-		files = input.files ? Array.from(input.files) : [];
+		setFiles(input.files ? Array.from(input.files) : []);
 	}
 
 	function fmtMB(bytes: number) {
@@ -77,6 +126,9 @@
 		isSubmitting = true;
 
 		try {
+			opts.formData.delete('files');
+			for (const file of files) opts.formData.append('files', file);
+
 			const res = await fetch(opts.action, {
 				method: 'POST',
 				body: opts.formData,
@@ -102,7 +154,7 @@
 				preview = responseData.preview;
 			} else if (responseData?.confirmed) {
 				preview = null;
-				successMsg = `Upload confirmed and queued as session ${responseData.sessionId}.`;
+				successMsg = `Upload confirmed and analyzed as session ${responseData.sessionId}.`;
 			} else {
 				errorMsg = 'Unknown server response.';
 				preview = null;
@@ -119,7 +171,7 @@
 <form method="POST" enctype="multipart/form-data" use:enhance={submitHandler} class="space-y-5">
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
-			<p class="text-sm font-medium text-muted-foreground">Claims ingestion</p>
+			<p class="text-sm font-medium text-muted-foreground">Claims analytics</p>
 			<h1 class="text-2xl font-semibold tracking-tight">Upload files</h1>
 		</div>
 		<a class="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted" href={historyHref}>
@@ -144,17 +196,6 @@
 	<section class="rounded-lg border bg-card p-5 shadow-sm">
 		<div class="grid gap-4 md:grid-cols-2">
 			<label class="block">
-				<span class="text-sm font-medium">Type of file</span>
-				<select name="fileType" bind:value={fileType} class="mt-1 h-10 w-full rounded-md border bg-background px-3 text-sm">
-					<option value="eligibility">Eligibility</option>
-					<option value="medical">Medical Claims</option>
-					<option value="pharmacy">Pharmacy Claims</option>
-					<option value="vision">Vision Claims</option>
-					<option value="dental">Dental Claims</option>
-				</select>
-			</label>
-
-			<label class="block">
 				<span class="text-sm font-medium">Account</span>
 				<select name="accountId" bind:value={accountId} class="mt-1 h-10 w-full rounded-md border bg-background px-3 text-sm">
 					{#each data.allowedAccounts as acct}
@@ -162,38 +203,6 @@
 					{/each}
 				</select>
 			</label>
-
-			{#if eligibilityEnabled}
-				<label class="block md:col-span-2">
-					<span class="text-sm font-medium">Eligibility start date</span>
-					<input
-						type="datetime-local"
-						name="eligibilityStartDate"
-						bind:value={eligibilityStartDate}
-						class="mt-1 h-10 w-full rounded-md border bg-background px-3 text-sm"
-					/>
-				</label>
-			{/if}
-		</div>
-
-		<div class="mt-4 space-y-3">
-			<label class="flex items-center gap-2 text-sm">
-				<input type="checkbox" name="useStoredMapping" bind:checked={useStoredMapping} class="size-4 rounded border" />
-				<span>Require stored mapping for this account and file type</span>
-			</label>
-
-			{#if mappingEnabled}
-				<label class="block">
-					<span class="text-sm font-medium">Mapping JSON (optional)</span>
-					<textarea
-						name="mappingJson"
-						rows="5"
-						bind:value={mappingJson}
-						class="mt-1 w-full rounded-md border bg-background px-3 py-2 font-mono text-sm"
-						placeholder={'{"columnA":"canonical.fieldA"}'}
-					></textarea>
-				</label>
-			{/if}
 		</div>
 
 		<div
@@ -220,11 +229,64 @@
 		</div>
 
 		{#if files.length}
-			<ul class="mt-3 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-				{#each files as f}
-					<li class="rounded-md border bg-muted/30 px-3 py-2">{f.name} - {fmtMB(f.size)} MB</li>
-				{/each}
-			</ul>
+			<div class="mt-5 overflow-x-auto">
+				<table class="w-full text-left text-sm">
+					<thead class="border-b text-muted-foreground">
+						<tr>
+							<th class="py-2 pr-3">File</th>
+							<th class="py-2 pr-3">Type</th>
+							<th class="py-2 pr-3">Mapping</th>
+							<th class="py-2 pr-3">Mapping JSON</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each files as file, index}
+							<tr class="border-b last:border-0">
+								<td class="py-3 pr-3">
+									<p class="font-medium">{file.name}</p>
+									<p class="text-xs text-muted-foreground">{fmtMB(file.size)} MB</p>
+								</td>
+								<td class="py-3 pr-3">
+									<select name={`fileType:${index}`} bind:value={fileConfigs[index].fileType} class="h-9 rounded-md border bg-background px-2 text-sm">
+										<option value="eligibility">Eligibility</option>
+										<option value="medical">Medical</option>
+										<option value="pharmacy">Pharmacy</option>
+									</select>
+								</td>
+								<td class="py-3 pr-3">
+									<select name={`mappingMode:${index}`} bind:value={fileConfigs[index].mappingMode} class="h-9 rounded-md border bg-background px-2 text-sm">
+										<option value="stored">Stored</option>
+										<option value="provided">Provided</option>
+										<option value="canonical">Canonical</option>
+									</select>
+								</td>
+								<td class="py-3 pr-3">
+									{#if fileConfigs[index].mappingMode === 'provided'}
+										<textarea
+											name={`mappingJson:${index}`}
+											rows="3"
+											bind:value={fileConfigs[index].mappingJson}
+											class="min-w-80 rounded-md border bg-background px-3 py-2 font-mono text-xs"
+											placeholder={'{"fields":{"Source":"member_id"}}'}
+										></textarea>
+									{:else}
+										<span class="text-muted-foreground">-</span>
+									{/if}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+
+			{#if !hasEligibilitySelection}
+				<label class="mt-4 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
+					<input type="checkbox" name="assumeClaimMembersEligible" bind:checked={assumeClaimMembersEligible} class="mt-0.5 size-4 rounded border" />
+					<span>
+						Eligibility is missing. I understand this session is not production-ready for full analytics and all individuals in the claims files may be treated as eligible for preview only.
+					</span>
+				</label>
+			{/if}
 		{/if}
 
 		<div class="mt-5 flex flex-wrap gap-2">
@@ -246,7 +308,7 @@
 					class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
 					disabled={isSubmitting}
 				>
-					Confirm and queue
+					Confirm and analyze
 				</button>
 			{/if}
 		</div>
@@ -262,43 +324,49 @@
 					</p>
 				</div>
 				<div class="rounded-md border bg-muted/40 px-3 py-2 text-sm">
-					Mapping: <span class="font-medium">{preview.usedMapping}</span>
-					{#if preview.mappingVersion}
-						<span class="text-muted-foreground">v{preview.mappingVersion}</span>
-					{/if}
+					Production ready:
+					<span class="font-medium">{preview.validation.productionReady ? 'yes' : 'no'}</span>
 				</div>
 			</div>
 
-			<div class="mt-4 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
-				<div><span class="text-muted-foreground">Uploader:</span> {preview.uploaderUserId}</div>
-				<div><span class="text-muted-foreground">Account:</span> {preview.accountId}</div>
-				<div><span class="text-muted-foreground">File type:</span> {preview.fileType}</div>
-				{#if preview.eligibilityStartDate}
-					<div><span class="text-muted-foreground">Eligibility start:</span> {preview.eligibilityStartDate}</div>
-				{/if}
-			</div>
+			{#if preview.validation.warnings.length}
+				<div class="mt-4 grid gap-2">
+					{#each preview.validation.warnings as warning}
+						<p class="rounded-md border px-3 py-2 text-sm text-muted-foreground">
+							<span class="font-medium">{warning.severity}:</span> {warning.filename ? `${warning.filename} - ` : ''}{warning.message}
+						</p>
+					{/each}
+				</div>
+			{/if}
 
 			<div class="mt-4 overflow-x-auto">
 				<table class="w-full text-left text-sm">
 					<thead class="border-b text-muted-foreground">
 						<tr>
 							<th class="py-2 pr-3">File</th>
-							<th class="py-2 pr-3">Size</th>
+							<th class="py-2 pr-3">Type</th>
+							<th class="py-2 pr-3">Mapping</th>
 							<th class="py-2 pr-3">Rows</th>
-							<th class="py-2 pr-3">MIME</th>
+							<th class="py-2 pr-3">Validation</th>
 							<th class="py-2 pr-3">Headers</th>
 						</tr>
 					</thead>
 					<tbody>
-						{#each preview.stats as stat}
+						{#each preview.files as file}
 							<tr class="border-b last:border-0">
-								<td class="py-3 pr-3 font-medium">{stat.filename}</td>
-								<td class="py-3 pr-3">{fmtMB(stat.bytes)} MB</td>
-								<td class="py-3 pr-3">{typeof stat.rowCount === 'number' ? stat.rowCount : '-'}</td>
-								<td class="py-3 pr-3">{stat.mime ?? 'n/a'}</td>
+								<td class="py-3 pr-3 font-medium">{file.filename}</td>
+								<td class="py-3 pr-3">{file.fileType}</td>
 								<td class="py-3 pr-3">
-									{#if stat.headers?.length}
-										<span class="text-muted-foreground">{stat.headers.join(', ')}</span>
+									{file.mapping.source}
+									{#if file.mapping.version}
+										<span class="text-muted-foreground">v{file.mapping.version}</span>
+									{/if}
+								</td>
+								<td class="py-3 pr-3">{typeof file.rowCount === 'number' ? file.rowCount : '-'}</td>
+								<td class="py-3 pr-3">{file.validation.status}</td>
+								<td class="py-3 pr-3">
+									{#if file.headers?.length}
+										<span class="text-muted-foreground">{file.headers.join(', ')}</span>
 									{:else}
 										-
 									{/if}

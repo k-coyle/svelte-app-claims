@@ -1,23 +1,54 @@
-# Vendored Claims Analysis
+# Claims Analysis Runtime
 
-This folder contains the app-owned copy of selected ETL and BI reporting code from:
+This folder contains the app-owned Python analysis runtime for the Claims BI demo.
 
-`C:\Users\kcoyle\Desktop\claims-analysis`
+The historic source repo is:
 
-The original repo is now reference material only. Changes for the Svelte claims app should happen here.
+```text
+C:\Users\kcoyle\Desktop\claims-analysis
+```
 
-Current scope copied into this app:
+Treat that repo as the analytics source of truth. Changes for this Svelte app happen here, then parity should be checked against the source repo.
 
-- `etl/common`: BI and Excel-report generation, including `Cleaner.write_excel_report()`
-- `etl/ingestion`: generic reader classes and stream/file cleaner
-- `etl/test`: mock-data reader config useful for local validation
+## Included Scope
+
+- `etl/common`: BI report generation, including `Cleaner.write_excel_report()`
+- `etl/ingestion`: reader classes and file cleaning helpers
+- `etl/test`: sample reader config for local validation
 - `etl/code_mappings`: condition, diagnosis, POS, and exclusion mapping CSVs
-- `etl/abstract.py` and `etl/utils.py`
+- `run_analysis.py`: app-owned orchestration for local upload sessions
+- `tools/source_parity.py`: output parity check against the historic source repo
 
-Runtime notes:
+## Runtime Contract
 
-- The historical project targeted Python 3.8 and older pandas/numpy versions.
-- This app should call the vendored code through a thin adapter rather than importing it directly into SvelteKit routes.
-- `run_analysis.py` is the app-owned adapter. It reads the app manifest, standardizes uploaded claims with stored mapping fields, and writes `python-status.json` plus `report-sections.json`.
-- Until Python 3.11 and the legacy dependencies are provisioned, the adapter runs in `stdlib_mvp` mode. That mode still produces dashboard-ready report sections from raw claims and records missing legacy dependencies in `python-status.json`.
-- The target legacy-compatible runtime is Python 3.11 with the pinned dependencies in `requirements.txt`.
+`run_analysis.py` accepts an app-generated manifest and writes all artifacts into the session analysis folder.
+
+```powershell
+.\.venv\Scripts\python.exe python\claims_analysis\run_analysis.py --probe
+.\.venv\Scripts\python.exe python\claims_analysis\run_analysis.py --manifest var\analysis\<sessionId>\manifest.json --out-dir var\analysis\<sessionId>
+```
+
+Primary outputs:
+
+- `python-status.json`
+- `canonical/*.csv`
+- `report-sections.json`
+- `dashboard.json`
+- `analysis-report.xlsx` when workbook dependencies are available
+
+## Modes
+
+- `source_ready`: pinned Python dependencies are present and canonical CSV outputs are written.
+- `fallback_analysis`: dependency setup is incomplete; the runner still produces local dashboard artifacts and records missing packages.
+
+The target runtime is Python 3.11 with the pinned dependencies in `requirements.txt`.
+
+## Parity Check
+
+Run this before analytics-sensitive demos or after changing copied ETL/BI logic:
+
+```powershell
+npm run test:analytics-parity
+```
+
+The parity check compares shared ETL file hashes and report-method outputs for the historic README sample data. It applies the same runtime shim to both repos so the checked-in README sample can execute without editing either repository.

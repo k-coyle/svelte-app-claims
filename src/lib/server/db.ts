@@ -2,7 +2,8 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
-const storePath = process.env.CLAIMS_LOCAL_STORE_PATH ?? join(process.cwd(), 'var', 'local-store.json');
+const storePath =
+	process.env.CLAIMS_LOCAL_STORE_PATH ?? join(process.cwd(), 'var', 'local-store.json');
 
 export type FileType = 'eligibility' | 'medical' | 'pharmacy' | 'vision' | 'dental' | string;
 
@@ -15,15 +16,26 @@ export type UploadStat = {
 	path?: string;
 };
 
+export type UploadRawRetention = {
+	retained: boolean;
+	reason: string;
+	cleanupStatus: 'not_started' | 'deleted' | 'retained' | 'failed';
+	rawUploadDir?: string;
+};
+
 export type UploadSessionDoc = {
 	_id?: string;
 	uploaderUserId: string;
 	accountId: string;
 	fileType: FileType;
+	fileTypes?: FileType[];
 	eligibilityStartDate?: string;
-	usedMapping: 'stored' | 'provided' | 'none';
+	usedMapping: 'stored' | 'provided' | 'canonical' | 'none';
 	mappingVersion?: number;
 	stats: UploadStat[];
+	files?: Array<Record<string, unknown>>;
+	validation?: Record<string, unknown>;
+	rawUploadRetention?: UploadRawRetention;
 	createdAt: string;
 	totalBytes: number;
 	audit?: { previewAt?: string; confirmAt?: string };
@@ -40,28 +52,9 @@ export type MappingDoc = {
 	updatedAt: string;
 };
 
-export type JobStatus = 'queued' | 'processing' | 'done' | 'error';
-
-export type JobDoc = {
-	_id?: string;
-	sessionId: string;
-	accountId: string;
-	fileType: FileType;
-	mappingVersion?: number;
-	files: Array<{ path: string; filename: string; bytes: number }>;
-	status: JobStatus;
-	createdAt: string;
-	updatedAt: string;
-	error?: string;
-	stats?: { processedRows?: number };
-	eligibilityStartDate?: string | null;
-	mapping?: { fields: Record<string, string> } | null;
-};
-
 type LocalStore = {
 	upload_sessions: UploadSessionDoc[];
 	mappings: MappingDoc[];
-	jobs: JobDoc[];
 };
 
 export type UploadSessionFilters = {
@@ -84,7 +77,7 @@ const emptyStore = (): LocalStore => {
 		upload_sessions: [],
 		mappings: [
 			{
-				_id: 'map_demo_clientA_eligibility_v1',
+				_id: 'map_clientA_eligibility_v1',
 				accountId: 'clientA',
 				fileType: 'eligibility',
 				version: 1,
@@ -98,8 +91,7 @@ const emptyStore = (): LocalStore => {
 				createdAt: now,
 				updatedAt: now
 			}
-		],
-		jobs: []
+		]
 	};
 };
 
@@ -114,8 +106,7 @@ async function readStore(): Promise<LocalStore> {
 		const parsed = JSON.parse(raw) as Partial<LocalStore>;
 		return {
 			upload_sessions: Array.isArray(parsed.upload_sessions) ? parsed.upload_sessions : [],
-			mappings: Array.isArray(parsed.mappings) ? parsed.mappings : [],
-			jobs: Array.isArray(parsed.jobs) ? parsed.jobs : []
+			mappings: Array.isArray(parsed.mappings) ? parsed.mappings : []
 		};
 	} catch (e) {
 		if ((e as NodeJS.ErrnoException).code === 'ENOENT') return emptyStore();
@@ -123,7 +114,7 @@ async function readStore(): Promise<LocalStore> {
 	}
 }
 
-let writeQueue = Promise.resolve();
+let writeSequence = Promise.resolve();
 
 async function writeStore(store: LocalStore): Promise<void> {
 	await ensureStoreFile();
@@ -133,13 +124,13 @@ async function writeStore(store: LocalStore): Promise<void> {
 }
 
 async function mutateStore<T>(fn: (store: LocalStore) => T | Promise<T>): Promise<T> {
-	const work = writeQueue.then(async () => {
+	const work = writeSequence.then(async () => {
 		const store = await readStore();
 		const result = await fn(store);
 		await writeStore(store);
 		return result;
 	});
-	writeQueue = work.then(
+	writeSequence = work.then(
 		() => undefined,
 		() => undefined
 	);
@@ -153,22 +144,15 @@ function id(prefix: string) {
 function uploadPredicate(filters: Pick<UploadSessionFilters, 'accountId' | 'fileType'>) {
 	return (row: UploadSessionDoc) =>
 		(!filters.accountId || row.accountId === filters.accountId) &&
-		(!filters.fileType || row.fileType === filters.fileType);
+		(!filters.fileType ||
+			row.fileType === filters.fileType ||
+			(Array.isArray(row.fileTypes) && row.fileTypes.includes(filters.fileType)));
 }
 
 function mappingPredicate(filters: Pick<MappingFilters, 'accountId' | 'fileType'>) {
 	return (row: MappingDoc) =>
 		(!filters.accountId || row.accountId === filters.accountId) &&
 		(!filters.fileType || row.fileType === filters.fileType);
-}
-
-export async function ping(): Promise<{ ok: true; storePath: string }> {
-	await readStore();
-	return { ok: true, storePath };
-}
-
-export async function ensureIndexes(): Promise<void> {
-	await ping();
 }
 
 export async function insertUploadSession(doc: UploadSessionDoc): Promise<string> {
@@ -190,22 +174,25 @@ export async function listUploadSessions(filtersOrLimit: UploadSessionFilters | 
 		typeof filtersOrLimit === 'number' ? { page: 1, pageSize: filtersOrLimit } : filtersOrLimit;
 	const page = Math.max(1, Number(filters.page ?? 1));
 	const pageSize = Math.min(100, Math.max(1, Number(filters.pageSize ?? 50)));
-	const sorted = store.upload_sessions
-		.filter(uploadPredicate(filters))
-		.sort((a, b) => {
-			const delta = Date.parse(b.createdAt) - Date.parse(a.createdAt);
-			return filters.sort === 'oldest' ? -delta : delta;
-		});
+	const sorted = store.upload_sessions.filter(uploadPredicate(filters)).sort((a, b) => {
+		const delta = Date.parse(b.createdAt) - Date.parse(a.createdAt);
+		return filters.sort === 'oldest' ? -delta : delta;
+	});
 
 	return sorted.slice((page - 1) * pageSize, page * pageSize);
 }
 
-export async function countUploadSessions(filters: Pick<UploadSessionFilters, 'accountId' | 'fileType'> = {}) {
+export async function countUploadSessions(
+	filters: Pick<UploadSessionFilters, 'accountId' | 'fileType'> = {}
+) {
 	const store = await readStore();
 	return store.upload_sessions.filter(uploadPredicate(filters)).length;
 }
 
-export async function getActiveMapping(accountId: string, fileType: string): Promise<MappingDoc | null> {
+export async function getActiveMapping(
+	accountId: string,
+	fileType: string
+): Promise<MappingDoc | null> {
 	const store = await readStore();
 	return (
 		store.mappings
@@ -279,35 +266,9 @@ export async function upsertMapping(input: {
 	});
 }
 
-export async function enqueueJob(
-	doc: Omit<JobDoc, '_id' | 'status' | 'createdAt' | 'updatedAt'>
-): Promise<string> {
-	return mutateStore((store) => {
-		const now = new Date().toISOString();
-		const _id = id('job');
-		store.jobs.push({
-			...doc,
-			_id,
-			status: 'queued',
-			createdAt: now,
-			updatedAt: now
-		});
-		return _id;
-	});
-}
-
-export async function listJobs(limit = 50): Promise<JobDoc[]> {
-	const store = await readStore();
-	return store.jobs
-		.slice()
-		.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-		.slice(0, limit);
-}
-
-export async function getDemoSummary() {
+export async function getWorkspaceSummary() {
 	const store = await readStore();
 	const activeMappings = store.mappings.filter((row) => row.isActive).length;
-	const queuedJobs = store.jobs.filter((row) => row.status === 'queued').length;
 	const latestUpload = store.upload_sessions
 		.slice()
 		.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))[0];
@@ -316,7 +277,6 @@ export async function getDemoSummary() {
 		uploadCount: store.upload_sessions.length,
 		mappingCount: store.mappings.length,
 		activeMappings,
-		queuedJobs,
 		latestUpload,
 		storePath
 	};

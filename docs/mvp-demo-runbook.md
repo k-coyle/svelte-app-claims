@@ -1,28 +1,26 @@
-# MVP Demo Runbook
+# Stakeholder Demo Runbook
 
-This demo uses local artifacts instead of MongoDB.
+This runbook keeps the demo focused on the local raw-claims-to-dashboard path. No database connection is required.
 
-## Current Demo Path
+## Walkthrough Path
 
-1. Start the app:
+1. Start the app.
 
    ```powershell
    cmd /c npm run dev -- --host 127.0.0.1
    ```
 
-2. Import a mapping at `/admin/mappings`.
+2. Open `/admin/mappings` and import a claims mapping CSV.
 
-   Recommended sample:
-
+   Recommended local sample:
    - Account: `clientC`
    - File type: `medical`
    - Mapping file: `sample_client_mappings/client_C_medical_claims_column_map.csv`
    - Set active: checked
 
-3. Upload raw claims at `/upload`.
+3. Open `/upload` and upload raw claims.
 
-   Recommended sample:
-
+   Recommended local sample:
    - Account: `clientC`
    - File type: `medical`
    - Require stored mapping: checked
@@ -30,35 +28,54 @@ This demo uses local artifacts instead of MongoDB.
 
 4. Confirm the upload.
 
-   The app writes:
-
+   The app creates:
    - `var/uploads/<sessionId>/` raw upload files
    - `var/analysis/<sessionId>/manifest.json`
    - `var/analysis/<sessionId>/claims-profile.json`
    - `var/analysis/<sessionId>/python-status.json`
+   - `var/analysis/<sessionId>/canonical/` cleaned CSVs
    - `var/analysis/<sessionId>/report-sections.json`
+   - `var/analysis/<sessionId>/analysis-report.xlsx`
    - `var/analysis/<sessionId>/dashboard.json`
 
 5. Open `/analysis`.
 
-   The dashboard shows pipeline status, claims profile, Python report sections, yearly trend, chronic-condition views, risk profile, matrix, and key findings.
+   The dashboard shows the analysis pipeline, claims profile, report sections, cost trends, PPPY trend, chronic-condition cost and prevalence, disease risk profile, matrix view, findings, recommendations, and trace workbook link.
 
-## Python Runtime
+## Python Check
 
-Target runtime for the legacy-compatible environment is Python 3.11 with:
+Use the local Python 3.11 environment:
 
-```text
-python/claims_analysis/requirements.txt
+```powershell
+.\.venv\Scripts\python.exe python\claims_analysis\run_analysis.py --probe
 ```
 
-This machine currently has Python 3.13 and Python 3.7. Until Python 3.11 is installed, `run_analysis.py` runs in `stdlib_mvp` mode. That mode still produces dashboard-ready report sections from raw claims while recording missing legacy dependencies in `python-status.json`.
+Expected mode: `source_ready`.
+
+If dependency setup breaks, `python-status.json` will show missing packages and the runner will switch to `fallback_analysis` for inspectable local output.
+
+## Parity Check
+
+Before a PM or stakeholder walkthrough, verify this repo still matches the historic analytics source:
+
+```powershell
+npm run test:analytics-parity
+```
+
+The check compares:
+
+- Shared copied ETL files against `C:\Users\kcoyle\Desktop\claims-analysis`
+- The report methods used by `write_excel_report()`
+- The sample data path documented in the historic README usage notes
+
+Current expected result: `ok: true`.
 
 ## Eligibility Behavior
 
-If eligibility is uploaded, the future legacy-cleaner path should use it.
+If eligibility is uploaded, the runner writes cleaned eligibility under the session `canonical/` folder.
 
-If eligibility is missing, the MVP runner uses deterministic demo eligibility: unique claim members count as full-year eligible members for denominator calculations.
+If eligibility is not uploaded, the runner generates deterministic full-year eligibility from unique claim members so dashboard denominators remain stable for the demo.
 
 ## Reference Workbook
 
-The workbook import on `/analysis` is optional and only for comparing generated dashboard output against the historical Excel/PPT example. It is not the primary MVP flow.
+The workbook import on `/analysis` is a comparison tool only. The primary walkthrough should start with raw claims upload and end with generated dashboard artifacts.

@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 
-export type HistoricalMappingColumn = {
+export type MappingColumn = {
 	columnNumber: number | null;
 	sourceColumn: string;
 	targetColumn: string;
@@ -8,11 +8,11 @@ export type HistoricalMappingColumn = {
 	parseDate: boolean;
 };
 
-export type HistoricalMappingImport = {
-	sourceFormat: 'historical_column_mapping_csv';
+export type MappingCsvImport = {
+	sourceFormat: 'column_mapping_csv';
 	fields: Record<string, string>;
 	positionFields: Record<string, string>;
-	columns: HistoricalMappingColumn[];
+	columns: MappingColumn[];
 	fieldCount: number;
 	dateFields: string[];
 };
@@ -53,7 +53,9 @@ function firstSheetRows(csv: string) {
 }
 
 function normalizeRow(row: Record<string, unknown>) {
-	return Object.fromEntries(Object.entries(row).map(([key, value]) => [normalizeHeader(key), value]));
+	return Object.fromEntries(
+		Object.entries(row).map(([key, value]) => [normalizeHeader(key), value])
+	);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -76,7 +78,7 @@ function headersArePositionBased(headers?: string[] | null) {
 	return populated.every((header) => /^\d+$/.test(header));
 }
 
-export function parseHistoricalMappingCsv(input: Buffer | string): HistoricalMappingImport {
+export function parseMappingCsv(input: Buffer | string): MappingCsvImport {
 	const csv = Buffer.isBuffer(input) ? input.toString('utf8') : input;
 	const rows = firstSheetRows(csv).map(normalizeRow);
 
@@ -89,7 +91,7 @@ export function parseHistoricalMappingCsv(input: Buffer | string): HistoricalMap
 		throw new Error(`Mapping CSV is missing required columns: ${missingColumns.join(', ')}`);
 	}
 
-	const columns: HistoricalMappingColumn[] = [];
+	const columns: MappingColumn[] = [];
 	const fields: Record<string, string> = {};
 	const positionFields: Record<string, string> = {};
 
@@ -124,7 +126,7 @@ export function parseHistoricalMappingCsv(input: Buffer | string): HistoricalMap
 	}
 
 	return {
-		sourceFormat: 'historical_column_mapping_csv',
+		sourceFormat: 'column_mapping_csv',
 		fields,
 		positionFields,
 		columns,

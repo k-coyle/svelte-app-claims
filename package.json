@@ -1,5 +1,5 @@
 {
-	"name": "new",
+	"name": "claims-bi-demo",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -8,6 +8,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "vitest run",
+		"test:analytics-parity": ".\\.venv\\Scripts\\python.exe python\\claims_analysis\\tools\\source_parity.py",
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
 		"coverage": "vitest run --coverage",
@@ -53,7 +54,6 @@
 	},
 	"dependencies": {
 		"devalue": "^5.0.0",
-		"mongodb": "^6.20.0",
 		"xlsx": "^0.18.5"
 	}
 }

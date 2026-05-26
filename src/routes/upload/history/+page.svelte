@@ -44,7 +44,7 @@
 <div class="space-y-5">
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 		<div>
-			<p class="text-sm font-medium text-muted-foreground">Claims ingestion</p>
+			<p class="text-sm font-medium text-muted-foreground">Claims analytics</p>
 			<h1 class="text-2xl font-semibold tracking-tight">Upload history</h1>
 		</div>
 		<Button href="/upload">New upload</Button>

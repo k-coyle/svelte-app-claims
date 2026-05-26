@@ -1,12 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import {
-	mappingPayloadToFields,
-	parseHistoricalMappingCsv
-} from '../src/lib/server/mappingImport';
+import { mappingPayloadToFields, parseMappingCsv } from '../src/lib/server/mappingImport';
 
-describe('historical mapping import', () => {
-	it('parses the legacy column mapping CSV shape', () => {
-		const parsed = parseHistoricalMappingCsv(
+describe('mapping CSV import', () => {
+	it('parses the column mapping CSV shape', () => {
+		const parsed = parseMappingCsv(
 			[
 				'column_number,column,column_uspm,dtype,parse_date',
 				'0,Claim Number,number,Int64,FALSE',
@@ -15,7 +12,7 @@ describe('historical mapping import', () => {
 			].join('\n')
 		);
 
-		expect(parsed.sourceFormat).toBe('historical_column_mapping_csv');
+		expect(parsed.sourceFormat).toBe('column_mapping_csv');
 		expect(parsed.fields['Claim Number']).toBe('number');
 		expect(parsed.fields['Date Service Started']).toBe('date_service_start');
 		expect(parsed.positionFields['2']).toBe('date_service_start');
@@ -23,7 +20,7 @@ describe('historical mapping import', () => {
 	});
 
 	it('uses position fields when uploaded headers are numeric', () => {
-		const parsed = parseHistoricalMappingCsv(
+		const parsed = parseMappingCsv(
 			[
 				'column_number,column,column_uspm,dtype,parse_date',
 				'0,member_id,member_id,string,FALSE',

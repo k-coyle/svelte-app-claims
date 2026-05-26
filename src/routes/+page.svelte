@@ -10,7 +10,6 @@
 	} from '$lib/components/ui/card';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import BarChart3Icon from '@lucide/svelte/icons/bar-chart-3';
-	import DatabaseZapIcon from '@lucide/svelte/icons/database-zap';
 	import FileSpreadsheetIcon from '@lucide/svelte/icons/file-spreadsheet';
 	import HistoryIcon from '@lucide/svelte/icons/history';
 	import ListChecksIcon from '@lucide/svelte/icons/list-checks';
@@ -21,7 +20,6 @@
 		uploadCount: number;
 		mappingCount: number;
 		activeMappings: number;
-		queuedJobs: number;
 		storePath: string;
 		latestUpload?: {
 			createdAt: string;
@@ -40,14 +38,6 @@
 		stats?: Array<{ filename: string }>;
 	};
 
-	type JobRow = {
-		_id?: string;
-		createdAt: string;
-		accountId: string;
-		fileType: string;
-		status: string;
-	};
-
 	type MappingRow = {
 		_id?: string;
 		accountId: string;
@@ -59,7 +49,6 @@
 	export let data: {
 		summary: Summary;
 		recentUploads: UploadRow[];
-		recentJobs: JobRow[];
 		mappings: MappingRow[];
 	};
 
@@ -67,7 +56,7 @@
 		{ label: 'Preview row counts and headers', state: 'Ready', icon: FileSpreadsheetIcon },
 		{ label: 'Persist sessions locally', state: 'Ready', icon: HistoryIcon },
 		{ label: 'Manage mapping versions', state: 'Ready', icon: SettingsIcon },
-		{ label: 'Queue ETL metadata', state: 'Stubbed', icon: DatabaseZapIcon }
+		{ label: 'Generate BI dashboard artifacts', state: 'Ready', icon: BarChart3Icon }
 	];
 
 	function fmtMB(bytes: number) {
@@ -84,12 +73,12 @@
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 		<div>
 			<div class="flex items-center gap-2">
-				<Badge variant="secondary">Local demo mode</Badge>
+				<Badge variant="secondary">Local artifact mode</Badge>
 				<Badge variant="outline">No DB required</Badge>
 			</div>
-			<h1 class="mt-3 text-3xl font-semibold tracking-tight">Claims ingestion dashboard</h1>
+			<h1 class="mt-3 text-3xl font-semibold tracking-tight">Claims analytics dashboard</h1>
 			<p class="mt-2 max-w-2xl text-sm text-muted-foreground">
-				Current prototype surface for upload preview, queue capture, session history, and mapping management.
+				A simple path from mapping import and raw claims upload to Python analysis, BI visuals, and trace workbook output.
 			</p>
 		</div>
 		<div class="flex flex-wrap gap-2">
@@ -113,8 +102,8 @@
 		</Card>
 		<Card>
 			<CardHeader>
-				<CardDescription>Queued jobs</CardDescription>
-				<CardTitle class="text-3xl">{data.summary.queuedJobs}</CardTitle>
+				<CardDescription>Analysis outputs</CardDescription>
+				<CardTitle class="text-3xl">{data.summary.uploadCount}</CardTitle>
 			</CardHeader>
 		</Card>
 		<Card>
@@ -134,7 +123,7 @@
 	<div class="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
 		<Card>
 			<CardHeader>
-				<CardTitle>Demo workflow</CardTitle>
+				<CardTitle>Stakeholder walkthrough</CardTitle>
 				<CardDescription>Primary surfaces for the stakeholder walkthrough.</CardDescription>
 			</CardHeader>
 			<CardContent class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -144,7 +133,7 @@
 						<ArrowRightIcon class="size-4 text-muted-foreground" />
 					</div>
 					<p class="mt-4 font-medium">Upload</p>
-					<p class="mt-1 text-sm text-muted-foreground">Preview files and queue a session.</p>
+					<p class="mt-1 text-sm text-muted-foreground">Preview files and create an analysis session.</p>
 				</a>
 				<a href="/upload/history" class="rounded-lg border p-4 transition hover:bg-muted/60">
 					<div class="flex items-center justify-between gap-2">
@@ -175,7 +164,7 @@
 
 		<Card>
 			<CardHeader>
-				<CardTitle>Build state</CardTitle>
+				<CardTitle>Current readiness</CardTitle>
 				<CardDescription>What is demo-ready in this iteration.</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
@@ -225,43 +214,24 @@
 
 		<Card>
 			<CardHeader>
-				<CardTitle>Queue and mappings</CardTitle>
-				<CardDescription>Local records that prepare the ETL integration path.</CardDescription>
+				<CardTitle>Mappings</CardTitle>
+				<CardDescription>Active local mapping versions used by upload and analysis sessions.</CardDescription>
 			</CardHeader>
-			<CardContent class="space-y-4">
-				<div>
-					<p class="mb-2 text-sm font-medium">Queued jobs</p>
-					{#if data.recentJobs.length}
-						<div class="space-y-2">
-							{#each data.recentJobs as job}
-								<div class="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
-									<span>{job.accountId} / {job.fileType}</span>
-									<Badge variant="outline">{job.status}</Badge>
-								</div>
-							{/each}
-						</div>
-					{:else}
-						<p class="rounded-md border border-dashed px-3 py-2 text-sm text-muted-foreground">No queued jobs.</p>
-					{/if}
-				</div>
-
-				<div>
-					<p class="mb-2 text-sm font-medium">Mappings</p>
-					{#if data.mappings.length}
-						<div class="space-y-2">
-							{#each data.mappings as mapping}
-								<div class="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
-									<span>{mapping.accountId} / {mapping.fileType} v{mapping.version}</span>
-									<Badge variant={mapping.isActive ? 'secondary' : 'outline'}>
-										{mapping.isActive ? 'Active' : 'Inactive'}
-									</Badge>
-								</div>
-							{/each}
-						</div>
-					{:else}
-						<p class="rounded-md border border-dashed px-3 py-2 text-sm text-muted-foreground">No mappings saved.</p>
-					{/if}
-				</div>
+			<CardContent>
+				{#if data.mappings.length}
+					<div class="space-y-2">
+						{#each data.mappings as mapping}
+							<div class="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
+								<span>{mapping.accountId} / {mapping.fileType} v{mapping.version}</span>
+								<Badge variant={mapping.isActive ? 'secondary' : 'outline'}>
+									{mapping.isActive ? 'Active' : 'Inactive'}
+								</Badge>
+							</div>
+						{/each}
+					</div>
+				{:else}
+					<p class="rounded-md border border-dashed px-3 py-2 text-sm text-muted-foreground">No mappings saved.</p>
+				{/if}
 			</CardContent>
 		</Card>
 	</div>

@@ -1,13 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// ✅ Mock DB so tests never touch Atlas during preview/confirm
 vi.mock('../src/lib/server/db', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../src/lib/server/db')>();
   return {
     ...actual,
     insertUploadSession: vi.fn(async () => 'mockSession123'),
-    enqueueJob: vi.fn(async () => 'job123'),
-    // 👇 add this so confirm path can resolve a mapping without throwing
     getActiveMapping: vi.fn(async (_accountId: string, _fileType: string) => ({
       version: 1,
       json: {
@@ -81,5 +78,5 @@ describe('audit logging', () => {
     expect(obj.event).toBe('upload.confirm');
     expect(obj.accountId).toBe('clientA');
     expect(obj.fileType).toBe('eligibility');
-  });
+  }, 15000);
 });

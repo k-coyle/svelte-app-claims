@@ -1,12 +1,10 @@
 import sys
 from collections import ChainMap
 from pathlib import Path
-import ipdb
 import csv
 import pandas as pd
 from munch import Munch
 import numpy as np
-import inspect
 import re
 
 from etl.utils import normalize_column_names, parse_date_with_cache, determine_seperator
@@ -19,15 +17,16 @@ class AbstractReader:
 
 	def __init__(self, paths, config_dir=None):
 		self.paths = paths
-        # Automatically determine config directory based on caller
-		caller_frame = inspect.stack()[1]
-		caller_file = Path(caller_frame.filename)
-		config_dir = caller_file.parent / 'config'
+		if config_dir is None:
+			module_path = sys.modules[self.__module__].__file__
+			config_dir = Path(module_path).parent / 'config'
+		else:
+			config_dir = Path(config_dir)
 		config_path = config_dir / f'{self.file_type}.csv'
 		if not config_path.exists():
 			raise FileNotFoundError(
-                f"Config file not found: {config_path}"
-            )
+				f"Config file not found: {config_path}"
+			)
 		config = pd.read_csv(config_path)
 		self.config_csv = config
 		extra_config = Munch()
@@ -44,18 +43,12 @@ class AbstractReader:
 	'''
 	def read(self, data=None, normalize=True, remap=True, id_col='member_id'):
 		logs = []
-		print("=== Entering absract.read() ===", file=sys.stderr)
-		print(f"self.paths: {self.paths}", file=sys.stderr)
-		print(f"self.column_mapping exists: {'column_mapping' in self.__dict__}", file=sys.stderr)
-		print(f"data type: {type(data)}", file=sys.stderr)
 		if data is not None:
 			# Accepts either a DataFrame or a list of dicts (from NDJSON)
 			if isinstance(data, pd.DataFrame):
 				df = data.copy()
 			else:
 				df = pd.DataFrame(data)
-			print(f"DataFrame shape after creation: {df.shape}", file=sys.stderr)
-			print(f"DataFrame columns: {df.columns.tolist()}", file=sys.stderr)
 		else:
 			df = pd.concat([
 				self.csv_reader(file_path) for file_path in self.paths
@@ -113,11 +106,8 @@ class AbstractReader:
 		df.drop_duplicates(inplace=True, keep='first')
 		logs.append("Removed empty strings, whitespace, dropped NA and duplicates.")
 
-		# --- Log all transformations ---
-		for log in logs:
-			print(f"[CLEAN LOG] {log}", file=sys.stderr)
-
-		return df, logs
+		self.last_logs = logs
+		return df
 	
 	def csv_reader(self, file_path):
 		with open(file_path) as csvfile:

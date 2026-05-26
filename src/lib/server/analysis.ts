@@ -1,25 +1,50 @@
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { ClaimsRunProfile } from './claimsProfile';
-import {
-	parseReportWorkbookBuffer,
-	type ReportWorkbookSummary
-} from './reportWorkbook';
+import { parseReportWorkbookBuffer, type ReportWorkbookSummary } from './reportWorkbook';
 
-export type AnalysisFileType = 'eligibility' | 'medical' | 'pharmacy' | 'vision' | 'dental' | string;
+export type AnalysisFileType =
+	| 'eligibility'
+	| 'medical'
+	| 'pharmacy'
+	| 'vision'
+	| 'dental'
+	| string;
+
+export type AnalysisMappingSource = 'stored' | 'provided' | 'canonical' | 'none';
 
 export type AnalysisFileInput = {
+	fileId?: string;
 	path: string;
 	filename: string;
 	bytes: number;
 	fileType: AnalysisFileType;
 	rowCount?: number | null;
 	headers?: string[] | null;
+	mime?: string;
+	mapping?: {
+		source: AnalysisMappingSource;
+		mode?: string;
+		version?: number;
+		fields?: Record<string, string>;
+		fieldCount?: number;
+	};
+	validation?: Record<string, unknown>;
+	invalidRowCount?: number;
+	rejectedRowCount?: number;
+	artifacts?: {
+		canonicalCsv?: string;
+	};
 };
 
-export type AnalysisRunStatus = 'ready_for_etl' | 'waiting_for_files' | 'ready_for_bi' | 'python_pending';
+export type AnalysisRunStatus =
+	| 'ready_for_etl'
+	| 'waiting_for_files'
+	| 'ready_for_bi'
+	| 'python_pending';
 
 export type AnalysisRequirement = {
 	key: 'eligibility' | 'medical' | 'pharmacy' | 'bi';
@@ -29,10 +54,12 @@ export type AnalysisRequirement = {
 };
 
 export type AnalysisManifest = {
+	manifestVersion?: number;
 	sessionId: string;
 	accountId: string;
 	createdAt: string;
 	status: AnalysisRunStatus;
+	fileTypes?: string[];
 	files: AnalysisFileInput[];
 	requirements: AnalysisRequirement[];
 	metrics: Array<{ label: string; value: string | number; tone?: 'default' | 'good' | 'warning' }>;
@@ -40,18 +67,27 @@ export type AnalysisManifest = {
 		manifest: string;
 		dashboard: string;
 		reportWorkbook?: string;
+		reportXlsx?: string;
 		claimsProfile?: string;
 		reportSections?: string;
+		etl?: Record<string, string>;
 	};
 	mapping?: {
-		source: 'stored' | 'provided' | 'none';
+		source: AnalysisMappingSource;
 		version?: number;
 		fields?: Record<string, string>;
 	};
+	validation?: Record<string, unknown>;
+	etlArtifacts?: Record<string, string>;
+	etlValidationPath?: string;
+	etlStatus?: string;
+	analyticsReady?: boolean;
+	etlValidation?: Record<string, unknown>;
+	rawUploadRetention?: Record<string, unknown>;
 	report?: ReportWorkbookSummary;
 	claims?: ClaimsRunProfile;
 	python: {
-		vendoredRoot: string;
+		pythonRoot: string;
 		requirementsFile: string;
 		runner: string;
 		status: 'not_checked' | 'ready' | 'missing_dependencies' | 'error';
@@ -60,9 +96,10 @@ export type AnalysisManifest = {
 };
 
 const analysisRoot = join(process.cwd(), 'var', 'analysis');
-const vendoredRoot = join(process.cwd(), 'python', 'claims_analysis');
-const requirementsFile = join(vendoredRoot, 'requirements.txt');
-const runnerFile = join(vendoredRoot, 'run_analysis.py');
+const pythonRoot = join(process.cwd(), 'python', 'claims_analysis');
+const requirementsFile = join(pythonRoot, 'requirements.txt');
+const runnerFile = join(pythonRoot, 'run_analysis.py');
+const localVenvPython = join(process.cwd(), '.venv', 'Scripts', 'python.exe');
 
 function runDir(sessionId: string) {
 	return join(analysisRoot, sessionId);
@@ -192,7 +229,7 @@ function buildReportMetrics(report: ReportWorkbookSummary) {
 
 function pythonStatusNotes() {
 	return [
-		'Vendored ETL and BI code is present under python/claims_analysis.',
+		'Source-of-truth ETL and BI code is present under python/claims_analysis.',
 		'Python execution is intentionally staged behind this manifest layer.',
 		'Install python/claims_analysis/requirements.txt before enabling deep ETL/BI execution.'
 	];
@@ -200,7 +237,7 @@ function pythonStatusNotes() {
 
 function pythonManifestStatus() {
 	return {
-		vendoredRoot,
+		pythonRoot,
 		requirementsFile,
 		runner: runnerFile,
 		status: 'not_checked' as const,
@@ -216,11 +253,22 @@ async function readJsonFile<T>(path: string): Promise<T | null> {
 	}
 }
 
+function recordValue(value: unknown): Record<string, string> | undefined {
+	if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+	return Object.fromEntries(
+		Object.entries(value)
+			.filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+	);
+}
+
 async function runPythonAnalysis(input: { manifestPath: string; outDir: string }) {
-	const pythonBin = process.env.CLAIMS_PYTHON_BIN ?? process.env.PYTHON_BIN ?? 'python';
+	const pythonBin =
+		process.env.CLAIMS_PYTHON_BIN ??
+		process.env.PYTHON_BIN ??
+		(existsSync(localVenvPython) ? localVenvPython : 'python');
 	const args = [runnerFile, '--manifest', input.manifestPath, '--out-dir', input.outDir];
 	const child = spawn(pythonBin, args, {
-		cwd: vendoredRoot,
+		cwd: pythonRoot,
 		stdio: ['ignore', 'pipe', 'pipe']
 	});
 
@@ -253,11 +301,15 @@ async function runPythonAnalysis(input: { manifestPath: string; outDir: string }
 }
 
 export async function writeAnalysisArtifacts(input: {
+	manifestVersion?: number;
 	sessionId: string;
 	accountId: string;
 	files: AnalysisFileInput[];
+	fileTypes?: string[];
 	claims?: ClaimsRunProfile | null;
 	mapping?: AnalysisManifest['mapping'];
+	validation?: AnalysisManifest['validation'];
+	rawUploadRetention?: AnalysisManifest['rawUploadRetention'];
 	createdAt?: string;
 }) {
 	const createdAt = input.createdAt ?? new Date().toISOString();
@@ -276,10 +328,12 @@ export async function writeAnalysisArtifacts(input: {
 	}
 
 	const manifest: AnalysisManifest = {
+		manifestVersion: input.manifestVersion,
 		sessionId: input.sessionId,
 		accountId: input.accountId,
 		createdAt,
 		status,
+		fileTypes: input.fileTypes,
 		files: input.files,
 		requirements,
 		metrics: input.claims ? buildClaimsMetrics(input.claims) : buildMetrics(input.files, status),
@@ -290,6 +344,8 @@ export async function writeAnalysisArtifacts(input: {
 			reportSections: reportSectionsPath
 		},
 		mapping: input.mapping,
+		validation: input.validation,
+		rawUploadRetention: input.rawUploadRetention,
 		claims: input.claims ?? undefined,
 		python: {
 			...pythonManifestStatus()
@@ -316,24 +372,40 @@ export async function writeAnalysisArtifacts(input: {
 	await writeFile(dashboardPath, `${JSON.stringify(dashboard, null, 2)}\n`, 'utf8');
 
 	const pythonResult = await runPythonAnalysis({ manifestPath, outDir: dir });
+	const etlArtifacts = recordValue(pythonResult.status?.etlArtifacts);
+	if (etlArtifacts) {
+		manifest.etlArtifacts = etlArtifacts;
+		manifest.artifacts.etl = etlArtifacts;
+	}
+	if (typeof pythonResult.status?.etlValidationPath === 'string') {
+		manifest.etlValidationPath = pythonResult.status.etlValidationPath;
+	}
+	if (typeof pythonResult.status?.etlStatus === 'string') {
+		manifest.etlStatus = pythonResult.status.etlStatus;
+	}
+	if (typeof pythonResult.status?.analyticsReady === 'boolean') {
+		manifest.analyticsReady = pythonResult.status.analyticsReady;
+	}
+	if (
+		pythonResult.status?.etlValidation &&
+		typeof pythonResult.status.etlValidation === 'object' &&
+		!Array.isArray(pythonResult.status.etlValidation)
+	) {
+		manifest.etlValidation = pythonResult.status.etlValidation as Record<string, unknown>;
+	}
 	if (pythonResult.report) {
 		manifest.report = pythonResult.report;
+		if (typeof pythonResult.status?.xlsxReportPath === 'string') {
+			manifest.artifacts.reportXlsx = pythonResult.status.xlsxReportPath;
+		}
 		manifest.status = 'ready_for_bi';
 		manifest.metrics = buildReportMetrics(pythonResult.report);
 		manifest.requirements = manifest.requirements.map((requirement) => {
-			if (requirement.key === 'eligibility' && requirement.status !== 'met') {
-				return {
-					...requirement,
-					status: 'met',
-					description:
-						'Demo eligibility was generated from claim members because no eligibility file was uploaded.'
-				};
-			}
 			if (requirement.key === 'bi') {
 				return {
 					...requirement,
 					status: 'met',
-					description: 'Python report sections were generated from uploaded raw claims.'
+					description: 'Python report sections were generated from canonical ingestion artifacts.'
 				};
 			}
 			return requirement;
@@ -347,7 +419,7 @@ export async function writeAnalysisArtifacts(input: {
 			notes: [
 				'Python runner completed and wrote dashboard-ready report sections.',
 				`Runner mode: ${String(pythonResult.status.mode ?? 'unknown')}.`,
-				'Legacy dependency readiness is recorded in python-status.json.'
+				'Python dependency readiness is recorded in python-status.json.'
 			]
 		};
 	} else {
@@ -367,7 +439,13 @@ export async function writeAnalysisArtifacts(input: {
 		metrics: manifest.metrics,
 		requirements: manifest.requirements,
 		python: manifest.python,
-		report: manifest.report ?? null
+		report: manifest.report ?? null,
+		etl: {
+			status: manifest.etlStatus,
+			analyticsReady: manifest.analyticsReady,
+			artifacts: manifest.etlArtifacts,
+			validationPath: manifest.etlValidationPath
+		}
 	};
 
 	await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
@@ -414,7 +492,8 @@ export async function writeReportWorkbookArtifacts(input: {
 			key: 'eligibility',
 			label: 'Eligibility baseline',
 			status: 'met',
-			description: 'Eligibility denominator logic is already reflected in the imported report output.'
+			description:
+				'Eligibility denominator logic is already reflected in the imported report output.'
 		},
 		{
 			key: 'medical',
@@ -435,7 +514,8 @@ export async function writeReportWorkbookArtifacts(input: {
 			key: 'bi',
 			label: 'BI dashboard inputs',
 			status: 'met',
-			description: 'Yearly write_excel_report output has been parsed into dashboard-ready artifacts.'
+			description:
+				'Yearly write_excel_report output has been parsed into dashboard-ready artifacts.'
 		}
 	];
 
