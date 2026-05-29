@@ -73,9 +73,11 @@ function stripBOM(value: string) {
 
 function detectDelimiter(line: string) {
 	const candidates = [',', '\t', '|', ';'];
-	return candidates
-		.map((delimiter) => ({ delimiter, count: line.split(delimiter).length }))
-		.sort((a, b) => b.count - a.count)[0]?.delimiter ?? ',';
+	return (
+		candidates
+			.map((delimiter) => ({ delimiter, count: line.split(delimiter).length }))
+			.sort((a, b) => b.count - a.count)[0]?.delimiter ?? ','
+	);
 }
 
 function splitDelimitedLine(line: string, delimiter: string) {
@@ -174,12 +176,13 @@ function counterRows<K extends string>(
 	limit = 8
 ): Array<Record<K, string> & { count: number; amount: number | null }> {
 	return [...counter.entries()]
-		.map(([key, value]) =>
-			({
-				[keyName]: key,
-				count: value.count,
-				amount: value.amountCount > 0 && Number.isFinite(value.amount) ? value.amount : null
-			}) as Record<K, string> & { count: number; amount: number | null }
+		.map(
+			([key, value]) =>
+				({
+					[keyName]: key,
+					count: value.count,
+					amount: value.amountCount > 0 && Number.isFinite(value.amount) ? value.amount : null
+				}) as Record<K, string> & { count: number; amount: number | null }
 		)
 		.sort((a, b) => b.count - a.count)
 		.slice(0, limit);
@@ -199,7 +202,9 @@ function mergeCounterRows<T extends string>(
 		}
 		counter.set(row[key], existing);
 	}
-	return counterRows(counter, key, 8) as Array<Record<T, string> & { count: number; amount: number | null }>;
+	return counterRows(counter, key, 8) as Array<
+		Record<T, string> & { count: number; amount: number | null }
+	>;
 }
 
 export function profileClaimsBuffer(input: ClaimsProfileInput): ClaimsFileProfile | null {
@@ -311,8 +316,14 @@ export function buildClaimsRunProfile(files: ClaimsFileProfile[]): ClaimsRunProf
 			profiledRows: files.reduce((sum, file) => sum + file.profiledRows, 0),
 			uniqueMembers: memberCount,
 			totalAmount: hasAmount ? totalAmount : null,
-			serviceYears: mergeCounterRows(files.flatMap((file) => file.serviceYears), 'year'),
-			topDiagnoses: mergeCounterRows(files.flatMap((file) => file.topDiagnoses), 'code')
+			serviceYears: mergeCounterRows(
+				files.flatMap((file) => file.serviceYears),
+				'year'
+			),
+			topDiagnoses: mergeCounterRows(
+				files.flatMap((file) => file.topDiagnoses),
+				'code'
+			)
 		}
 	};
 }

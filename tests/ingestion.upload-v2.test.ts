@@ -7,6 +7,18 @@ const sessionId = 'sess_phi_mixed';
 const analysisInputs: unknown[] = [];
 
 vi.mock('../src/lib/server/db', () => ({
+	clearDemoSessions: vi.fn(async () => ({ deletedSessions: 0, deletedArtifacts: [] })),
+	deleteUploadSession: vi.fn(async () => ({ deleted: false, deletedArtifacts: [] })),
+	getWorkspaceSummary: vi.fn(async () => ({
+		uploadCount: 0,
+		mappingCount: 0,
+		activeMappings: 0,
+		storePath: '',
+		storageRoot: ''
+	})),
+	listMappings: vi.fn(async () => []),
+	listUploadSessions: vi.fn(async () => []),
+	upsertMapping: vi.fn(async () => 'map123'),
 	getActiveMapping: vi.fn(async (_accountId: string, fileType: string) => {
 		const fieldsByType: Record<string, Record<string, string>> = {
 			eligibility: {
@@ -46,13 +58,14 @@ vi.mock('../src/lib/server/db', () => ({
 }));
 
 vi.mock('../src/lib/server/analysis', () => ({
+	listAnalysisManifests: vi.fn(async () => []),
 	writeAnalysisArtifacts: vi.fn(async (input: unknown) => {
 		analysisInputs.push(input);
 		return input;
 	})
 }));
 
-import { actions } from '../src/routes/upload/+page.server';
+import { actions } from '../src/routes/+page.server';
 import { insertUploadSession } from '../src/lib/server/db';
 
 function textFile(name: string, csv: string) {
@@ -81,13 +94,22 @@ describe('production PHI upload ingestion v2', () => {
 		const form = baseForm('confirm');
 		form.append(
 			'files',
-			textFile('eligibility.csv', 'MemberID,CoverageStart,CoverageEnd\nM001,2024-01-01,2024-12-31\n')
+			textFile(
+				'eligibility.csv',
+				'MemberID,CoverageStart,CoverageEnd\nM001,2024-01-01,2024-12-31\n'
+			)
 		);
 		form.append(
 			'files',
-			textFile('medical.csv', 'MemberID,ServiceDate,Paid,ClaimNo,Sequence,Diag1\nM001,2024-02-01,100,C1,1,I10\n')
+			textFile(
+				'medical.csv',
+				'MemberID,ServiceDate,Paid,ClaimNo,Sequence,Diag1\nM001,2024-02-01,100,C1,1,I10\n'
+			)
 		);
-		form.append('files', textFile('pharmacy.csv', 'MemberID,FillDate,Paid,NDC\nM001,2024-03-01,25,12345678901\n'));
+		form.append(
+			'files',
+			textFile('pharmacy.csv', 'MemberID,FillDate,Paid,NDC\nM001,2024-03-01,25,12345678901\n')
+		);
 		form.append('fileType:0', 'eligibility');
 		form.append('fileType:1', 'medical');
 		form.append('fileType:2', 'pharmacy');
@@ -95,8 +117,8 @@ describe('production PHI upload ingestion v2', () => {
 		form.append('mappingMode:1', 'stored');
 		form.append('mappingMode:2', 'stored');
 
-		const req = new Request('http://local/upload', { method: 'POST', body: form });
-		const result = await (actions as any).default({ request: req });
+		const req = new Request('http://local/', { method: 'POST', body: form });
+		const result = await (actions as any).upload({ request: req });
 
 		expect(result.confirmed).toBe(true);
 		expect(result.sessionId).toBe(sessionId);
@@ -117,8 +139,12 @@ describe('production PHI upload ingestion v2', () => {
 			'pharmacy'
 		]);
 		expect(analysisInput.files.map((file: any) => file.mapping.version)).toEqual([1, 2, 3]);
-		expect(analysisInput.files.every((file: any) => file.artifacts.canonicalCsv === file.path)).toBe(true);
-		expect(analysisInput.files.every((file: any) => existsSync(file.artifacts.canonicalCsv))).toBe(true);
+		expect(
+			analysisInput.files.every((file: any) => file.artifacts.canonicalCsv === file.path)
+		).toBe(true);
+		expect(analysisInput.files.every((file: any) => existsSync(file.artifacts.canonicalCsv))).toBe(
+			true
+		);
 		expect(existsSync(join(process.cwd(), 'var', 'uploads', sessionId, 'raw-temp'))).toBe(false);
 
 		const medicalCsv = await readFile(analysisInput.files[1].artifacts.canonicalCsv, 'utf8');
@@ -128,7 +154,10 @@ describe('production PHI upload ingestion v2', () => {
 
 	it('blocks medical-only confirmation unless the user accepts the explicit eligibility assumption', async () => {
 		const form = baseForm('confirm');
-		form.append('files', textFile('medical.csv', 'MemberID,ServiceDate,Paid,ClaimNo\nM001,2024-02-01,100,C1\n'));
+		form.append(
+			'files',
+			textFile('medical.csv', 'MemberID,ServiceDate,Paid,ClaimNo\nM001,2024-02-01,100,C1\n')
+		);
 		form.append('fileType:0', 'medical');
 		form.append('mappingMode:0', 'provided');
 		form.append(
@@ -143,8 +172,8 @@ describe('production PHI upload ingestion v2', () => {
 			})
 		);
 
-		const req = new Request('http://local/upload', { method: 'POST', body: form });
-		const result = await (actions as any).default({ request: req });
+		const req = new Request('http://local/', { method: 'POST', body: form });
+		const result = await (actions as any).upload({ request: req });
 
 		expect(result.error).toMatch(/eligibility/i);
 		expect(analysisInputs).toHaveLength(0);
@@ -153,7 +182,10 @@ describe('production PHI upload ingestion v2', () => {
 	it('allows explicitly assumed medical-only eligibility while marking the session not production-ready', async () => {
 		const form = baseForm('confirm');
 		form.append('assumeClaimMembersEligible', 'on');
-		form.append('files', textFile('medical.csv', 'MemberID,ServiceDate,Paid,ClaimNo\nM001,2024-02-01,100,C1\n'));
+		form.append(
+			'files',
+			textFile('medical.csv', 'MemberID,ServiceDate,Paid,ClaimNo\nM001,2024-02-01,100,C1\n')
+		);
 		form.append('fileType:0', 'medical');
 		form.append('mappingMode:0', 'provided');
 		form.append(
@@ -168,8 +200,8 @@ describe('production PHI upload ingestion v2', () => {
 			})
 		);
 
-		const req = new Request('http://local/upload', { method: 'POST', body: form });
-		const result = await (actions as any).default({ request: req });
+		const req = new Request('http://local/', { method: 'POST', body: form });
+		const result = await (actions as any).upload({ request: req });
 
 		expect(result.confirmed).toBe(true);
 		const analysisInput = analysisInputs[0] as any;
@@ -184,8 +216,8 @@ describe('production PHI upload ingestion v2', () => {
 		form.append('fileType:0', 'medical');
 		form.append('mappingMode:0', 'canonical');
 
-		const req = new Request('http://local/upload', { method: 'POST', body: form });
-		const result = await (actions as any).default({ request: req });
+		const req = new Request('http://local/', { method: 'POST', body: form });
+		const result = await (actions as any).upload({ request: req });
 
 		expect(result.preview.validation.productionReady).toBe(false);
 		expect(result.preview.files[0].validation.requiredCoverage.amount.status).toBe('missing');
@@ -196,12 +228,18 @@ describe('production PHI upload ingestion v2', () => {
 		const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
 		try {
 			const form = baseForm('preview');
-			form.append('files', textFile('medical.csv', 'MemberID,ServiceDate,Paid,ClaimNo\nSECRET_MEMBER,2024-02-01,100,C1\n'));
+			form.append(
+				'files',
+				textFile(
+					'medical.csv',
+					'MemberID,ServiceDate,Paid,ClaimNo\nSECRET_MEMBER,2024-02-01,100,C1\n'
+				)
+			);
 			form.append('fileType:0', 'medical');
 			form.append('mappingMode:0', 'canonical');
 
-			const req = new Request('http://local/upload', { method: 'POST', body: form });
-			await (actions as any).default({ request: req });
+			const req = new Request('http://local/', { method: 'POST', body: form });
+			await (actions as any).upload({ request: req });
 
 			const logText = spy.mock.calls.map((call) => String(call[0])).join('\n');
 			expect(logText).toContain('upload.preview');

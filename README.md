@@ -1,14 +1,14 @@
 # Claims BI Demo
 
-Local web app for walking stakeholders from raw claims intake to Python-generated BI dashboard output.
+Local web app for walking stakeholders from raw claims intake to Python-generated analytics QA output.
 
 ## What This App Does
 
-- Imports client column mappings for medical, pharmacy, and eligibility files.
-- Uploads raw claims files into local session folders.
-- Runs the app-owned Python analysis runner against those files.
-- Writes canonical CSVs, status JSON, dashboard JSON, report sections, and an optional trace workbook.
-- Renders dashboard-ready KPIs, trends, condition views, risk profile, findings, and recommendations.
+- Imports client column mappings for medical, pharmacy, and eligibility files inline.
+- Uploads mixed eligibility, medical, and pharmacy files in one guided workspace.
+- Runs the app-owned Python analysis runner against canonical artifacts.
+- Writes canonical CSVs, ETL CSVs, status JSON, validation JSON, and curated download artifacts.
+- Renders core analytics QA metrics for readiness checks, row counts, warnings, claim counts, members, and med/Rx totals.
 
 No database is required for the current demo build. Runtime data is stored under `var/`.
 
@@ -19,11 +19,12 @@ npm install
 cmd /c npm run dev -- --host 127.0.0.1
 ```
 
-Open the local URL printed by Vite, then use:
+Open the local URL printed by Vite. The MVP workflow lives at `/`:
 
-1. `/admin/mappings` to import a column mapping CSV.
-2. `/upload` to upload raw claims and confirm analysis.
-3. `/analysis` to review the generated BI dashboard and trace artifacts.
+1. Upload eligibility, medical, and pharmacy files.
+2. Validate file types, mappings, PHI posture, and production readiness.
+3. Run or rerun the Python QA pipeline.
+4. Review ETL-first QA metrics and curated artifacts.
 
 ## Python Runtime
 
@@ -62,8 +63,11 @@ cmd /c npm run build
 ## Artifact Layout
 
 ```text
-var/uploads/<sessionId>/       raw uploaded files
+var/indexes/                   flat-file indexes for sessions, mappings, and audit events
+var/sessions/<sessionId>/      per-session metadata
+var/uploads/<sessionId>/       temporary raw upload files
 var/analysis/<sessionId>/      manifest, status, dashboard, report artifacts
 var/analysis/<sessionId>/canonical/
                                cleaned medical/pharmacy/eligibility CSVs
+var/analysis/<sessionId>/etl/  analysis-ready ETL CSVs and etl_validation.json
 ```

@@ -160,7 +160,10 @@ function stripBOM(value: string) {
 }
 
 function normalizeField(value: string) {
-	return value.trim().replace(/^\uFEFF/, '').toLowerCase();
+	return value
+		.trim()
+		.replace(/^\uFEFF/, '')
+		.toLowerCase();
 }
 
 function safeSegment(value: string) {
@@ -228,10 +231,15 @@ function hasDiagnosis(headers: string[]) {
 }
 
 function hasDrug(headers: string[]) {
-	return headers.filter((field) => ['ndc', 'drug_name', 'gpi', 'rx_number', 'number'].includes(field));
+	return headers.filter((field) =>
+		['ndc', 'drug_name', 'gpi', 'rx_number', 'number'].includes(field)
+	);
 }
 
-function coverage(status: RequiredFieldCoverage['status'], fields: string[] = []): RequiredFieldCoverage {
+function coverage(
+	status: RequiredFieldCoverage['status'],
+	fields: string[] = []
+): RequiredFieldCoverage {
 	return { status, fields };
 }
 
@@ -250,7 +258,9 @@ async function readSheetRows(buf: Buffer) {
 export async function readTabularRows(file: UploadedFile) {
 	const ext = getExt(file.name);
 	if (ext === '.xlsx' || ext === '.xls') {
-		return (await readSheetRows(file.buf)).map((row) => row.map((value) => String(value ?? '').trim()));
+		return (await readSheetRows(file.buf)).map((row) =>
+			row.map((value) => String(value ?? '').trim())
+		);
 	}
 
 	const text = stripBOM(file.buf.toString('utf8'));
@@ -267,7 +277,9 @@ export async function countRowsSmart(file: UploadedFile) {
 export async function extractHeadersSmart(file: UploadedFile) {
 	const rows = await readTabularRows(file);
 	const header = Array.isArray(rows?.[0]) ? rows[0] : null;
-	return header ? header.slice(0, HEADER_PEEK_MAX).map((value) => String(value ?? '').trim()) : null;
+	return header
+		? header.slice(0, HEADER_PEEK_MAX).map((value) => String(value ?? '').trim())
+		: null;
 }
 
 export async function readFilesFromForm(form: FormData) {
@@ -296,13 +308,25 @@ export function validateAllowedFiles(files: UploadedFile[]) {
 	return null;
 }
 
-export function inferFileType(filename: string, headers?: string[] | null): SupportedIngestionFileType {
+export function inferFileType(
+	filename: string,
+	headers?: string[] | null
+): SupportedIngestionFileType {
 	const name = filename.toLowerCase();
 	const joinedHeaders = (headers ?? []).join(' ').toLowerCase();
-	if (name.includes('elig') || joinedHeaders.includes('eligibility') || joinedHeaders.includes('coverage')) {
+	if (
+		name.includes('elig') ||
+		joinedHeaders.includes('eligibility') ||
+		joinedHeaders.includes('coverage')
+	) {
 		return 'eligibility';
 	}
-	if (name.includes('pharm') || name.includes('rx') || joinedHeaders.includes('ndc') || joinedHeaders.includes('fill')) {
+	if (
+		name.includes('pharm') ||
+		name.includes('rx') ||
+		joinedHeaders.includes('ndc') ||
+		joinedHeaders.includes('fill')
+	) {
 		return 'pharmacy';
 	}
 	return 'medical';
@@ -323,7 +347,8 @@ function mappingModeFromForm(form: FormData, index: number): IngestionMappingMod
 	const raw = String(form.get(`mappingMode:${index}`) ?? '').trim();
 	if (raw === 'stored' || raw === 'provided' || raw === 'canonical') return raw;
 	if (form.get('useStoredMapping') === 'on') return 'stored';
-	if (String(form.get(`mappingJson:${index}`) ?? form.get('mappingJson') ?? '').trim()) return 'provided';
+	if (String(form.get(`mappingJson:${index}`) ?? form.get('mappingJson') ?? '').trim())
+		return 'provided';
 	return 'auto';
 }
 
@@ -379,7 +404,11 @@ export async function resolveFileMapping(input: {
 		}
 	}
 
-	const stored = await safeGetActiveMapping(input.accountId, input.fileType, input.getActiveMapping);
+	const stored = await safeGetActiveMapping(
+		input.accountId,
+		input.fileType,
+		input.getActiveMapping
+	);
 	if (stored) {
 		const fields = mappingPayloadToFields(stored.json, input.headers) ?? {};
 		return {
@@ -423,7 +452,8 @@ function validateCanonicalHeaders(
 			start.length && end.length ? 'met' : asOf.length ? 'met' : 'missing',
 			[...start, ...end, ...asOf]
 		);
-		if (!member.length) blockingWarnings.push('Eligibility requires member_id or equivalent member identifier.');
+		if (!member.length)
+			blockingWarnings.push('Eligibility requires member_id or equivalent member identifier.');
 		if (!start.length || (!end.length && !asOf.length)) {
 			blockingWarnings.push(
 				'Eligibility requires start/end coverage fields or an accepted as-of coverage field.'
@@ -449,7 +479,8 @@ function validateCanonicalHeaders(
 		if (!member.length) blockingWarnings.push('Medical claims require member_id.');
 		if (!serviceDate.length) blockingWarnings.push('Medical claims require a service date field.');
 		if (!amount.length) blockingWarnings.push('Medical claims require an amount field.');
-		if (!diagnosis.length) qualityWarnings.push('No diagnosis fields were mapped; clinical analytics will be limited.');
+		if (!diagnosis.length)
+			qualityWarnings.push('No diagnosis fields were mapped; clinical analytics will be limited.');
 	}
 
 	if (fileType === 'pharmacy') {
@@ -462,9 +493,11 @@ function validateCanonicalHeaders(
 		requiredCoverage.amount = coverage(amount.length ? 'met' : 'missing', amount);
 		requiredCoverage.drug = coverage(drug.length ? 'met' : 'optional', drug);
 		if (!member.length) blockingWarnings.push('Pharmacy claims require member_id.');
-		if (!fillDate.length) blockingWarnings.push('Pharmacy claims require a fill, written, or processed date field.');
+		if (!fillDate.length)
+			blockingWarnings.push('Pharmacy claims require a fill, written, or processed date field.');
 		if (!amount.length) blockingWarnings.push('Pharmacy claims require an amount field.');
-		if (!drug.length) qualityWarnings.push('No NDC or drug fields were mapped; Rx analytics will be limited.');
+		if (!drug.length)
+			qualityWarnings.push('No NDC or drug fields were mapped; Rx analytics will be limited.');
 	}
 
 	return {
@@ -519,7 +552,8 @@ export async function profileUploadedFiles(input: {
 
 	for (const [index, file] of input.files.entries()) {
 		const rows = await readTabularRows(file);
-		const headers = rows[0]?.map((value) => String(value ?? '').trim()).slice(0, HEADER_PEEK_MAX) ?? null;
+		const headers =
+			rows[0]?.map((value) => String(value ?? '').trim()).slice(0, HEADER_PEEK_MAX) ?? null;
 		const inferredFileType = inferFileType(file.name, headers);
 		const fileType = fileTypeFromForm(input.form, index, inferredFileType);
 		if (!fileType) {
@@ -543,7 +577,8 @@ export async function profileUploadedFiles(input: {
 		let invalidRowCount = 0;
 		for (const row of rows.slice(1)) {
 			const rowData = rowObject(canonicalHeaders, row);
-			if (requiredFields.some((field) => !String(rowData[field] ?? '').trim())) invalidRowCount += 1;
+			if (requiredFields.some((field) => !String(rowData[field] ?? '').trim()))
+				invalidRowCount += 1;
 		}
 
 		profiles.push({
@@ -649,11 +684,15 @@ export async function writeRawTempFiles(input: {
 	files: UploadedFile[];
 	baseDir?: string;
 }) {
-	const rawDir = input.baseDir ?? join(process.cwd(), 'var', 'uploads', input.sessionId, 'raw-temp');
+	const rawDir =
+		input.baseDir ?? join(process.cwd(), 'var', 'uploads', input.sessionId, 'raw-temp');
 	await mkdir(rawDir, { recursive: true });
 	await Promise.all(
 		input.files.map((file, index) =>
-			writeFile(join(rawDir, `${String(index + 1).padStart(2, '0')}-${basename(file.name)}`), file.buf)
+			writeFile(
+				join(rawDir, `${String(index + 1).padStart(2, '0')}-${basename(file.name)}`),
+				file.buf
+			)
 		)
 	);
 	return rawDir;
@@ -684,7 +723,9 @@ export async function writeCanonicalFiles(input: {
 		const profile = input.profiles[index];
 		const rows = await readTabularRows(file);
 		const sourceHeaders = rows[0]?.map((value) => String(value ?? '').trim()) ?? [];
-		const canonicalHeaders = canonicalHeadersFor(sourceHeaders, profile.mapping.fields).map(normalizeField);
+		const canonicalHeaders = canonicalHeadersFor(sourceHeaders, profile.mapping.fields).map(
+			normalizeField
+		);
 		const hasClaimId =
 			profile.fileType !== 'medical' ||
 			hasAny(canonicalHeaders, ['claim_id', 'number', 'claim_number']).length > 0 ||

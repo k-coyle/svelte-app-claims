@@ -1,10 +1,9 @@
-import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { ClaimsRunProfile } from './claimsProfile';
-import { parseReportWorkbookBuffer, type ReportWorkbookSummary } from './reportWorkbook';
+import type { AnalysisReportSummary as ReportWorkbookSummary } from '$lib/analysis/types';
 
 export type AnalysisFileType =
 	| 'eligibility'
@@ -256,8 +255,7 @@ async function readJsonFile<T>(path: string): Promise<T | null> {
 function recordValue(value: unknown): Record<string, string> | undefined {
 	if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
 	return Object.fromEntries(
-		Object.entries(value)
-			.filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+		Object.entries(value).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
 	);
 }
 
@@ -454,107 +452,6 @@ export async function writeAnalysisArtifacts(input: {
 	return manifest;
 }
 
-export async function writeReportWorkbookArtifacts(input: {
-	accountId: string;
-	filename: string;
-	bytes: number;
-	buffer: Buffer;
-	createdAt?: string;
-	sessionId?: string;
-}): Promise<AnalysisManifest> {
-	const createdAt = input.createdAt ?? new Date().toISOString();
-	const sessionId = input.sessionId ?? `report_${randomUUID()}`;
-	const dir = runDir(sessionId);
-	await mkdir(dir, { recursive: true });
-
-	const parsed = parseReportWorkbookBuffer(input.buffer, input.filename);
-	const dashboardPath = join(dir, 'dashboard.json');
-	const manifestPath = join(dir, 'manifest.json');
-	const reportWorkbookPath = join(dir, 'report-workbook.json');
-	const sourceWorkbookPath = join(dir, 'source-workbook.xlsx');
-
-	await writeFile(reportWorkbookPath, `${JSON.stringify(parsed, null, 2)}\n`, 'utf8');
-	await writeFile(sourceWorkbookPath, input.buffer);
-
-	const files: AnalysisFileInput[] = [
-		{
-			path: sourceWorkbookPath,
-			filename: input.filename,
-			bytes: input.bytes,
-			fileType: 'report_workbook',
-			rowCount: parsed.years.reduce((sum, year) => sum + Object.keys(year.sections).length, 0),
-			headers: parsed.summary.availableSections.slice(0, 10)
-		}
-	];
-
-	const requirements: AnalysisRequirement[] = [
-		{
-			key: 'eligibility',
-			label: 'Eligibility baseline',
-			status: 'met',
-			description:
-				'Eligibility denominator logic is already reflected in the imported report output.'
-		},
-		{
-			key: 'medical',
-			label: 'Medical claims',
-			status: 'met',
-			description: 'Medical claims are already represented in the yearly report sections.'
-		},
-		{
-			key: 'pharmacy',
-			label: 'Pharmacy claims',
-			status: parsed.summary.years.some((year) => Number(year.pharmacyTotal ?? 0) > 0)
-				? 'met'
-				: 'optional',
-			description:
-				'Pharmacy claims are supported by the report shape; this workbook has no pharmacy spend.'
-		},
-		{
-			key: 'bi',
-			label: 'BI dashboard inputs',
-			status: 'met',
-			description:
-				'Yearly write_excel_report output has been parsed into dashboard-ready artifacts.'
-		}
-	];
-
-	const manifest: AnalysisManifest = {
-		sessionId,
-		accountId: input.accountId,
-		createdAt,
-		status: 'ready_for_bi',
-		files,
-		requirements,
-		metrics: buildReportMetrics(parsed.summary),
-		artifacts: {
-			manifest: manifestPath,
-			dashboard: dashboardPath,
-			reportWorkbook: reportWorkbookPath
-		},
-		report: parsed.summary,
-		python: {
-			...pythonManifestStatus()
-		}
-	};
-
-	const dashboard = {
-		sessionId: manifest.sessionId,
-		accountId: manifest.accountId,
-		status: manifest.status,
-		createdAt: manifest.createdAt,
-		metrics: manifest.metrics,
-		requirements: manifest.requirements,
-		files: manifest.files,
-		report: parsed.summary
-	};
-
-	await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
-	await writeFile(dashboardPath, `${JSON.stringify(dashboard, null, 2)}\n`, 'utf8');
-
-	return manifest;
-}
-
 export async function listAnalysisManifests(limit = 25): Promise<AnalysisManifest[]> {
 	try {
 		const entries = await readdir(analysisRoot, { withFileTypes: true });
@@ -593,4 +490,28 @@ export function analysisPathsForSession(sessionId: string) {
 		dashboard: join(dir, 'dashboard.json'),
 		root: dirname(dir)
 	};
+}
+
+export async function rerunAnalysisForSession(sessionId: string): Promise<AnalysisManifest> {
+	if (!/^[A-Za-z0-9_.-]+$/.test(sessionId)) {
+		throw new Error('Invalid session identifier.');
+	}
+	const paths = analysisPathsForSession(sessionId);
+	const manifest = await readJsonFile<AnalysisManifest>(paths.manifest);
+	if (!manifest) {
+		throw new Error('Analysis manifest was not found for this session.');
+	}
+
+	return writeAnalysisArtifacts({
+		manifestVersion: manifest.manifestVersion,
+		sessionId: manifest.sessionId,
+		accountId: manifest.accountId,
+		files: manifest.files,
+		fileTypes: manifest.fileTypes,
+		claims: manifest.claims ?? null,
+		mapping: manifest.mapping,
+		validation: manifest.validation,
+		rawUploadRetention: manifest.rawUploadRetention,
+		createdAt: manifest.createdAt
+	});
 }

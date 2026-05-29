@@ -34,12 +34,10 @@ async function writeManifest(dir: string, manifest: Record<string, unknown>) {
 function csvRows(text: string) {
 	const [headerLine, ...lines] = text.trim().split(/\r?\n/);
 	const headers = headerLine.split(',');
-	return lines
-		.filter(Boolean)
-		.map((line) => {
-			const values = line.split(',');
-			return Object.fromEntries(headers.map((header, index) => [header, values[index] ?? '']));
-		});
+	return lines.filter(Boolean).map((line) => {
+		const values = line.split(',');
+		return Object.fromEntries(headers.map((header, index) => [header, values[index] ?? '']));
+	});
 }
 
 describe('python ETL layer', () => {
@@ -54,7 +52,7 @@ describe('python ETL layer', () => {
 			'sys.path.insert(0, str(root))',
 			'from etl.ingestion.cleaner import MedicalReader',
 			'import pandas as pd',
-			"reader = MedicalReader(paths=[])",
+			'reader = MedicalReader(paths=[])',
 			"df = reader.read(data=[{'Member Identifier': 'M001', 'Date Service Started': '2024-01-01', 'Paid Amount': '12.50'}])",
 			"print(json.dumps({'isTuple': isinstance(df, tuple), 'shape': list(df.shape), 'columns': list(df.columns)}))"
 		].join('; ');
@@ -105,20 +103,47 @@ describe('python ETL layer', () => {
 				sessionId: 'test_etl_full',
 				accountId: 'testClient',
 				files: [
-					{ filename: 'eligibility.csv', fileType: 'eligibility', bytes: Buffer.byteLength(eligibilityCsv), artifacts: { canonicalCsv: eligibilityPath }, mapping: { source: 'canonical', fields: {} } },
-					{ filename: 'medical.csv', fileType: 'medical', bytes: Buffer.byteLength(medicalCsv), artifacts: { canonicalCsv: medicalPath }, mapping: { source: 'canonical', fields: {} } },
-					{ filename: 'pharmacy.csv', fileType: 'pharmacy', bytes: Buffer.byteLength(pharmacyCsv), artifacts: { canonicalCsv: pharmacyPath }, mapping: { source: 'canonical', fields: {} } }
+					{
+						filename: 'eligibility.csv',
+						fileType: 'eligibility',
+						bytes: Buffer.byteLength(eligibilityCsv),
+						artifacts: { canonicalCsv: eligibilityPath },
+						mapping: { source: 'canonical', fields: {} }
+					},
+					{
+						filename: 'medical.csv',
+						fileType: 'medical',
+						bytes: Buffer.byteLength(medicalCsv),
+						artifacts: { canonicalCsv: medicalPath },
+						mapping: { source: 'canonical', fields: {} }
+					},
+					{
+						filename: 'pharmacy.csv',
+						fileType: 'pharmacy',
+						bytes: Buffer.byteLength(pharmacyCsv),
+						artifacts: { canonicalCsv: pharmacyPath },
+						mapping: { source: 'canonical', fields: {} }
+					}
 				],
-				validation: { productionReady: true, session: { eligibilityPresent: true, medicalPresent: true, pharmacyPresent: true } }
+				validation: {
+					productionReady: true,
+					session: { eligibilityPresent: true, medicalPresent: true, pharmacyPresent: true }
+				}
 			});
 
 			await runPython(manifestPath, outDir);
 
 			const status = JSON.parse(await readFile(join(outDir, 'python-status.json'), 'utf8'));
-			const validation = JSON.parse(await readFile(join(outDir, 'etl', 'etl_validation.json'), 'utf8'));
+			const validation = JSON.parse(
+				await readFile(join(outDir, 'etl', 'etl_validation.json'), 'utf8')
+			);
 			const medicalRows = csvRows(await readFile(join(outDir, 'etl', 'medical_clean.csv'), 'utf8'));
-			const diagnosisRows = csvRows(await readFile(join(outDir, 'etl', 'medical_diagnosis_long.csv'), 'utf8'));
-			const comorbidityRows = csvRows(await readFile(join(outDir, 'etl', 'member_comorbidity.csv'), 'utf8'));
+			const diagnosisRows = csvRows(
+				await readFile(join(outDir, 'etl', 'medical_diagnosis_long.csv'), 'utf8')
+			);
+			const comorbidityRows = csvRows(
+				await readFile(join(outDir, 'etl', 'member_comorbidity.csv'), 'utf8')
+			);
 
 			expect(status.ok).toBe(true);
 			expect(status.etlStatus).toBe('complete');
@@ -130,7 +155,9 @@ describe('python ETL layer', () => {
 			expect(medicalRows[0].days_spent).toBe('3');
 			expect(diagnosisRows.some((row) => row.condition_group === 'Hypertension')).toBe(true);
 			expect(diagnosisRows.some((row) => row.condition_group === 'Diabetes')).toBe(true);
-			expect(comorbidityRows.some((row) => row.member_id === 'M001' && row.comorbidity_count === '2')).toBe(true);
+			expect(
+				comorbidityRows.some((row) => row.member_id === 'M001' && row.comorbidity_count === '2')
+			).toBe(true);
 			expect(validation.duplicateCounts.medical).toBe(1);
 			expect(validation.dateParseFailures.medical).toBeGreaterThan(0);
 			expect(validation.numericParseFailures.pharmacy).toBeGreaterThan(0);
@@ -160,7 +187,13 @@ describe('python ETL layer', () => {
 				sessionId: 'test_etl_assumed_eligibility',
 				accountId: 'testClient',
 				files: [
-					{ filename: 'medical.csv', fileType: 'medical', bytes: Buffer.byteLength(medicalCsv), artifacts: { canonicalCsv: medicalPath }, mapping: { source: 'canonical', fields: {} } }
+					{
+						filename: 'medical.csv',
+						fileType: 'medical',
+						bytes: Buffer.byteLength(medicalCsv),
+						artifacts: { canonicalCsv: medicalPath },
+						mapping: { source: 'canonical', fields: {} }
+					}
 				],
 				validation: {
 					productionReady: false,
@@ -176,9 +209,15 @@ describe('python ETL layer', () => {
 			await runPython(manifestPath, outDir);
 
 			const status = JSON.parse(await readFile(join(outDir, 'python-status.json'), 'utf8'));
-			const eligibilityRows = csvRows(await readFile(join(outDir, 'etl', 'eligibility_clean.csv'), 'utf8'));
-			const pharmacyRows = csvRows(await readFile(join(outDir, 'etl', 'pharmacy_clean.csv'), 'utf8'));
-			const validation = JSON.parse(await readFile(join(outDir, 'etl', 'etl_validation.json'), 'utf8'));
+			const eligibilityRows = csvRows(
+				await readFile(join(outDir, 'etl', 'eligibility_clean.csv'), 'utf8')
+			);
+			const pharmacyRows = csvRows(
+				await readFile(join(outDir, 'etl', 'pharmacy_clean.csv'), 'utf8')
+			);
+			const validation = JSON.parse(
+				await readFile(join(outDir, 'etl', 'etl_validation.json'), 'utf8')
+			);
 
 			expect(status.etlStatus).toBe('complete_with_warnings');
 			expect(status.analyticsReady).toBe(false);
@@ -186,7 +225,11 @@ describe('python ETL layer', () => {
 			expect(eligibilityRows[0].source).toBe('assumed_from_claim_members');
 			expect(pharmacyRows).toHaveLength(0);
 			expect(validation.eligibility.assumedFromClaims).toBe(true);
-			expect(validation.warnings.blocking.some((warning: { code: string }) => warning.code === 'assumed_eligibility')).toBe(true);
+			expect(
+				validation.warnings.blocking.some(
+					(warning: { code: string }) => warning.code === 'assumed_eligibility'
+				)
+			).toBe(true);
 			expect(JSON.stringify(status)).not.toContain('M001');
 		} finally {
 			await rm(dir, { recursive: true, force: true });
@@ -213,7 +256,13 @@ describe('python ETL layer', () => {
 				sessionId: 'test_etl_missing_eligibility',
 				accountId: 'testClient',
 				files: [
-					{ filename: 'medical.csv', fileType: 'medical', bytes: Buffer.byteLength(medicalCsv), artifacts: { canonicalCsv: medicalPath }, mapping: { source: 'canonical', fields: {} } }
+					{
+						filename: 'medical.csv',
+						fileType: 'medical',
+						bytes: Buffer.byteLength(medicalCsv),
+						artifacts: { canonicalCsv: medicalPath },
+						mapping: { source: 'canonical', fields: {} }
+					}
 				],
 				validation: {
 					productionReady: false,
@@ -229,13 +278,21 @@ describe('python ETL layer', () => {
 			await runPython(manifestPath, outDir);
 
 			const status = JSON.parse(await readFile(join(outDir, 'python-status.json'), 'utf8'));
-			const validation = JSON.parse(await readFile(join(outDir, 'etl', 'etl_validation.json'), 'utf8'));
-			const eligibilityRows = csvRows(await readFile(join(outDir, 'etl', 'eligibility_clean.csv'), 'utf8'));
+			const validation = JSON.parse(
+				await readFile(join(outDir, 'etl', 'etl_validation.json'), 'utf8')
+			);
+			const eligibilityRows = csvRows(
+				await readFile(join(outDir, 'etl', 'eligibility_clean.csv'), 'utf8')
+			);
 
 			expect(status.etlStatus).toBe('blocked');
 			expect(status.analyticsReady).toBe(false);
 			expect(eligibilityRows).toHaveLength(0);
-			expect(validation.warnings.blocking.some((warning: { code: string }) => warning.code === 'missing_eligibility')).toBe(true);
+			expect(
+				validation.warnings.blocking.some(
+					(warning: { code: string }) => warning.code === 'missing_eligibility'
+				)
+			).toBe(true);
 		} finally {
 			await rm(dir, { recursive: true, force: true });
 		}

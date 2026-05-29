@@ -1,4 +1,4 @@
-import type { Actions, PageServerLoad } from './$types';
+import { readFile } from 'node:fs/promises';
 import { writeAnalysisArtifacts } from '$lib/server/analysis';
 import { buildClaimsRunProfile, profileClaimsBuffer } from '$lib/server/claimsProfile';
 import { getActiveMapping, insertUploadSession } from '$lib/server/db';
@@ -19,15 +19,19 @@ import {
 	type IngestionSessionValidation,
 	type RawUploadRetention
 } from '$lib/server/ingestion';
-import { readFile } from 'node:fs/promises';
 
-type User = { id: string; role: 'client' | 'client_manager'; accountId?: string };
+export type User = { id: string; role: 'client' | 'client_manager'; accountId?: string };
 
-function getUser(): User {
+export type WorkspaceActionEvent = {
+	request: Request;
+	getClientAddress?: () => string;
+};
+
+export function getUser(): User {
 	return { id: 'user_123', role: 'client_manager' };
 }
 
-function getAllowedAccounts(user: User) {
+export function getAllowedAccounts(user: User) {
 	if (user.role === 'client') return [{ id: user.accountId!, name: 'My Account' }];
 	return [
 		{ id: 'clientA', name: 'Client A' },
@@ -36,7 +40,7 @@ function getAllowedAccounts(user: User) {
 	];
 }
 
-function canSelectAccount(user: User, accountId: string) {
+export function canSelectAccount(user: User, accountId: string) {
 	return user.role === 'client' ? user.accountId === accountId : true;
 }
 
@@ -236,111 +240,98 @@ async function confirmSession(input: {
 		});
 
 		return { sessionId, rawUploadRetention: finalRetention };
-	} catch (e) {
+	} catch (error) {
 		if (rawDir) await cleanupRawTempFiles(rawDir, input.retention);
-		throw e;
+		throw error;
 	}
 }
 
-export const load: PageServerLoad = async () => {
-	const user = getUser();
-	const allowedAccounts = getAllowedAccounts(user);
-	return {
-		allowedAccounts,
-		defaultAccountId: user.role === 'client' ? user.accountId : allowedAccounts[0]?.id,
-		userId: user.id
-	};
-};
+export async function handleUploadAction(evt: WorkspaceActionEvent) {
+	try {
+		const request = evt.request;
+		const ip = typeof evt.getClientAddress === 'function' ? evt.getClientAddress() : undefined;
+		const form = await request.formData();
+		const user = getUser();
 
-export const actions: Actions = {
-	default: async (evt) => {
-		try {
-			const request = evt.request;
-			const ip = typeof evt.getClientAddress === 'function' ? evt.getClientAddress() : undefined;
-			const form = await request.formData();
-			const user = getUser();
+		const intent = String(form.get('intent') ?? 'preview');
+		const accountId = String(form.get('accountId') ?? '');
+		const claimMembersEligibleAssumptionAccepted = form.get('assumeClaimMembersEligible') === 'on';
 
-			const intent = String(form.get('intent') ?? 'preview');
-			const accountId = String(form.get('accountId') ?? '');
-			const claimMembersEligibleAssumptionAccepted =
-				form.get('assumeClaimMembersEligible') === 'on';
+		if (!accountId) return { error: 'Account is required.' };
+		if (!canSelectAccount(user, accountId)) return { error: 'Not allowed for this account.' };
 
-			if (!accountId) return { error: 'Account is required.' };
-			if (!canSelectAccount(user, accountId)) return { error: 'Not allowed for this account.' };
+		const { files, profiles, validation } = await makeProfiles({
+			form,
+			accountId,
+			claimMembersEligibleAssumptionAccepted
+		});
+		const stats = fileStatsFromProfiles(profiles);
+		const totalBytes = stats.reduce((sum, stat) => sum + Number(stat.bytes ?? 0), 0);
+		const summary = previewMappingSummary(profiles);
+		const sessionFileType = legacySessionFileType(profiles);
+		const sessionFileTypes = fileTypes(profiles);
 
-			const { files, profiles, validation } = await makeProfiles({
-				form,
+		if (intent === 'preview') {
+			auditLog('upload.preview', {
+				uploaderUserId: user.id,
 				accountId,
-				claimMembersEligibleAssumptionAccepted
+				fileType: sessionFileType,
+				fileTypes: sessionFileTypes,
+				ip,
+				productionReady: validation.productionReady,
+				files: profiles.map((file) => ({
+					filename: file.filename,
+					bytes: file.bytes,
+					mime: file.mime,
+					fileType: file.fileType,
+					mappingSource: file.mapping.source,
+					mappingVersion: file.mapping.version,
+					validationStatus: file.validation.status
+				})),
+				totalBytes
 			});
-			const stats = fileStatsFromProfiles(profiles);
-			const totalBytes = stats.reduce((sum, stat) => sum + Number(stat.bytes ?? 0), 0);
-			const summary = previewMappingSummary(profiles);
-			const sessionFileType = legacySessionFileType(profiles);
-			const sessionFileTypes = fileTypes(profiles);
 
-			if (intent === 'preview') {
-				auditLog('upload.preview', {
+			return {
+				preview: {
 					uploaderUserId: user.id,
 					accountId,
 					fileType: sessionFileType,
 					fileTypes: sessionFileTypes,
-					ip,
-					productionReady: validation.productionReady,
-					files: profiles.map((file) => ({
-						filename: file.filename,
-						bytes: file.bytes,
-						mime: file.mime,
-						fileType: file.fileType,
-						mappingSource: file.mapping.source,
-						mappingVersion: file.mapping.version,
-						validationStatus: file.validation.status
-					})),
-					totalBytes
-				});
-
-				return {
-					preview: {
-						uploaderUserId: user.id,
-						accountId,
-						fileType: sessionFileType,
-						fileTypes: sessionFileTypes,
-						...summary,
-						stats,
-						files: publicFiles(profiles),
-						validation
-					}
-				};
-			}
-
-			if (intent === 'confirm') {
-				assertEligibilityConfirmation(validation);
-				const createdAt = new Date().toISOString();
-				const retention = rawUploadRetentionPolicy();
-				const confirmed = await confirmSession({
-					user,
-					accountId,
-					profiles,
-					files,
-					validation,
-					createdAt,
-					totalBytes,
-					retention
-				});
-
-				return {
-					confirmed: true,
-					sessionId: confirmed.sessionId,
-					validation,
-					rawUploadRetention: confirmed.rawUploadRetention
-				};
-			}
-
-			return { error: 'Unknown intent.' };
-		} catch (e: unknown) {
-			const msg = e instanceof Error ? e.message : 'Unexpected error';
-			if (process.env.NODE_ENV !== 'test') console.error('Upload error:', msg);
-			return { error: msg };
+					...summary,
+					stats,
+					files: publicFiles(profiles),
+					validation
+				}
+			};
 		}
+
+		if (intent === 'confirm') {
+			assertEligibilityConfirmation(validation);
+			const createdAt = new Date().toISOString();
+			const retention = rawUploadRetentionPolicy();
+			const confirmed = await confirmSession({
+				user,
+				accountId,
+				profiles,
+				files,
+				validation,
+				createdAt,
+				totalBytes,
+				retention
+			});
+
+			return {
+				confirmed: true,
+				sessionId: confirmed.sessionId,
+				validation,
+				rawUploadRetention: confirmed.rawUploadRetention
+			};
+		}
+
+		return { error: 'Unknown intent.' };
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Unexpected error';
+		if (process.env.NODE_ENV !== 'test') console.error('Upload error:', message);
+		return { error: message };
 	}
-};
+}

@@ -121,7 +121,13 @@ export type AnalysisManifest = {
 		claimsProfile?: string;
 		dashboard?: string;
 		manifest?: string;
+		etl?: Record<string, string>;
 	};
+	etlArtifacts?: Record<string, string>;
+	etlValidationPath?: string;
+	etlStatus?: string;
+	analyticsReady?: boolean;
+	etlValidation?: Record<string, unknown>;
 	mapping?: {
 		source: 'stored' | 'provided' | 'canonical' | 'none';
 		version?: number;

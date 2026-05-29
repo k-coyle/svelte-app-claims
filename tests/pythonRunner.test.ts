@@ -127,7 +127,14 @@ describe('python claims analysis runner', () => {
 						bytes: Buffer.byteLength(medicalCsv),
 						fileType: 'medical',
 						rowCount: 2,
-						headers: ['member_id', 'date_service_start', 'amount_total', 'claim_id', 'icd_1', 'pos_code'],
+						headers: [
+							'member_id',
+							'date_service_start',
+							'amount_total',
+							'claim_id',
+							'icd_1',
+							'pos_code'
+						],
 						mapping: {
 							source: 'canonical',
 							fields: {}

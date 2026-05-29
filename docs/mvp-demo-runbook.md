@@ -1,6 +1,6 @@
 # Stakeholder Demo Runbook
 
-This runbook keeps the demo focused on the local raw-claims-to-dashboard path. No database connection is required.
+This runbook keeps the demo focused on the local raw-claims-to-analytics-QA path. No database connection is required.
 
 ## Walkthrough Path
 
@@ -10,7 +10,7 @@ This runbook keeps the demo focused on the local raw-claims-to-dashboard path. N
    cmd /c npm run dev -- --host 127.0.0.1
    ```
 
-2. Open `/admin/mappings` and import a claims mapping CSV.
+2. Open `/` and use the inline mapping panel to import a claims mapping CSV.
 
    Recommended local sample:
    - Account: `clientC`
@@ -18,29 +18,30 @@ This runbook keeps the demo focused on the local raw-claims-to-dashboard path. N
    - Mapping file: `sample_client_mappings/client_C_medical_claims_column_map.csv`
    - Set active: checked
 
-3. Open `/upload` and upload raw claims.
+3. Use the Upload step on `/` to upload raw claims.
 
    Recommended local sample:
    - Account: `clientC`
    - File type: `medical`
-   - Require stored mapping: checked
+   - Mapping mode: `stored`
    - Claims file: `sample_client_data/client_C_medical_claims_sample.csv`
 
-4. Confirm the upload.
+4. Preview, validate, and confirm the upload.
 
    The app creates:
-   - `var/uploads/<sessionId>/` raw upload files
+   - `var/sessions/<sessionId>/session.json`
    - `var/analysis/<sessionId>/manifest.json`
    - `var/analysis/<sessionId>/claims-profile.json`
    - `var/analysis/<sessionId>/python-status.json`
    - `var/analysis/<sessionId>/canonical/` cleaned CSVs
+   - `var/analysis/<sessionId>/etl/` analysis-ready CSVs
+   - `var/analysis/<sessionId>/etl/etl_validation.json`
    - `var/analysis/<sessionId>/report-sections.json`
-   - `var/analysis/<sessionId>/analysis-report.xlsx`
    - `var/analysis/<sessionId>/dashboard.json`
 
-5. Open `/analysis`.
+5. Review the Run and Review steps on `/`.
 
-   The dashboard shows the analysis pipeline, claims profile, report sections, cost trends, PPPY trend, chronic-condition cost and prevalence, disease risk profile, matrix view, findings, recommendations, and trace workbook link.
+   The QA console shows pipeline status, production readiness, warning counts, row counts, rejected rows, members, medical/Rx claims, medical/Rx totals, raw-retention status, and curated downloads.
 
 ## Python Check
 
@@ -72,10 +73,10 @@ Current expected result: `ok: true`.
 
 ## Eligibility Behavior
 
-If eligibility is uploaded, the runner writes cleaned eligibility under the session `canonical/` folder.
+If eligibility is uploaded, the runner writes cleaned eligibility under the session `canonical/` and `etl/` folders.
 
-If eligibility is not uploaded, the runner generates deterministic full-year eligibility from unique claim members so dashboard denominators remain stable for the demo.
+If eligibility is not uploaded, the user must explicitly accept the claim-member eligibility assumption. The runner may generate preview eligibility from unique claim members, but the session is marked not production-ready for full analytics.
 
-## Reference Workbook
+## Cleanup
 
-The workbook import on `/analysis` is a comparison tool only. The primary walkthrough should start with raw claims upload and end with generated dashboard artifacts.
+Use the recent-runs sidebar to delete one demo session, or use **Clear demo sessions** to remove all local demo sessions and generated artifacts while keeping stored mappings.

@@ -1,0 +1,598 @@
+{
+  "mappings": [
+    {
+      "_id": "map_clientA_eligibility_v1",
+      "accountId": "clientA",
+      "fileType": "eligibility",
+      "version": 1,
+      "isActive": true,
+      "json": {
+        "MemberID": "member_id",
+        "EligibilityStart": "medical_eligibility_start_date",
+        "EligibilityEnd": "medical_eligibility_end_date",
+        "Relationship": "member_relationship"
+      },
+      "createdAt": "2026-05-29T18:31:45.526Z",
+      "updatedAt": "2026-05-29T18:31:45.526Z"
+    },
+    {
+      "_id": "map_eac6e855-d357-44ca-a971-7b48f834d00b",
+      "accountId": "Mock",
+      "fileType": "eligibility",
+      "version": 1,
+      "json": {
+        "sourceFormat": "column_mapping_csv",
+        "fields": {
+          "medicalEligibilityEndDate": "medical_eligibility_end_date",
+          "medicalEligibilityStartDate": "medical_eligibility_start_date",
+          "medicalPlanId": "medical_plan_id",
+          "memberGender": "member_gender",
+          "memberId": "member_id",
+          "memberPostalCode": "member_postal_code"
+        },
+        "positionFields": {
+          "0": "medical_eligibility_end_date",
+          "1": "medical_eligibility_start_date",
+          "2": "medical_plan_id",
+          "3": "member_gender",
+          "4": "member_id",
+          "5": "member_postal_code"
+        },
+        "columns": [
+          {
+            "columnNumber": 0,
+            "sourceColumn": "medicalEligibilityEndDate",
+            "targetColumn": "medical_eligibility_end_date",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 1,
+            "sourceColumn": "medicalEligibilityStartDate",
+            "targetColumn": "medical_eligibility_start_date",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 2,
+            "sourceColumn": "medicalPlanId",
+            "targetColumn": "medical_plan_id",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 3,
+            "sourceColumn": "memberGender",
+            "targetColumn": "member_gender",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 4,
+            "sourceColumn": "memberId",
+            "targetColumn": "member_id",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 5,
+            "sourceColumn": "memberPostalCode",
+            "targetColumn": "member_postal_code",
+            "dtype": "string",
+            "parseDate": false
+          }
+        ],
+        "fieldCount": 6,
+        "dateFields": [
+          "medical_eligibility_end_date",
+          "medical_eligibility_start_date"
+        ]
+      },
+      "isActive": true,
+      "createdAt": "2026-05-29T18:31:45.526Z",
+      "updatedAt": "2026-05-29T18:31:45.526Z"
+    },
+    {
+      "_id": "map_3ad74e30-c21d-4b4c-8a5e-bab4aaaa1b02",
+      "accountId": "Mock",
+      "fileType": "medical",
+      "version": 1,
+      "json": {
+        "sourceFormat": "column_mapping_csv",
+        "fields": {
+          "number": "number",
+          "sequence": "sequence",
+          "memberId": "member_id",
+          "memberDob": "member_dob",
+          "dateServiceStart": "date_service_start",
+          "dateServiceEnd": "date_service_end",
+          "posCode": "pos_code",
+          "provider_id": "provider_id",
+          "tosCode": "tos_code",
+          "icd1": "icd_1",
+          "icd2": "icd_2",
+          "icd3": "icd_3",
+          "icd4": "icd_4",
+          "icd5": "icd_5",
+          "icd6": "icd_6",
+          "icd7": "icd_7",
+          "icd8": "icd_8",
+          "icd9": "icd_9",
+          "icd10": "icd_10",
+          "procedureCode": "procedure_code",
+          "modifier1a": "modifier_1a",
+          "isInNetwork": "is_in_network",
+          "statusCode": "status_code",
+          "dateSubmitted": "date_submitted",
+          "datePaid": "date_paid",
+          "amountCob": "amount_cob",
+          "amountBilled": "amount_billed",
+          "amountNetPayment": "amount_net_payment",
+          "amountPatientResponsibility": "amount_patient_responsibility",
+          "amountTotal": "amount_total"
+        },
+        "positionFields": {
+          "0": "number",
+          "1": "sequence",
+          "2": "member_id",
+          "3": "member_dob",
+          "4": "date_service_start",
+          "5": "date_service_end",
+          "6": "pos_code",
+          "7": "provider_id",
+          "8": "tos_code",
+          "9": "icd_1",
+          "10": "icd_2",
+          "11": "icd_3",
+          "12": "icd_4",
+          "13": "icd_5",
+          "14": "icd_6",
+          "15": "icd_7",
+          "16": "icd_8",
+          "17": "icd_9",
+          "18": "icd_10",
+          "19": "procedure_code",
+          "20": "modifier_1a",
+          "21": "is_in_network",
+          "22": "status_code",
+          "23": "date_submitted",
+          "24": "date_paid",
+          "25": "amount_cob",
+          "26": "amount_billed",
+          "27": "amount_net_payment",
+          "28": "amount_patient_responsibility",
+          "29": "amount_total"
+        },
+        "columns": [
+          {
+            "columnNumber": 0,
+            "sourceColumn": "number",
+            "targetColumn": "number",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 1,
+            "sourceColumn": "sequence",
+            "targetColumn": "sequence",
+            "dtype": "Int64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 2,
+            "sourceColumn": "memberId",
+            "targetColumn": "member_id",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 3,
+            "sourceColumn": "memberDob",
+            "targetColumn": "member_dob",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 4,
+            "sourceColumn": "dateServiceStart",
+            "targetColumn": "date_service_start",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 5,
+            "sourceColumn": "dateServiceEnd",
+            "targetColumn": "date_service_end",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 6,
+            "sourceColumn": "posCode",
+            "targetColumn": "pos_code",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 7,
+            "sourceColumn": "provider_id",
+            "targetColumn": "provider_id",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 8,
+            "sourceColumn": "tosCode",
+            "targetColumn": "tos_code",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 9,
+            "sourceColumn": "icd1",
+            "targetColumn": "icd_1",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 10,
+            "sourceColumn": "icd2",
+            "targetColumn": "icd_2",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 11,
+            "sourceColumn": "icd3",
+            "targetColumn": "icd_3",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 12,
+            "sourceColumn": "icd4",
+            "targetColumn": "icd_4",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 13,
+            "sourceColumn": "icd5",
+            "targetColumn": "icd_5",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 14,
+            "sourceColumn": "icd6",
+            "targetColumn": "icd_6",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 15,
+            "sourceColumn": "icd7",
+            "targetColumn": "icd_7",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 16,
+            "sourceColumn": "icd8",
+            "targetColumn": "icd_8",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 17,
+            "sourceColumn": "icd9",
+            "targetColumn": "icd_9",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 18,
+            "sourceColumn": "icd10",
+            "targetColumn": "icd_10",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 19,
+            "sourceColumn": "procedureCode",
+            "targetColumn": "procedure_code",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 20,
+            "sourceColumn": "modifier1a",
+            "targetColumn": "modifier_1a",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 21,
+            "sourceColumn": "isInNetwork",
+            "targetColumn": "is_in_network",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 22,
+            "sourceColumn": "statusCode",
+            "targetColumn": "status_code",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 23,
+            "sourceColumn": "dateSubmitted",
+            "targetColumn": "date_submitted",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 24,
+            "sourceColumn": "datePaid",
+            "targetColumn": "date_paid",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 25,
+            "sourceColumn": "amountCob",
+            "targetColumn": "amount_cob",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 26,
+            "sourceColumn": "amountBilled",
+            "targetColumn": "amount_billed",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 27,
+            "sourceColumn": "amountNetPayment",
+            "targetColumn": "amount_net_payment",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 28,
+            "sourceColumn": "amountPatientResponsibility",
+            "targetColumn": "amount_patient_responsibility",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 29,
+            "sourceColumn": "amountTotal",
+            "targetColumn": "amount_total",
+            "dtype": "Float64",
+            "parseDate": false
+          }
+        ],
+        "fieldCount": 30,
+        "dateFields": [
+          "member_dob",
+          "date_service_start",
+          "date_service_end",
+          "date_submitted",
+          "date_paid"
+        ]
+      },
+      "isActive": true,
+      "createdAt": "2026-05-29T18:32:06.815Z",
+      "updatedAt": "2026-05-29T18:32:06.815Z"
+    },
+    {
+      "_id": "map_33a08c23-d2e7-44ff-9336-967298eab983",
+      "accountId": "Mock",
+      "fileType": "pharmacy",
+      "version": 1,
+      "json": {
+        "sourceFormat": "column_mapping_csv",
+        "fields": {
+          "number": "number",
+          "responsiblePartyId": "responsible_party_id",
+          "memberId": "member_id",
+          "memberDob": "member_dob",
+          "planGroupId": "plan_group_id",
+          "pharmacyId": "pharmacy_id",
+          "ndc": "ndc",
+          "drugName": "drug_name",
+          "quantityDispensed": "quantity_dispensed",
+          "daysSupply": "days_supply",
+          "dateWritten": "date_written",
+          "dateFilled": "date_filled",
+          "isInNetwork": "is_in_network",
+          "statusCode": "status_code",
+          "dateSubmitted": "date_submitted",
+          "datePaid": "date_paid",
+          "amountBilled": "amount_billed",
+          "amountNetPayment": "amount_net_payment",
+          "amountPatientResponsibility": "amount_patient_responsibility",
+          "amountTotal": "amount_total"
+        },
+        "positionFields": {
+          "0": "number",
+          "1": "responsible_party_id",
+          "2": "member_id",
+          "6": "member_dob",
+          "8": "plan_group_id",
+          "10": "pharmacy_id",
+          "15": "ndc",
+          "16": "drug_name",
+          "17": "quantity_dispensed",
+          "18": "days_supply",
+          "26": "date_written",
+          "27": "date_filled",
+          "30": "is_in_network",
+          "32": "status_code",
+          "33": "date_submitted",
+          "34": "date_paid",
+          "36": "amount_billed",
+          "39": "amount_net_payment",
+          "40": "amount_patient_responsibility",
+          "41": "amount_total"
+        },
+        "columns": [
+          {
+            "columnNumber": 0,
+            "sourceColumn": "number",
+            "targetColumn": "number",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 1,
+            "sourceColumn": "responsiblePartyId",
+            "targetColumn": "responsible_party_id",
+            "dtype": "Int64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 2,
+            "sourceColumn": "memberId",
+            "targetColumn": "member_id",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 6,
+            "sourceColumn": "memberDob",
+            "targetColumn": "member_dob",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 8,
+            "sourceColumn": "planGroupId",
+            "targetColumn": "plan_group_id",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 10,
+            "sourceColumn": "pharmacyId",
+            "targetColumn": "pharmacy_id",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 15,
+            "sourceColumn": "ndc",
+            "targetColumn": "ndc",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 16,
+            "sourceColumn": "drugName",
+            "targetColumn": "drug_name",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 17,
+            "sourceColumn": "quantityDispensed",
+            "targetColumn": "quantity_dispensed",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 18,
+            "sourceColumn": "daysSupply",
+            "targetColumn": "days_supply",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 26,
+            "sourceColumn": "dateWritten",
+            "targetColumn": "date_written",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 27,
+            "sourceColumn": "dateFilled",
+            "targetColumn": "date_filled",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 30,
+            "sourceColumn": "isInNetwork",
+            "targetColumn": "is_in_network",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 32,
+            "sourceColumn": "statusCode",
+            "targetColumn": "status_code",
+            "dtype": "string",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 33,
+            "sourceColumn": "dateSubmitted",
+            "targetColumn": "date_submitted",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 34,
+            "sourceColumn": "datePaid",
+            "targetColumn": "date_paid",
+            "dtype": null,
+            "parseDate": true
+          },
+          {
+            "columnNumber": 36,
+            "sourceColumn": "amountBilled",
+            "targetColumn": "amount_billed",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 39,
+            "sourceColumn": "amountNetPayment",
+            "targetColumn": "amount_net_payment",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 40,
+            "sourceColumn": "amountPatientResponsibility",
+            "targetColumn": "amount_patient_responsibility",
+            "dtype": "Float64",
+            "parseDate": false
+          },
+          {
+            "columnNumber": 41,
+            "sourceColumn": "amountTotal",
+            "targetColumn": "amount_total",
+            "dtype": "Float64",
+            "parseDate": false
+          }
+        ],
+        "fieldCount": 20,
+        "dateFields": [
+          "member_dob",
+          "date_written",
+          "date_filled",
+          "date_submitted",
+          "date_paid"
+        ]
+      },
+      "isActive": true,
+      "createdAt": "2026-05-29T18:32:34.826Z",
+      "updatedAt": "2026-05-29T18:32:34.826Z"
+    }
+  ]
+}
