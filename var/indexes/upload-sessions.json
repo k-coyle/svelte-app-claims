@@ -1,3 +1,675 @@
 {
-  "upload_sessions": []
+	"upload_sessions": [
+		{
+			"uploaderUserId": "user_123",
+			"accountId": "client_B",
+			"fileType": "mixed",
+			"fileTypes": ["medical", "pharmacy"],
+			"usedMapping": "stored",
+			"mappingVersion": 1,
+			"stats": [
+				{
+					"filename": "client_B_medical_claims_sample.csv",
+					"bytes": 25213425,
+					"rowCount": 100001,
+					"mime": "text/csv",
+					"headers": [
+						"number",
+						"sequence",
+						"responsible_party_id",
+						"member_id",
+						"ssn",
+						"name_first",
+						"name_last",
+						"member_dob",
+						"date_service_start",
+						"date_service_end"
+					]
+				},
+				{
+					"filename": "client_B_pharmacy_claims_sample.csv",
+					"bytes": 28140388,
+					"rowCount": 100001,
+					"mime": "text/csv",
+					"headers": [
+						"number",
+						"responsible_party_id",
+						"member_id",
+						"ssn",
+						"name_first",
+						"name_last",
+						"member_dob",
+						"prescriber_id",
+						"plan_group_id",
+						"plan_group_name"
+					]
+				}
+			],
+			"files": [
+				{
+					"fileId": "file_1",
+					"filename": "client_B_medical_claims_sample.csv",
+					"bytes": 25213425,
+					"mime": "text/csv",
+					"rowCount": 100001,
+					"headers": [
+						"number",
+						"sequence",
+						"responsible_party_id",
+						"member_id",
+						"ssn",
+						"name_first",
+						"name_last",
+						"member_dob",
+						"date_service_start",
+						"date_service_end"
+					],
+					"inferredFileType": "medical",
+					"fileType": "medical",
+					"mapping": {
+						"source": "stored",
+						"mode": "stored",
+						"mappingId": "map_4c38184d-0f71-43ad-97e7-581ef2718d35",
+						"version": 1,
+						"name": "Medical Mapping",
+						"originalFilename": "client_B_medical_claims_column_map.csv",
+						"defaultReason": "newest_added",
+						"fieldCount": 47,
+						"fields": {
+							"number": "number",
+							"sequence": "sequence",
+							"responsible_party_id": "responsible_party_id",
+							"member_id": "member_id",
+							"ssn": "ssn",
+							"name_first": "name_first",
+							"name_last": "name_last",
+							"member_dob": "member_dob",
+							"date_service_start": "date_service_start",
+							"date_service_end": "date_service_end",
+							"pos_code": "pos_code",
+							"revenue_code": "revenue_code",
+							"provider_id": "provider_id",
+							"provider_state": "provider_state",
+							"provider_postal_code": "provider_postal_code",
+							"provider_specialty_code": "provider_specialty_code",
+							"tos_cd": "tos_code",
+							"type_of_bill": "type_of_bill",
+							"icd1": "icd_1",
+							"icd2": "icd_2",
+							"icd3": "icd_3",
+							"icd4": "icd_4",
+							"icd5": "icd_5",
+							"icd6": "icd_6",
+							"icd7": "icd_7",
+							"icd8": "icd_8",
+							"icd9": "icd_9",
+							"icd10": "icd_10",
+							"procedure_code": "procedure_code",
+							"modifier_1a": "modifier_1a",
+							"date_admission": "date_admission",
+							"date_discharge": "date_discharge",
+							"discharge_status_code": "discharge_status_code",
+							"primary_care_provider": "primary_care_provider",
+							"primary_payer_flag": "primary_payer_flag",
+							"is_in_network": "is_in_network",
+							"is_medicaid_medicare_recipient": "is_medicaid_medicare_recipient",
+							"status_code": "status_code",
+							"date_submitted": "date_submitted",
+							"date_paid": "date_paid",
+							"amount_cob": "amount_cob",
+							"amount_billed": "amount_billed",
+							"amount_allowed": "amount_allowed",
+							"amount_adjusted": "amount_adjusted",
+							"amount_net_payment": "amount_net_payment",
+							"amount_patient_responsibility": "amount_patient_responsibility",
+							"amount_total": "amount_total"
+						}
+					},
+					"validation": {
+						"status": "ok",
+						"requiredCoverage": {
+							"member": {
+								"status": "met",
+								"fields": ["member_id", "responsible_party_id"]
+							},
+							"serviceDate": {
+								"status": "met",
+								"fields": ["date_service_start", "date_service_end", "date_paid"]
+							},
+							"amount": {
+								"status": "met",
+								"fields": [
+									"amount_total",
+									"amount_allowed",
+									"amount_net_payment",
+									"amount_billed",
+									"amount_patient_responsibility"
+								]
+							},
+							"claimIdentifier": {
+								"status": "met",
+								"fields": ["number", "sequence"]
+							},
+							"diagnosis": {
+								"status": "met",
+								"fields": [
+									"icd_1",
+									"icd_2",
+									"icd_3",
+									"icd_4",
+									"icd_5",
+									"icd_6",
+									"icd_7",
+									"icd_8",
+									"icd_9",
+									"icd_10"
+								]
+							}
+						},
+						"blockingWarnings": [],
+						"qualityWarnings": [],
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					}
+				},
+				{
+					"fileId": "file_2",
+					"filename": "client_B_pharmacy_claims_sample.csv",
+					"bytes": 28140388,
+					"mime": "text/csv",
+					"rowCount": 100001,
+					"headers": [
+						"number",
+						"responsible_party_id",
+						"member_id",
+						"ssn",
+						"name_first",
+						"name_last",
+						"member_dob",
+						"prescriber_id",
+						"plan_group_id",
+						"plan_group_name"
+					],
+					"inferredFileType": "pharmacy",
+					"fileType": "pharmacy",
+					"mapping": {
+						"source": "stored",
+						"mode": "stored",
+						"mappingId": "map_997c5e40-7759-4e26-9fa3-a1bfc6ee3df4",
+						"version": 1,
+						"name": "Pharmacy Mapping",
+						"originalFilename": "client_B_pharmacy_claims_column_map.csv",
+						"defaultReason": "newest_added",
+						"fieldCount": 42,
+						"fields": {
+							"number": "number",
+							"responsible_party_id": "responsible_party_id",
+							"member_id": "member_id",
+							"ssn": "ssn",
+							"name_first": "name_first",
+							"name_last": "name_last",
+							"member_dob": "member_dob",
+							"prescriber_id": "prescriber_id",
+							"plan_group_id": "plan_group_id",
+							"plan_group_name": "plan_group_name",
+							"pharmacy_id": "pharmacy_id",
+							"pharmacy_name": "pharmacy_name",
+							"pharmacy_state": "pharmacy_state",
+							"pharmacy_postal_code": "pharmacy_postal_code",
+							"pharmacy_type": "pharmacy_type",
+							"ndc": "ndc",
+							"drug_name": "drug_name",
+							"quantity_dispensed": "quantity_dispensed",
+							"days_supply": "days_supply",
+							"generic_indicator": "generic_indicator",
+							"compound_indicator": "compound_indicator",
+							"maintenance_drug": "maintenance_drug",
+							"formulary_status": "formulary_status",
+							"daw": "daw",
+							"diagnosis_code": "diagnosis_code",
+							"primary_condition": "primary_condition",
+							"date_written": "date_written",
+							"date_filled": "date_filled",
+							"primary_care_provider": "primary_care_provider",
+							"primary_payer_flag": "primary_payer_flag",
+							"is_in_network": "is_in_network",
+							"is_medicaid_medicare_recipient": "is_medicaid_medicare_recipient",
+							"status_code": "status_code",
+							"date_submitted": "date_submitted",
+							"date_paid": "date_paid",
+							"amount_cob": "amount_cob",
+							"amount_billed": "amount_billed",
+							"amount_allowed": "amount_allowed",
+							"amount_adjusted": "amount_adjusted",
+							"amount_net_payment": "amount_net_payment",
+							"amount_patient_responsibility": "amount_patient_responsibility",
+							"amount_total": "amount_total"
+						}
+					},
+					"validation": {
+						"status": "ok",
+						"requiredCoverage": {
+							"member": {
+								"status": "met",
+								"fields": ["member_id", "responsible_party_id"]
+							},
+							"fillDate": {
+								"status": "met",
+								"fields": ["date_filled", "date_written", "date_paid"]
+							},
+							"amount": {
+								"status": "met",
+								"fields": [
+									"amount_total",
+									"amount_allowed",
+									"amount_net_payment",
+									"amount_billed",
+									"amount_patient_responsibility"
+								]
+							},
+							"drug": {
+								"status": "met",
+								"fields": ["number", "ndc", "drug_name"]
+							}
+						},
+						"blockingWarnings": [],
+						"qualityWarnings": [],
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					}
+				}
+			],
+			"validation": {
+				"productionReady": false,
+				"session": {
+					"eligibilityPresent": false,
+					"medicalPresent": true,
+					"pharmacyPresent": true,
+					"claimMembersEligibleAssumptionAccepted": true
+				},
+				"warnings": [
+					{
+						"severity": "blocking",
+						"code": "missing_eligibility",
+						"message": "Eligibility was not uploaded; claim-member eligibility was explicitly assumed for preview analytics only."
+					}
+				],
+				"files": [
+					{
+						"fileId": "file_1",
+						"filename": "client_B_medical_claims_sample.csv",
+						"fileType": "medical",
+						"status": "ok",
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					},
+					{
+						"fileId": "file_2",
+						"filename": "client_B_pharmacy_claims_sample.csv",
+						"fileType": "pharmacy",
+						"status": "ok",
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					}
+				]
+			},
+			"rawUploadRetention": {
+				"retained": false,
+				"reason": "Raw uploads are deleted after canonicalization by default.",
+				"cleanupStatus": "not_started"
+			},
+			"createdAt": "2026-06-01T17:36:34.455Z",
+			"totalBytes": 53353813,
+			"audit": {
+				"confirmAt": "2026-06-01T17:36:34.455Z"
+			},
+			"_id": "sess_650409f2-498a-40de-9c01-063098bfb10d"
+		},
+		{
+			"uploaderUserId": "user_123",
+			"accountId": "Mock",
+			"fileType": "mixed",
+			"fileTypes": ["eligibility", "medical", "pharmacy"],
+			"usedMapping": "stored",
+			"mappingVersion": 1,
+			"stats": [
+				{
+					"filename": "USPM_mock_claims_data__eligibility.csv",
+					"bytes": 1390,
+					"rowCount": 26,
+					"mime": "text/csv",
+					"headers": [
+						"medicalEligibilityEndDate",
+						"medicalEligibilityStartDate",
+						"medicalPlanId",
+						"memberGender",
+						"memberId",
+						"memberPostalCode"
+					]
+				},
+				{
+					"filename": "USPM_mock_claims_data__medical.csv",
+					"bytes": 7827,
+					"rowCount": 57,
+					"mime": "text/csv",
+					"headers": [
+						"number",
+						"sequence",
+						"memberId",
+						"memberDob",
+						"dateServiceStart",
+						"dateServiceEnd",
+						"posCode",
+						"provider_id",
+						"tosCode",
+						"icd1"
+					]
+				},
+				{
+					"filename": "USPM_mock_claims_data__pharmacy.csv",
+					"bytes": 3671,
+					"rowCount": 25,
+					"mime": "text/csv",
+					"headers": [
+						"number",
+						"responsiblePartyId",
+						"memberId",
+						"memberDob",
+						"planGroupId",
+						"pharmacyId",
+						"ndc",
+						"drugName",
+						"quantityDispensed",
+						"daysSupply"
+					]
+				}
+			],
+			"files": [
+				{
+					"fileId": "file_1",
+					"filename": "USPM_mock_claims_data__eligibility.csv",
+					"bytes": 1390,
+					"mime": "text/csv",
+					"rowCount": 26,
+					"headers": [
+						"medicalEligibilityEndDate",
+						"medicalEligibilityStartDate",
+						"medicalPlanId",
+						"memberGender",
+						"memberId",
+						"memberPostalCode"
+					],
+					"inferredFileType": "eligibility",
+					"fileType": "eligibility",
+					"mapping": {
+						"source": "stored",
+						"mode": "stored",
+						"mappingId": "map_eac6e855-d357-44ca-a971-7b48f834d00b",
+						"version": 1,
+						"defaultReason": "newest_added",
+						"fieldCount": 6,
+						"fields": {
+							"medicalEligibilityEndDate": "medical_eligibility_end_date",
+							"medicalEligibilityStartDate": "medical_eligibility_start_date",
+							"medicalPlanId": "medical_plan_id",
+							"memberGender": "member_gender",
+							"memberId": "member_id",
+							"memberPostalCode": "member_postal_code"
+						}
+					},
+					"validation": {
+						"status": "ok",
+						"requiredCoverage": {
+							"member": {
+								"status": "met",
+								"fields": ["member_id"]
+							},
+							"coverage": {
+								"status": "met",
+								"fields": ["medical_eligibility_start_date", "medical_eligibility_end_date"]
+							}
+						},
+						"blockingWarnings": [],
+						"qualityWarnings": [],
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					}
+				},
+				{
+					"fileId": "file_2",
+					"filename": "USPM_mock_claims_data__medical.csv",
+					"bytes": 7827,
+					"mime": "text/csv",
+					"rowCount": 57,
+					"headers": [
+						"number",
+						"sequence",
+						"memberId",
+						"memberDob",
+						"dateServiceStart",
+						"dateServiceEnd",
+						"posCode",
+						"provider_id",
+						"tosCode",
+						"icd1"
+					],
+					"inferredFileType": "medical",
+					"fileType": "medical",
+					"mapping": {
+						"source": "stored",
+						"mode": "stored",
+						"mappingId": "map_3ad74e30-c21d-4b4c-8a5e-bab4aaaa1b02",
+						"version": 1,
+						"defaultReason": "newest_added",
+						"fieldCount": 30,
+						"fields": {
+							"number": "number",
+							"sequence": "sequence",
+							"memberId": "member_id",
+							"memberDob": "member_dob",
+							"dateServiceStart": "date_service_start",
+							"dateServiceEnd": "date_service_end",
+							"posCode": "pos_code",
+							"provider_id": "provider_id",
+							"tosCode": "tos_code",
+							"icd1": "icd_1",
+							"icd2": "icd_2",
+							"icd3": "icd_3",
+							"icd4": "icd_4",
+							"icd5": "icd_5",
+							"icd6": "icd_6",
+							"icd7": "icd_7",
+							"icd8": "icd_8",
+							"icd9": "icd_9",
+							"icd10": "icd_10",
+							"procedureCode": "procedure_code",
+							"modifier1a": "modifier_1a",
+							"isInNetwork": "is_in_network",
+							"statusCode": "status_code",
+							"dateSubmitted": "date_submitted",
+							"datePaid": "date_paid",
+							"amountCob": "amount_cob",
+							"amountBilled": "amount_billed",
+							"amountNetPayment": "amount_net_payment",
+							"amountPatientResponsibility": "amount_patient_responsibility",
+							"amountTotal": "amount_total"
+						}
+					},
+					"validation": {
+						"status": "ok",
+						"requiredCoverage": {
+							"member": {
+								"status": "met",
+								"fields": ["member_id"]
+							},
+							"serviceDate": {
+								"status": "met",
+								"fields": ["date_service_start", "date_service_end", "date_paid"]
+							},
+							"amount": {
+								"status": "met",
+								"fields": [
+									"amount_total",
+									"amount_net_payment",
+									"amount_billed",
+									"amount_patient_responsibility"
+								]
+							},
+							"claimIdentifier": {
+								"status": "met",
+								"fields": ["number", "sequence"]
+							},
+							"diagnosis": {
+								"status": "met",
+								"fields": [
+									"icd_1",
+									"icd_2",
+									"icd_3",
+									"icd_4",
+									"icd_5",
+									"icd_6",
+									"icd_7",
+									"icd_8",
+									"icd_9",
+									"icd_10"
+								]
+							}
+						},
+						"blockingWarnings": [],
+						"qualityWarnings": [],
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					}
+				},
+				{
+					"fileId": "file_3",
+					"filename": "USPM_mock_claims_data__pharmacy.csv",
+					"bytes": 3671,
+					"mime": "text/csv",
+					"rowCount": 25,
+					"headers": [
+						"number",
+						"responsiblePartyId",
+						"memberId",
+						"memberDob",
+						"planGroupId",
+						"pharmacyId",
+						"ndc",
+						"drugName",
+						"quantityDispensed",
+						"daysSupply"
+					],
+					"inferredFileType": "pharmacy",
+					"fileType": "pharmacy",
+					"mapping": {
+						"source": "stored",
+						"mode": "stored",
+						"mappingId": "map_33a08c23-d2e7-44ff-9336-967298eab983",
+						"version": 1,
+						"defaultReason": "newest_added",
+						"fieldCount": 20,
+						"fields": {
+							"number": "number",
+							"responsiblePartyId": "responsible_party_id",
+							"memberId": "member_id",
+							"memberDob": "member_dob",
+							"planGroupId": "plan_group_id",
+							"pharmacyId": "pharmacy_id",
+							"ndc": "ndc",
+							"drugName": "drug_name",
+							"quantityDispensed": "quantity_dispensed",
+							"daysSupply": "days_supply",
+							"dateWritten": "date_written",
+							"dateFilled": "date_filled",
+							"isInNetwork": "is_in_network",
+							"statusCode": "status_code",
+							"dateSubmitted": "date_submitted",
+							"datePaid": "date_paid",
+							"amountBilled": "amount_billed",
+							"amountNetPayment": "amount_net_payment",
+							"amountPatientResponsibility": "amount_patient_responsibility",
+							"amountTotal": "amount_total"
+						}
+					},
+					"validation": {
+						"status": "ok",
+						"requiredCoverage": {
+							"member": {
+								"status": "met",
+								"fields": ["member_id", "responsible_party_id"]
+							},
+							"fillDate": {
+								"status": "met",
+								"fields": ["date_filled", "date_written", "date_paid"]
+							},
+							"amount": {
+								"status": "met",
+								"fields": [
+									"amount_total",
+									"amount_net_payment",
+									"amount_billed",
+									"amount_patient_responsibility"
+								]
+							},
+							"drug": {
+								"status": "met",
+								"fields": ["number", "ndc", "drug_name"]
+							}
+						},
+						"blockingWarnings": [],
+						"qualityWarnings": [],
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					}
+				}
+			],
+			"validation": {
+				"productionReady": true,
+				"session": {
+					"eligibilityPresent": true,
+					"medicalPresent": true,
+					"pharmacyPresent": true,
+					"claimMembersEligibleAssumptionAccepted": false
+				},
+				"warnings": [],
+				"files": [
+					{
+						"fileId": "file_1",
+						"filename": "USPM_mock_claims_data__eligibility.csv",
+						"fileType": "eligibility",
+						"status": "ok",
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					},
+					{
+						"fileId": "file_2",
+						"filename": "USPM_mock_claims_data__medical.csv",
+						"fileType": "medical",
+						"status": "ok",
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					},
+					{
+						"fileId": "file_3",
+						"filename": "USPM_mock_claims_data__pharmacy.csv",
+						"fileType": "pharmacy",
+						"status": "ok",
+						"invalidRowCount": 0,
+						"rejectedRowCount": 0
+					}
+				]
+			},
+			"rawUploadRetention": {
+				"retained": false,
+				"reason": "Raw uploads are deleted after canonicalization by default.",
+				"cleanupStatus": "not_started"
+			},
+			"createdAt": "2026-06-15T18:25:26.277Z",
+			"totalBytes": 12888,
+			"audit": {
+				"confirmAt": "2026-06-15T18:25:26.277Z"
+			},
+			"_id": "sess_bcca27fa-475a-4880-b2ef-33b863cbfdde"
+		}
+	]
 }
