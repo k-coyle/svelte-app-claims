@@ -4,6 +4,7 @@ import { dirname, join, resolve } from 'node:path';
 import type {
 	AuditEventDoc,
 	ClearSessionsResult,
+	DefaultMappingDoc,
 	DeleteSessionResult,
 	DocumentRepository,
 	MappingDoc,
@@ -70,6 +71,8 @@ function seedMappings(): MappingDoc[] {
 			accountId: 'clientA',
 			fileType: 'eligibility',
 			version: 1,
+			name: 'Client A eligibility v1',
+			originalFilename: 'seed-clientA-eligibility.csv',
 			isActive: true,
 			json: {
 				MemberID: 'member_id',
@@ -229,6 +232,9 @@ export function createFileDocumentRepository(
 	}
 
 	async function getActiveMapping(accountId: string, fileType: string) {
+		const defaultMapping = await getDefaultMapping(accountId, fileType);
+		if (defaultMapping) return defaultMapping;
+
 		const index = await readMappingIndex();
 		return (
 			index.mappings
@@ -238,6 +244,67 @@ export function createFileDocumentRepository(
 					return byUpdated || b.version - a.version;
 				})[0] ?? null
 		);
+	}
+
+	function findSessionMappingReference(session: UploadSessionDoc, fileType: string) {
+		const file = (session.files ?? []).find((candidate) => {
+			const record = candidate as { fileType?: unknown; mapping?: unknown };
+			return String(record.fileType ?? '') === fileType && typeof record.mapping === 'object';
+		}) as { mapping?: Record<string, unknown> } | undefined;
+
+		const mapping = file?.mapping;
+		if (!mapping || mapping.source !== 'stored') return null;
+		return {
+			mappingId:
+				typeof mapping.mappingId === 'string'
+					? mapping.mappingId
+					: typeof mapping.id === 'string'
+						? mapping.id
+						: undefined,
+			version:
+				typeof mapping.version === 'number'
+					? mapping.version
+					: Number.isInteger(Number(mapping.version))
+						? Number(mapping.version)
+						: undefined
+		};
+	}
+
+	function newestMapping(rows: MappingDoc[]) {
+		return rows.slice().sort((a, b) => {
+			const byUpdated = Date.parse(b.updatedAt) - Date.parse(a.updatedAt);
+			if (byUpdated) return byUpdated;
+			return b.version - a.version;
+		})[0];
+	}
+
+	async function getDefaultMapping(
+		accountId: string,
+		fileType: string
+	): Promise<DefaultMappingDoc | null> {
+		const [uploadIndex, mappingIndex] = await Promise.all([readUploadIndex(), readMappingIndex()]);
+		const mappings = mappingIndex.mappings.filter(
+			(row) => row.accountId === accountId && row.fileType === fileType
+		);
+		if (!mappings.length) return null;
+
+		const sessions = uploadIndex.upload_sessions
+			.filter((row) => row.accountId === accountId)
+			.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+
+		for (const session of sessions) {
+			const reference = findSessionMappingReference(session, fileType);
+			if (!reference) continue;
+			const mapping =
+				(reference.mappingId
+					? mappings.find((row) => row._id === reference.mappingId)
+					: undefined) ??
+				(reference.version ? mappings.find((row) => row.version === reference.version) : undefined);
+			if (mapping) return { ...mapping, defaultReason: 'latest_confirmed_upload' };
+		}
+
+		const fallback = newestMapping(mappings);
+		return fallback ? { ...fallback, defaultReason: 'newest_added' } : null;
 	}
 
 	async function listMappings(filters: MappingFilters = {}) {
@@ -259,6 +326,8 @@ export function createFileDocumentRepository(
 		accountId: string;
 		fileType: string;
 		version: number;
+		name?: string;
+		originalFilename?: string;
 		json: Record<string, unknown>;
 		isActive?: boolean;
 	}) {
@@ -283,6 +352,8 @@ export function createFileDocumentRepository(
 		if (existing) {
 			existing.json = input.json;
 			existing.isActive = Boolean(input.isActive);
+			existing.name = input.name;
+			existing.originalFilename = input.originalFilename;
 			existing.updatedAt = ts;
 			await writeMappingIndex(index);
 			return existing._id ?? '';
@@ -294,6 +365,8 @@ export function createFileDocumentRepository(
 			accountId: input.accountId,
 			fileType: input.fileType,
 			version: input.version,
+			name: input.name,
+			originalFilename: input.originalFilename,
 			json: input.json,
 			isActive: Boolean(input.isActive),
 			createdAt: ts,
@@ -334,6 +407,7 @@ export function createFileDocumentRepository(
 		deleteUploadSession,
 		clearDemoSessions,
 		getActiveMapping,
+		getDefaultMapping,
 		listMappings,
 		upsertMapping,
 		recordAuditEvent,

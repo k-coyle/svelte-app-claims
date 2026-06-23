@@ -40,9 +40,15 @@ export type MappingDoc = {
 	fileType: FileType;
 	isActive: boolean;
 	version: number;
+	name?: string;
+	originalFilename?: string;
 	json: Record<string, unknown>;
 	createdAt?: string;
 	updatedAt: string;
+};
+
+export type DefaultMappingDoc = MappingDoc & {
+	defaultReason: 'latest_confirmed_upload' | 'newest_added';
 };
 
 export type UploadSessionFilters = {
@@ -95,11 +101,14 @@ export type DocumentRepository = {
 	deleteUploadSession(sessionId: string): Promise<DeleteSessionResult>;
 	clearDemoSessions(): Promise<ClearSessionsResult>;
 	getActiveMapping(accountId: string, fileType: string): Promise<MappingDoc | null>;
+	getDefaultMapping(accountId: string, fileType: string): Promise<DefaultMappingDoc | null>;
 	listMappings(filters?: MappingFilters): Promise<MappingDoc[]>;
 	upsertMapping(input: {
 		accountId: string;
 		fileType: string;
 		version: number;
+		name?: string;
+		originalFilename?: string;
 		json: Record<string, unknown>;
 		isActive?: boolean;
 	}): Promise<string>;

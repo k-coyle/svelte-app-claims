@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock DB: provide getActiveMapping, and no-op insert for this suite
+// Mock DB: provide getDefaultMapping, and no-op insert for this suite
 vi.mock('../src/lib/server/db', () => ({
 	clearDemoSessions: vi.fn(async () => ({ deletedSessions: 0, deletedArtifacts: [] })),
 	deleteUploadSession: vi.fn(async () => ({ deleted: false, deletedArtifacts: [] })),
@@ -14,16 +14,20 @@ vi.mock('../src/lib/server/db', () => ({
 	listMappings: vi.fn(async () => []),
 	listUploadSessions: vi.fn(async () => []),
 	upsertMapping: vi.fn(async () => 'map123'),
-	getActiveMapping: vi.fn(async (accountId: string, fileType: string) => {
+	getActiveMapping: vi.fn(async () => null),
+	getDefaultMapping: vi.fn(async (accountId: string, fileType: string) => {
 		if (accountId === 'clientA' && fileType === 'eligibility') {
 			return {
+				_id: 'map_clientA_eligibility_v3',
 				accountId,
 				fileType,
 				version: 3,
+				name: 'Eligibility v3',
 				json: { columnA: 'canonical.fieldA', columnB: 'canonical.fieldB' },
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
-				isActive: true
+				isActive: true,
+				defaultReason: 'newest_added'
 			};
 		}
 		return null;
@@ -32,7 +36,7 @@ vi.mock('../src/lib/server/db', () => ({
 }));
 
 import { actions } from '../src/routes/+page.server';
-import { getActiveMapping } from '../src/lib/server/db';
+import { getDefaultMapping } from '../src/lib/server/db';
 
 describe('stored mapping lookup', () => {
 	beforeEach(() => vi.clearAllMocks());
@@ -53,7 +57,7 @@ describe('stored mapping lookup', () => {
 		expect(res.preview.usedMapping).toBe('stored');
 		expect(res.preview.mappingVersion).toBe(3);
 		expect(res.preview.mappingFieldCount).toBe(2);
-		expect(getActiveMapping).toHaveBeenCalledTimes(1);
+		expect(getDefaultMapping).toHaveBeenCalledTimes(1);
 	});
 
 	it('errors if stored mapping requested but not found', async () => {
@@ -86,7 +90,7 @@ describe('stored mapping lookup', () => {
 		expect(res.preview.usedMapping).toBe('provided');
 		expect(res.preview.mappingVersion).toBeUndefined();
 		expect(res.preview.mappingFieldCount).toBe(2);
-		expect(getActiveMapping).toHaveBeenCalledTimes(0);
+		expect(getDefaultMapping).toHaveBeenCalledTimes(0);
 	});
 
 	it('falls back to stored mapping when no JSON provided and checkbox off', async () => {

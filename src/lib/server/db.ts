@@ -1,6 +1,7 @@
 import { fileDocumentRepository } from './storage/fileRepository';
 import type {
 	FileType,
+	DefaultMappingDoc,
 	MappingDoc,
 	MappingFilters,
 	UploadRawRetention,
@@ -11,6 +12,7 @@ import type {
 
 export type {
 	FileType,
+	DefaultMappingDoc,
 	MappingDoc,
 	MappingFilters,
 	UploadRawRetention,
@@ -52,6 +54,13 @@ export async function getActiveMapping(
 	return fileDocumentRepository.getActiveMapping(accountId, fileType);
 }
 
+export async function getDefaultMapping(
+	accountId: string,
+	fileType: string
+): Promise<DefaultMappingDoc | null> {
+	return fileDocumentRepository.getDefaultMapping(accountId, fileType);
+}
+
 export async function listMappings(filters: MappingFilters = {}) {
 	return fileDocumentRepository.listMappings(filters);
 }
@@ -60,6 +69,8 @@ export async function upsertMapping(input: {
 	accountId: string;
 	fileType: string;
 	version: number;
+	name?: string;
+	originalFilename?: string;
 	json: Record<string, unknown>;
 	isActive?: boolean;
 }): Promise<string> {

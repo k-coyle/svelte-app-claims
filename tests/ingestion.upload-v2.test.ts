@@ -19,7 +19,8 @@ vi.mock('../src/lib/server/db', () => ({
 	listMappings: vi.fn(async () => []),
 	listUploadSessions: vi.fn(async () => []),
 	upsertMapping: vi.fn(async () => 'map123'),
-	getActiveMapping: vi.fn(async (_accountId: string, fileType: string) => {
+	getActiveMapping: vi.fn(async () => null),
+	getDefaultMapping: vi.fn(async (_accountId: string, fileType: string) => {
 		const fieldsByType: Record<string, Record<string, string>> = {
 			eligibility: {
 				MemberID: 'member_id',
@@ -44,13 +45,17 @@ vi.mock('../src/lib/server/db', () => ({
 		const fields = fieldsByType[fileType];
 		return fields
 			? {
+					_id: `map_${fileType}_default`,
 					accountId: 'clientA',
 					fileType,
 					version: fileType === 'eligibility' ? 1 : fileType === 'medical' ? 2 : 3,
+					name: `${fileType}-mapping.csv`,
+					originalFilename: `${fileType}-mapping.csv`,
 					json: { fields },
 					createdAt: new Date().toISOString(),
 					updatedAt: new Date().toISOString(),
-					isActive: true
+					isActive: true,
+					defaultReason: 'newest_added'
 				}
 			: null;
 	}),
@@ -59,6 +64,7 @@ vi.mock('../src/lib/server/db', () => ({
 
 vi.mock('../src/lib/server/analysis', () => ({
 	listAnalysisManifests: vi.fn(async () => []),
+	listAnalysisManifestsForSessions: vi.fn(async () => []),
 	writeAnalysisArtifacts: vi.fn(async (input: unknown) => {
 		analysisInputs.push(input);
 		return input;
@@ -129,6 +135,16 @@ describe('production PHI upload ingestion v2', () => {
 		expect(storedSession.fileTypes).toEqual(['eligibility', 'medical', 'pharmacy']);
 		expect(storedSession.validation.productionReady).toBe(true);
 		expect(storedSession.rawUploadRetention.retained).toBe(false);
+		expect(storedSession.files.map((file: any) => file.mapping.mappingId)).toEqual([
+			'map_eligibility_default',
+			'map_medical_default',
+			'map_pharmacy_default'
+		]);
+		expect(storedSession.files.map((file: any) => file.mapping.defaultReason)).toEqual([
+			'newest_added',
+			'newest_added',
+			'newest_added'
+		]);
 
 		const analysisInput = analysisInputs[0] as any;
 		expect(analysisInput.manifestVersion).toBe(2);
@@ -139,6 +155,11 @@ describe('production PHI upload ingestion v2', () => {
 			'pharmacy'
 		]);
 		expect(analysisInput.files.map((file: any) => file.mapping.version)).toEqual([1, 2, 3]);
+		expect(analysisInput.files.map((file: any) => file.mapping.name)).toEqual([
+			'eligibility-mapping.csv',
+			'medical-mapping.csv',
+			'pharmacy-mapping.csv'
+		]);
 		expect(
 			analysisInput.files.every((file: any) => file.artifacts.canonicalCsv === file.path)
 		).toBe(true);

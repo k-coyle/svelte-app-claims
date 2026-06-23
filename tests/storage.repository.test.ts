@@ -103,4 +103,57 @@ describe('file document repository', () => {
 		expect(await repo.listMappings({ accountId: 'clientA', fileType: 'medical' })).toHaveLength(1);
 		expect(existsSync(join(root, 'analysis', 'orphan_old_session'))).toBe(false);
 	});
+
+	it('resolves default mappings from the latest confirmed upload before newest added mapping', async () => {
+		root = await mkdtemp(join(process.cwd(), 'var', 'test-storage-'));
+		const repo = createFileDocumentRepository({ rootDir: root });
+		await repo.upsertMapping({
+			accountId: 'Mock',
+			fileType: 'medical',
+			version: 1,
+			name: 'Mock medical v1.csv',
+			originalFilename: 'Mock medical v1.csv',
+			json: { fields: { MemberID: 'member_id' } },
+			isActive: true
+		});
+		await repo.upsertMapping({
+			accountId: 'Mock',
+			fileType: 'medical',
+			version: 2,
+			name: 'Mock medical v2.csv',
+			originalFilename: 'Mock medical v2.csv',
+			json: { fields: { MemberID: 'member_id', Paid: 'amount_total' } },
+			isActive: true
+		});
+
+		const newestAdded = await repo.getDefaultMapping('Mock', 'medical');
+		expect(newestAdded?.version).toBe(2);
+		expect(newestAdded?.defaultReason).toBe('newest_added');
+
+		await repo.insertUploadSession({
+			_id: 'sess_mock_confirmed',
+			uploaderUserId: 'user_123',
+			accountId: 'Mock',
+			fileType: 'medical',
+			fileTypes: ['medical'],
+			usedMapping: 'stored',
+			stats: [],
+			files: [
+				{
+					fileType: 'medical',
+					mapping: {
+						source: 'stored',
+						version: 1,
+						name: 'Mock medical v1.csv'
+					}
+				}
+			],
+			createdAt: '2026-05-29T12:00:00.000Z',
+			totalBytes: 0
+		});
+
+		const latestConfirmed = await repo.getDefaultMapping('Mock', 'medical');
+		expect(latestConfirmed?.version).toBe(1);
+		expect(latestConfirmed?.defaultReason).toBe('latest_confirmed_upload');
+	});
 });

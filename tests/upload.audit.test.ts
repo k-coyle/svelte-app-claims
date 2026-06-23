@@ -5,8 +5,9 @@ vi.mock('../src/lib/server/db', async (importOriginal) => {
 	return {
 		...actual,
 		insertUploadSession: vi.fn(async () => 'mockSession123'),
-		getActiveMapping: vi.fn(async (_accountId: string, _fileType: string) => ({
+		getDefaultMapping: vi.fn(async (_accountId: string, _fileType: string) => ({
 			version: 1,
+			defaultReason: 'newest_added',
 			json: {
 				MemberID: 'member_id',
 				EligibilityStart: 'medical_eligibility_start_date',
@@ -67,6 +68,7 @@ describe('audit logging', () => {
 
 		expect(res.confirmed).toBe(true);
 		expect(res.sessionId).toBe('mockSession123');
+		expect(res.accountId).toBe('clientA');
 		expect(insertUploadSession).toHaveBeenCalledTimes(1);
 
 		const calls = spy.mock.calls.map((c) => String(c[0]));

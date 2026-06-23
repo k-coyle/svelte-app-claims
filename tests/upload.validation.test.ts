@@ -14,6 +14,7 @@ vi.mock('../src/lib/server/db', () => ({
 	listUploadSessions: vi.fn(async () => []),
 	upsertMapping: vi.fn(async () => 'map123'),
 	getActiveMapping: vi.fn(async () => null),
+	getDefaultMapping: vi.fn(async () => null),
 	insertUploadSession: vi.fn(async () => 'sess-mock')
 }));
 

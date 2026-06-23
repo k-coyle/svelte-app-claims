@@ -24,7 +24,11 @@ export type FileStat = {
 export type IngestionMapping = {
 	source: IngestionMappingSource;
 	mode: IngestionMappingMode;
+	mappingId?: string;
 	version?: number;
+	name?: string;
+	originalFilename?: string;
+	defaultReason?: 'latest_confirmed_upload' | 'newest_added';
 	fields: Record<string, string>;
 	fieldCount: number;
 	error?: string;
@@ -103,7 +107,14 @@ export type IngestionSessionValidation = {
 export type ActiveMappingLookup = (
 	accountId: string,
 	fileType: string
-) => Promise<{ version: number; json: Record<string, unknown> } | null>;
+) => Promise<{
+	_id?: string;
+	version: number;
+	name?: string;
+	originalFilename?: string;
+	json: Record<string, unknown>;
+	defaultReason?: 'latest_confirmed_upload' | 'newest_added';
+} | null>;
 
 const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
 const MAX_FILES = 20;
@@ -414,7 +425,11 @@ export async function resolveFileMapping(input: {
 		return {
 			source: 'stored',
 			mode,
+			mappingId: stored._id,
 			version: stored.version,
+			name: stored.name,
+			originalFilename: stored.originalFilename,
+			defaultReason: stored.defaultReason,
 			fields,
 			fieldCount: Object.keys(fields).length
 		};

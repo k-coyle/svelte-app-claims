@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { writeAnalysisArtifacts } from '$lib/server/analysis';
 import { buildClaimsRunProfile, profileClaimsBuffer } from '$lib/server/claimsProfile';
-import { getActiveMapping, insertUploadSession } from '$lib/server/db';
+import { getDefaultMapping, insertUploadSession } from '$lib/server/db';
 import {
 	buildSessionValidation,
 	cleanupRawTempFiles,
@@ -66,7 +66,10 @@ function analysisMappingSummary(files: IngestionFileProfile[]) {
 	return mapped
 		? {
 				source: mapped.source,
+				mappingId: mapped.mappingId,
 				version: mapped.version,
+				name: mapped.name,
+				defaultReason: mapped.defaultReason,
 				fields: mapped.fields
 			}
 		: { source: 'none' as const };
@@ -107,7 +110,7 @@ async function makeProfiles(input: {
 		accountId: input.accountId,
 		form: input.form,
 		files,
-		getActiveMapping
+		getActiveMapping: getDefaultMapping
 	});
 	const validation = buildSessionValidation({
 		files: profiles,
@@ -141,7 +144,11 @@ function publicFiles(files: IngestionFileProfile[]) {
 		mapping: {
 			source: file.mapping.source,
 			mode: file.mapping.mode,
+			mappingId: file.mapping.mappingId,
 			version: file.mapping.version,
+			name: file.mapping.name,
+			originalFilename: file.mapping.originalFilename,
+			defaultReason: file.mapping.defaultReason,
 			fieldCount: file.mapping.fieldCount,
 			fields: file.mapping.fields
 		},
@@ -206,7 +213,11 @@ async function confirmSession(input: {
 				mapping: {
 					source: file.mapping.source,
 					mode: file.mapping.mode,
+					mappingId: file.mapping.mappingId,
 					version: file.mapping.version,
+					name: file.mapping.name,
+					originalFilename: file.mapping.originalFilename,
+					defaultReason: file.mapping.defaultReason,
 					fields: file.mapping.fields,
 					fieldCount: file.mapping.fieldCount
 				},
@@ -323,6 +334,7 @@ export async function handleUploadAction(evt: WorkspaceActionEvent) {
 			return {
 				confirmed: true,
 				sessionId: confirmed.sessionId,
+				accountId,
 				validation,
 				rawUploadRetention: confirmed.rawUploadRetention
 			};
