@@ -478,6 +478,27 @@ export async function listAnalysisManifests(limit = 25): Promise<AnalysisManifes
 	}
 }
 
+function isSafeSessionId(sessionId: string) {
+	return /^[A-Za-z0-9_.-]+$/.test(sessionId);
+}
+
+async function readAnalysisManifestForSession(sessionId: string) {
+	if (!isSafeSessionId(sessionId)) return null;
+	return readJsonFile<AnalysisManifest>(join(runDir(sessionId), 'manifest.json'));
+}
+
+export async function listAnalysisManifestsForSessions(
+	sessionIds: string[]
+): Promise<AnalysisManifest[]> {
+	const uniqueSessionIds = Array.from(new Set(sessionIds.filter(isSafeSessionId)));
+	if (!uniqueSessionIds.length) return [];
+
+	const manifests = await Promise.all(uniqueSessionIds.map(readAnalysisManifestForSession));
+	return manifests
+		.filter((manifest): manifest is AnalysisManifest => Boolean(manifest))
+		.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+}
+
 export async function getLatestAnalysisManifest() {
 	return (await listAnalysisManifests(1))[0] ?? null;
 }
